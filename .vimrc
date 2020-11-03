@@ -16,6 +16,7 @@ Plug 'scrooloose/nerdtree',
 Plug 'dylanaraps/wal.vim'
 " Plug 'junegunn/fzf'
 " Plug 'ervandew/supertab'
+Plug 'rhysd/vim-clang-format'
 call plug#end()		" Initialize plugin system
 
 " his enables mouse in all modes, hence a for all. See vim manpages and
