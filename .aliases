@@ -1,0 +1,61 @@
+#!/bin/bash
+
+function xbps-fzf() {
+    # xpkg -a | fzf -m --preview 'xq {1}' --preview-window=right:66%:wrap | xargs -ro xi
+    . $ENVIRONMENT_SCRIPTS/fuzzypkg.sh
+}
+
+alias rm='trash'
+alias fd='fd --hidden'
+
+alias REA="cd /home/fm/Documents/README"
+alias SCR="cd /home/fm/.config/env"
+alias DOW="cd /home/fm/Downloads"
+alias DOC="cd /home/fm/Documents"
+alias MUS="cd /home/fm/Music"
+
+alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
+alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
+
+alias poweroff='sudo poweroff'
+alias reboot='sudo reboot'
+alias zzz=$ENVIRONMENT_SCRIPTS/application_wrappers/zzz.sh
+
+alias alert='echo -e '\''\a'\'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias pegrep='grep -iP --color=auto'
+alias history='omz_history -t '\''yyyy/mm/dd'\'
+
+alias l='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias l.='ls -d .*'
+alias la='ls -lAh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias ll='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+
+alias youtube='mpsyt'
+alias rc='source /home/fm/.zshrc'
+alias sway=$ENVIRONMENT_SCRIPTS/sway_launch.sh
+alias translate=$ENVIRONMENT_SCRIPTS/interactive_translation.sh
+# alias vifm=$ENVIRONMENT_SCRIPTS/application_wrappers/vifmrun
+# alias fzf=$ENVIRONMENT_SCRIPTS/application_wrappers/fzfimg.sh
+
+alias xb='xbps-fzf'
+alias xq='xbps-query'
+alias xp='sudo xbps-pkgdb'
+alias xre='sudo xbps-reconfigure'
+alias xi='sudo xbps-install'
+alias xr='sudo xbps-remove'
+alias xs='sudo $HOME/Git/void-packages/xbps-src'
+
+alias aria2pp='aria2p --port 6801 --secret HeLLo'
+
+alias aria2c-list='< /home/fm/.config/aria2/aria2.save'
+alias aria2c-list-clear='rm /home/fm/.config/aria2/aria2.save'
+alias aria2c-log='< /home/fm/.config/aria2/aria2.log'
+alias aria2c-log-clear='rm /home/fm/.config/aria2/aria2.log'
+
+alias weechat="weechat -d $HOME/.config/weechat"
+
+alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
