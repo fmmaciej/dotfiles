@@ -8,7 +8,6 @@
 
 call plug#begin('~/.vim/plugged')
 " Plug 'w0rp/ale'
-" Plug 'tomasiser/vim-code-dark',
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-surround'
 " Plug 'terryma/vim-multiple-cursors'
@@ -59,7 +58,7 @@ set incsearch		" Searches for strings incrementally
  
 set autoindent		" Auto-indent new lines
 set shiftwidth=4	" Number of auto-indent spaces
-set softtabstop=4	" Number of spaces per Tab
+set softtabstop=4	" Number of spaces pTab
 set smartindent		" Enable smart-indent
 set smarttab		" Enable smart-tabs
  
