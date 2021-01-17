@@ -7,9 +7,10 @@ function xbps-fzf() {
 
 alias rm='trash'
 alias fd='fd --hidden'
+alias less='bat'
 
-alias REA="cd /home/fm/Documents/README"
 alias SCR="cd /home/fm/.config/env"
+alias REA="cd /home/fm/Documents/README"
 alias DOW="cd /home/fm/Downloads"
 alias DOC="cd /home/fm/Documents"
 alias MUS="cd /home/fm/Music"
