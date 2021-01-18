@@ -1,0 +1,31 @@
+font=SF Pro Text 11
+width=420
+padding=18
+margin=18
+border-size=1
+# Only for desktop, ignored when no such output exists
+output=DP-1
+
+background-color=#000000
+text-color=#CCCCCC
+border-color=#CCCCCC
+default-timeout=30000
+
+[urgency=low]
+background-color=#999999
+text-color=#AAAAAA
+
+[urgency=high]
+background-color=#E41C28
+text-color=#9FCA56
+border-color=#151718
+default-timeout=0
+ignore-timeout=1
+
+[app-name=pidgin]
+background-color=#999999
+text-color=#00bfff
+border-color=#151718
+default-timeout=30000
+ignore-timeout=1
+
