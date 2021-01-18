@@ -22,11 +22,11 @@ set $altr Mod5
 
 include "$HOME/.cache/wal/colors-sway"
 
-exec --no-startup-id wal -R # -i $wallpaper
-output * bg $wallpaper fill
-
 set $wallpapers $HOME/Pictures/Wallpapers/Road
 bindsym $mod+w exec "wal -i $wallpapers -o wal-set"
+
+exec --no-startup-id wal -R # -i $wallpaper
+output * bg $wallpaper fill
 
 ### Clamshell Mode
 #
@@ -59,10 +59,10 @@ exec --no-startup-id xrdb -load ~/.Xresources
 ### window colors
 #
 #                       border      background      text	    indicator
-client.focused		$color0	    $background	    $foreground	    $color7	$background
-client.unfocused	$color0	    $background	    $foreground	    $color7	$background
-client.focused_inactive $color0	    $background	    $foreground	    $color7	$background
-client.urgent		$color0	    $background	    $foreground	    $color7	$background
+# client.focused		$color0	    $background	    $foreground	    $color7	$background
+# client.unfocused	$color0	    $background	    $foreground	    $color7	$background
+# client.focused_inactive $color0	    $background	    $foreground	    $color7	$background
+# client.urgent		$color0	    $background	    $foreground	    $color7	$background
 #
 # set $opacity 0.95
 # for_window [class=".*"] no_focus opacity $opacity
@@ -84,15 +84,15 @@ set $monitor_dell_moj 'Dell Inc. DELL U2414H 9TG463AS6R4L'
 set $monitor_dell_sii_lewy 'Dell Inc. DELL P2419H G4YBPM2'
 set $monitor_dell_sii_prawy 'Dell Inc. DELL P2419H 16HR3Q2'
 
-set $laptop_screen 'Chimei Innolux Corporation 0x15B1 0x00000000'
-set $primary $monitor_dell_sii_lewy
+# set $laptop_screen 'Chimei Innolux Corporation 0x15B1 0x00000000'
+# set $primary $monitor_dell_sii_lewy
 # set $primary $monitor_dell_moj
-set $secondary $monitor_dell_sii_prawy
+# set $secondary $monitor_dell_sii_prawy
 
-output $laptop_screen resolution 1920x1080 position 0 0
-output $primary resolution 1920x1080 position 1920 0 transform 270
+# output $laptop_screen resolution 1920x1080 position 0 0
+# output $primary resolution 1920x1080 position 1920 0 transform 270
 # output $primary resolution 1920x1080 position 1920 0 
-output $secondary resolution 1920x1080 position 3000 0 transform 90
+# output $secondary resolution 1920x1080 position 3000 0 transform 90
 
 ### Idle configuration
 #
@@ -120,10 +120,10 @@ output $secondary resolution 1920x1080 position 3000 0 transform 90
 #	middle_emulation enabled
 #   }
 #
-input "AT Translated Set 2 keyboard" xkb_model "precision_m"
-input "Dell WMI hotkeys" xkb_model "precision_m"
+# input "AT Translated Set 2 keyboard" xkb_model "precision_m"
+# input "Dell WMI hotkeys" xkb_model "precision_m"
 input * xkb_layout "pl"
-input * xkb_numlock enable
+# input * xkb_numlock enable
 # input * xkb_variant "colemak,,typewriter"
 # input * xkb_options "grp:win_space_toggle"
 # input "AT Translated Set 2 keyboard" xkb_options lv3:ralt_alt
@@ -229,11 +229,14 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 # bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+q exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit SwayWM?' -b 'Yes, exit SwayWM' 'swaymsg exit'"
 
 ### Terminal
 #
-set $term alacritty
+set $term 'PAN_MESA_DEBUG=gl3 alacritty'
 bindsym $mod+Return exec $term
+set $term1 xterm
+bindsym Ctrl+Return exec $term1
 
 #####################################################################################
 ################################## EXIT
@@ -286,7 +289,7 @@ bindsym XF86MonBrightnessDown exec brightnessctl s 5%- # decrease screen brightn
 
 ### MAIN WORKSPACES
 #
-# $ws0 jest do zapisywania screenshotow jako notatek
+# $ws0 jest do zapisywania screenshotow jakr notatek
 # set $ws00 "00:!: "
 #     assign [class="flameshot"] $ws00
 #     for_window[class="flameshot"] floating enable
@@ -544,26 +547,10 @@ bindsym $mod+Ctrl+less move workspace to output left
 
 #######################################################################################
 ########################## BAR
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-bar {
-	strip_workspace_numbers yes
-#       exec ~/.config/i3/i3status.sh
-        status_command i3status -c /home/fm/.config/sway/i3status.conf
-#       status_command i3blocks -c ~/.config/i3/i3blocks.conf
-        workspace_buttons yes
-        position top
-	font pango: Roboto, FontAwesome5Free, FontAwesome5Brands
 
-    colors {
-	background $background
-	separator $color0
-#			    borders		background	    text
-	focused_workspace   $background		$color2		    $foreground
-	inactive_workspace  $background		$background	    $color1
-#	urgent_workspace    $urgent-bg-color	$urgent-bg-color    $text-color
-    }
-}
+# bar {
+#     exec --no-startup-id waybar -c /home/fm/.config/sway/waybar.conf
+# }
 
 #########################################################################################
 ##################### DMENU 
@@ -629,9 +616,9 @@ bindsym $mod+grave scratchpad show
 
 # Unclutter
 # it appears that unclutter-xfixes does not work on wayland
-exec --no-startup-id unclutter --timeout 2 --jitter 2
-exec --no-startup-id pidgin
-exec --no-startup-id aplay $HOME/.sounds/Windows98/Windows_98/Windows_98_startup.wav
+# exec --no-startup-id unclutter --timeout 2 --jitter 2
+# exec --no-startup-id pidgin
+exec --no-startup-id aplay $HOME/.local/share/sounds/Windows98/Windows_98/Windows_98_startup.wav
 
 # Transparent windows
 exec_always --no-startup-id python3 ${ENVIRONMENT_SCRIPTS}/inactive-windows-transparency.py
@@ -640,15 +627,16 @@ exec_always --no-startup-id python3 ${ENVIRONMENT_SCRIPTS}/inactive-windows-tran
 # gammastep is better redshift
 # exec_always --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/redshift.sh
 exec --no-startup-id gammastep
+exec_always ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh
 
 # Firefox black theme?
-exec_always ${ENVIRONMENT_SCRIPTS}/import-gsettings/import-gsettings.sh \
-    gtk-theme:gtk-theme-name \
-    icon-theme:gtk-icon-theme-name \
-    cursor-theme:gtk-cursor-theme-name
+# exec_always ${ENVIRONMENT_SCRIPTS}/import-gsettings/import-gsettings.sh \
+#     gtk-theme:gtk-theme-name \
+#     icon-theme:gtk-icon-theme-name \
+#     cursor-theme:gtk-cursor-theme-name
 
-bindsym Print exec --no-startup-id grim "$HOME/Pictures/Screenshots/$(date '+%Y%M%d_%H%m%S').png"
-bindsym Shift+Print exec --no-startup-id grim -g "$(slurp)" "$HOME/Pictures/Screenshots/$(date '+%Y%M%d_%H%m%S').png"
+# bindsym Print exec --no-startup-id grim "$HOME/Pictures/Screenshots/$(date '+%Y%M%d_%H%m%S').png"
+# bindsym Shift+Print exec --no-startup-id grim -g "$(slurp)" "$HOME/Pictures/Screenshots/$(date '+%Y%M%d_%H%m%S').png"
 
 # bindsym Print exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/screenshot_flameshot.sh full
 # bindsym Shift+Print exec --no-startup-id $HOME/.scirpts/screenshot_flameshot.sh gui

@@ -5,6 +5,7 @@ function xbps-fzf() {
     . $ENVIRONMENT_SCRIPTS/fuzzypkg.sh
 }
 
+alias alacritty='PAN_MESA_DEBUG=gl3; alacritty'
 alias rm='trash'
 alias fd='fd --hidden'
 
@@ -34,12 +35,14 @@ alias ll='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%
 alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 
-alias youtube='mpsyt'
 alias rc='source /home/fm/.zshrc'
+alias rs='gpg-connect-agent updatestartuptty /bye'
+
 alias sway=$ENVIRONMENT_SCRIPTS/sway_launch.sh
 alias translate=$ENVIRONMENT_SCRIPTS/interactive_translation.sh
 # alias vifm=$ENVIRONMENT_SCRIPTS/application_wrappers/vifmrun
 # alias fzf=$ENVIRONMENT_SCRIPTS/application_wrappers/fzfimg.sh
+alias youtube='mpsyt'
 
 alias xb='xbps-fzf'
 alias xq='xbps-query'
