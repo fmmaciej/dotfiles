@@ -23,7 +23,7 @@ set $altr Mod5
 include "$HOME/.cache/wal/colors-sway"
 
 exec --no-startup-id wal -R # -i $wallpaper
-output * bg $wallpaper fill
+# output * bg $wallpaper fill
 
 set $wallpapers $HOME/Pictures/Wallpapers/Road
 bindsym $mod+w exec "wal -i $wallpapers -o wal-set"
