@@ -5,16 +5,16 @@ function xbps-fzf() {
     . $ENVIRONMENT_SCRIPTS/fuzzypkg.sh
 }
 
-alias alacritty='PAN_MESA_DEBUG=gl3; alacritty'
 alias rm='trash'
 alias fd='fd --hidden'
 alias less='bat'
 
 alias SCR="cd /home/fm/.config/env"
-alias REA="cd /home/fm/Documents/README"
+alias REA="cd /home/fm/Documents/readme"
 alias DOW="cd /home/fm/Downloads"
 alias DOC="cd /home/fm/Documents"
 alias MUS="cd /home/fm/Music"
+alias GI="cd /home/fm/Git"
 
 alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
 alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
@@ -51,7 +51,7 @@ alias xp='sudo xbps-pkgdb'
 alias xre='sudo xbps-reconfigure'
 alias xi='sudo xbps-install'
 alias xr='sudo xbps-remove'
-alias xs='sudo $HOME/Git/void-packages/xbps-src'
+alias xs='$HOME/Git/void-packages/xbps-src'
 
 alias aria2pp='aria2p --port 6801 --secret HeLLo'
 
@@ -63,3 +63,5 @@ alias aria2c-log-clear='rm /home/fm/.config/aria2/aria2.log'
 alias weechat="weechat -d $HOME/.config/weechat"
 
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+alias vsc='/opt/VScode/code'
