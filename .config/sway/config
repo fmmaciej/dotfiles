@@ -113,21 +113,20 @@ set $monitor_dell_sii_prawy 'Dell Inc. DELL P2419H 16HR3Q2'
 #
 # Example 
 #
-#   input "2:14:SynPS/2_Synaptics_TouchPad" {
-#	dwt enabled
-#	tap enabled
-#	natural_scroll enabled
-#	middle_emulation enabled
-#   }
-#
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+    pointer_accel 0.9
+}
+
 # input "AT Translated Set 2 keyboard" xkb_model "precision_m"
 # input "Dell WMI hotkeys" xkb_model "precision_m"
 input * xkb_layout "pl"
 # input * xkb_numlock enable
 # input * xkb_variant "colemak,,typewriter"
 # input * xkb_options "grp:win_space_toggle"
-# input "AT Translated Set 2 keyboard" xkb_options lv3:ralt_alt
-# input "Dell WMI hotkeys" xkb_options lv3:ralt_alt
 
 
 # kill focused window
