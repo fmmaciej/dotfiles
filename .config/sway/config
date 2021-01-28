@@ -228,12 +228,11 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+q exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit SwayWM?' -b 'Yes, exit SwayWM' 'swaymsg exit'"
 
 ### Terminal
 #
-set $term 'PAN_MESA_DEBUG=gl3 alacritty'
+set $term 'alacritty'
 bindsym $mod+Return exec $term
 set $term1 xterm
 bindsym Ctrl+Return exec $term1
@@ -258,7 +257,7 @@ bindsym Ctrl+Return exec $term1
 
 ### XF86 CONTROLS
 #
-bindsym XF86PowerOff mode "$mode_system"
+# bindsym XF86PowerOff mode "$mode_system"
 # bindsym XF86AudioRaiseVolume exec "amixer sset Master '2%+'"
 # bindsym XF87AudioLowerVolume exec "amixer sset Master '2%-'"
 # bindsym XF86AudioMute exec "amixer sset Master toggle"
@@ -296,26 +295,16 @@ bindsym XF86MonBrightnessDown exec brightnessctl s 5%- # decrease screen brightn
 
 for_window [class="org.qt-project.qtcreator"] floating enable 
 
-set $ws11 "11:1: "
-set $ws21 "21:2: "
-set $ws31 "31:3: "
-set $ws41 "41:4: "
-set $ws51 "51:5: "
-set $ws61 "61:6: "
-set $ws71 "71:7: "
-    assign [class="Caprine"] $ws71
-    #assign [class="Skype"] $ws71
-    assign [class="Cryptocat"] $ws71
-    for_window [class="Cryptocat"] floating enable 
-    assign [class="qTox"] $ws71
-    for_window [class="qTox"] floating enable
-set $ws81 "81:8: "	
-    assign [class="Thunderbird"] $ws81
-set $ws91 "91:9: "
-    assign [class="Audacious"] $ws91 
-    assign [class="Anoise"] $ws91
-    # for_window[class="Anoise"] floating enable
-set $ws101 "101:10: "
+set $ws11 "11:1"
+set $ws21 "21:2"
+set $ws31 "31:3"
+set $ws41 "41:4"
+set $ws51 "51:5"
+set $ws61 "61:6"
+set $ws71 "71:7"
+set $ws81 "81:8"	
+set $ws91 "91:9"
+set $ws101 "101:10"
 
 workspace $ws11 output $laptop_screen
 workspace $ws21 output $laptop_screen
@@ -328,25 +317,15 @@ workspace $ws81 output $laptop_screen
 workspace $ws91 output $laptop_screen
 workspace $ws101 output $laptop_screen
 
-# WWW
 bindsym $mod+1 workspace $ws11
-# C++
 bindsym $mod+2 workspace $ws21
-# Python
 bindsym $mod+3 workspace $ws31
-# Bash
 bindsym $mod+4 workspace $ws41
-# i3
 bindsym $mod+5 workspace $ws51
-# Job / Physics
 bindsym $mod+6 workspace $ws61
-# Messenger / Other
 bindsym $mod+7 workspace $ws71
-# Mail / RSS
 bindsym $mod+8 workspace $ws81
-# Music / Other
 bindsym $mod+9 workspace $ws91
-# Movie / Downloads
 bindsym $mod+0 workspace $ws101
 
 bindsym $mod+Shift+1 move container to workspace $ws11
@@ -362,39 +341,18 @@ bindsym $mod+Shift+0 move container to workspace $ws101
 
 ### Aditional Workspaces
 #
-# www
-set $ws12 "12:"
-
-# C++
-set $ws22 "22:"
-#    assign [class="Code"] $ws22
-# Python
-set $ws32 "32:"
-
-# Bash
-set $ws42 "42:"
-
-#
-set $ws52 "52:"
-
-# Job / Physics
-set $ws62 "62:"
-
-# Messenger / Other
-set $ws72 "72:"
+set $ws12 "12:1a"
+set $ws22 "22:2a"
+set $ws32 "32:3a"
+set $ws42 "42:4a"
+set $ws52 "52:5a"
+set $ws62 "62:6a"
+set $ws72 "72:7a"
     assign [class="Pidgin"] $ws72
     for_window [class="Pidgin"] floating window
-# Mail / RSS
-set $ws82 "82:"
-    assign [class="Liferea"] $ws82
-
-# Music / Other
-set $ws92 "92:"
-
-# Movies / Downloads
-set $ws102 "102:"
-    assign [class="Deluge"] $ws102
-    assign [class="Nicotine"] $ws102
+set $ws82 "82:8a"
+set $ws92 "92:9a"
+set $ws102 "102:10a"
 
 workspace $ws12 output $laptop_screen
 workspace $ws22 output $laptop_screen 
@@ -431,16 +389,16 @@ bindsym $alt+Shift+0 move container to workspace $ws102
 
 ### Primary workspaces
 #
-set $ws01primary "1:1: " 
-set $ws02primary "2:2: " 
-set $ws03primary "3:3: " 
-set $ws04primary "4:4: " 
-set $ws05primary "5:5: " 
-set $ws06primary "6:6: " 
-set $ws07primary "7:7: " 
-set $ws08primary "8:8: " 
-set $ws09primary "9:9: " 
-set $ws10primary "10:10: " 
+set $ws01primary "1: 1" 
+set $ws02primary "2: 2" 
+set $ws03primary "3: 3" 
+set $ws04primary "4: 4" 
+set $ws05primary "5: 5" 
+set $ws06primary "6: 6" 
+set $ws07primary "7: 7" 
+set $ws08primary "8: 8" 
+set $ws09primary "9: 9" 
+set $ws10primary "10: 10" 
 
 workspace $ws01primary output $primary
 workspace $ws02primary output $primary
@@ -477,27 +435,16 @@ bindsym Ctrl+Shift+0 move container to workspace $ws10primary
 
 ### Secondary workspaces
 #
-set $ws01secondary "1: 1: " 
-set $ws02secondary "2: 2: " 
-set $ws03secondary "3: 3: " 
-set $ws04secondary "4: 4: " 
-set $ws05secondary "5: 5: " 
-set $ws06secondary "6: 6: " 
-set $ws07secondary "7: 7: " 
-set $ws08secondary "8: 8: " 
-set $ws09secondary "9: 9: " 
-set $ws10secondary "10: 10: " 
-#
-# set $ws01secondary "1:1: " 
-# set $ws02secondary "2:2: " 
-# set $ws03secondary "3:3: " 
-# set $ws04secondary "4:4: " 
-# set $ws05secondary "5:5: " 
-# set $ws06secondary "6:6: " 
-# set $ws07secondary "7:7: " 
-# set $ws08secondary "8:8: " 
-# set $ws09secondary "9:9: " 
-# set $ws10secondary "10:10: " 
+set $ws01secondary "1: 1a" 
+set $ws02secondary "2: 2a" 
+set $ws03secondary "3: 3a" 
+set $ws04secondary "4: 4a" 
+set $ws05secondary "5: 5a" 
+set $ws06secondary "6: 6a" 
+set $ws07secondary "7: 7a" 
+set $ws08secondary "8: 8a" 
+set $ws09secondary "9: 9a" 
+set $ws10secondary "10: 10a" 
 
 workspace $ws01secondary output $secondary 
 workspace $ws02secondary output $secondary
