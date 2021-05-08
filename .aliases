@@ -2,19 +2,32 @@
 
 function xbps-fzf() {
     # xpkg -a | fzf -m --preview 'xq {1}' --preview-window=right:66%:wrap | xargs -ro xi
-    . $ENVIRONMENT_SCRIPTS/fuzzypkg.sh
+    . $ENVIRONMENT_SCRIPTS/xbps-fzf.sh
 }
 
 alias rm='trash'
 alias fd='fd --hidden'
 alias less='bat'
+alias cp='cp -v'
+alias mv='mv -v'
+alias info='info --vi-keys'
+alias clip='watch "cat ~/Temporary/temp.clipboard"'
 
-alias SCR="cd /home/fm/.config/env"
+alias CON="cd /home/fm/.config"
+alias EV="cd /home/fm/.config/env"
 alias REA="cd /home/fm/Documents/readme"
 alias DOW="cd /home/fm/Downloads"
 alias DOC="cd /home/fm/Documents"
 alias MUS="cd /home/fm/Music"
+alias PBC="cd /home/fm/PinebookPro"
+
 alias GI="cd /home/fm/Git"
+alias GIC="cd /home/fm/Git/C++"
+alias GIB="cd /home/fm/Git/Bash"
+
+alias PR="cd /home/fm/Projects"
+alias PRC="cd /home/fm/Projects/C++"
+alias PRB="cd /home/fm/Projects/Bash"
 
 alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
 alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
@@ -23,7 +36,8 @@ alias poweroff='sudo poweroff'
 alias reboot='sudo reboot'
 alias zzz=$ENVIRONMENT_SCRIPTS/application_wrappers/zzz.sh
 
-alias alert='echo -e '\''\a'\'
+# alias alert='echo -e '\''\a'\'
+alias alert='aplay ~/.local/share/sounds/WindowsMe/NOTIFY.WAV &> /dev/null'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias pegrep='grep -iP --color=auto'
@@ -37,21 +51,23 @@ alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H
 alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 
 alias rc='source /home/fm/.zshrc'
-alias rs='gpg-connect-agent updatestartuptty /bye'
+alias rs='/home/fm/.config/env/gpg-agent_switch.sh'
 
 alias sway=$ENVIRONMENT_SCRIPTS/sway_launch.sh
+alias waybar=${ENVIRONMENT_SCRIPTS}/waybar_launch.sh
+alias whatsmyip=${ENVIRONMENT_SCRIPTS}/whatsmyip.sh
 alias translate=$ENVIRONMENT_SCRIPTS/interactive_translation.sh
 # alias vifm=$ENVIRONMENT_SCRIPTS/application_wrappers/vifmrun
 # alias fzf=$ENVIRONMENT_SCRIPTS/application_wrappers/fzfimg.sh
-alias youtube='mpsyt'
 
-alias xb='xbps-fzf'
+alias xf='xbps-fzf'
 alias xq='xbps-query'
 alias xp='sudo xbps-pkgdb'
 alias xre='sudo xbps-reconfigure'
 alias xi='sudo xbps-install'
 alias xr='sudo xbps-remove'
 alias xs='$HOME/Git/void-packages/xbps-src'
+alias xu='sudo xbps-install -Su && omz update'
 
 alias aria2pp='aria2p --port 6801 --secret HeLLo'
 
@@ -61,7 +77,18 @@ alias aria2c-log='< /home/fm/.config/aria2/aria2.log'
 alias aria2c-log-clear='rm /home/fm/.config/aria2/aria2.log'
 
 alias weechat="weechat -d $HOME/.config/weechat"
+alias mail="aerc"
+alias rss="newsboat"
+alias spt="spotify-tui"
+alias mpsyt='/home/fm/Git/mps-youtube/mpsyt'
+alias yt='/home/fm/Git/ytfzf/ytfzf'
+alias ts='we-get'
+alias ggl='googler'
+alias img='img2sixel --width=auto --height=auto'
 
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 alias vsc='/opt/VScode/code'
+alias vsci='/opt/VScode/code-insider'
+
+

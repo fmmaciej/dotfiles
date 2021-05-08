@@ -1,18 +1,88 @@
-### Font
+### SwayWM Configuration file
 #
+set $mod Mod4
+set $altl Mod1
+set $altr Mod5
+
+# xwayland disable
+
+### Widow Colours
+#
+include "$HOME/.cache/wal/colors-sway"
+
+#                       border	    background	text	    indicator
+client.background		    $background
+client.focused          $color2	    $color2     $color7	    $color4
+client.focused_inactive $color5	    $color5	$color8	    $color4
+client.unfocused        $color13    $color13	$color8	    $color4
+client.urgent           $color1	    $color1     $color7	    $color4
+
+### Window decoration settings
+#
+# You can also use any non-zero value if you'd like to have a border
+# for_window [class="^.*"] border pixel 0
+smart_borders on
+
+gaps inner 45
+gaps outer 0
+
+default_border pixel 0
+default_floating_border pixel 0
+
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango: SF Pro Display 12
+font pango: SF Pro Display 11
 
-### OTHER
+titlebar_border_thickness 0
+# titlebar_padding <h>
+
+hide_edge_borders both
+popup_during_fullscreen smart
+
+focus_on_window_activation smart
+
+bindsym $mod+equal gaps inner all plus 5
+bindsym $mod+minus gaps inner all minus 5
+
+# bindsym $mod+o border pixel 2
+# bindsym $mod+Shift+o border none
+ 
+# Only enable outer gaps when there is exactly one container
+# smart_gaps inverse_outer
+
+# Activate smart borders (only when there are effectively no gaps)
+# smart_borders no_gaps
+
+# set $opacity 0.95
+# for_window [class=".*"] no_focus opacity $opacity
+# for_window [app_id=".*"] no_focus opacity $opacity
+
+### Themes
 #
-# xwayland disable
-#
-set $mod Mod4
-set $alt Mod1
-set $altr Mod5
+# set $theme Plata-Noir-Compact
+set $icons Papirus-Dark
+# set $schema org.gnome.desktop.interface
+# set $cursor "Breeze_Obsidian"
+# set $cursor_size 20
+
+# seat seat0 xcursor_theme $cursor $cursor_size
+
+exec_always {
+    # gsettings set $schema gtk-theme $theme
+    gsettings set $schema icon-theme $icons
+    # gsettings set $schema cursor-theme $cursor
+    # gsettings set $schema cursor-size $cursor_size
+    # gsettings set $schema font-name "SanFranciscoText 10"
+    # gsettings set $schema document-font-name "SanFranciscoDisplay 10"
+    # gsettings set $schema monospace-font-name "SFMono 10"
+}
+
+# After unplugging an external display, some applications appear too large on my HiDPI screen
+# See wlroots issue #1119. This is an Xwayland bug fixed in 1.20.9.
+# exec_always --no-startup-id xrdb -merge ~/.Xresources
+exec --no-startup-id xrdb -load ~/.Xresources
 
 
 ### Wallpaper
@@ -20,13 +90,10 @@ set $altr Mod5
 # Output configuraion
 # Default wallpaper (more /usr/share/backgrounds/sway/)
 
-include "$HOME/.cache/wal/colors-sway"
-
-set $wallpapers $HOME/Pictures/Wallpapers/Road
-bindsym $mod+w exec "wal -i $wallpapers -o wal-set"
-
-exec --no-startup-id wal -R # -i $wallpaper
+set $wallpapers $HOME/Pictures/Wallpapers/Road2
+exec --no-startup-id wal -R
 output * bg $wallpaper fill
+bindsym $mod+Shift+w exec "wal -i $wallpapers; ${ENVIRONMENT_SCRIPTS}/colors_alacritty.sh; ${ENVIRONMENT_SCRIPTS}/colors_foot.sh; ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh; ${ENVIRONMENT_SCRIPTS}/mako_launch.sh"
 
 ### Clamshell Mode
 #
@@ -51,23 +118,6 @@ output * bg $wallpaper fill
 # output eDP1 pos 1600 0 res 1920x1080
 # Note that the x-pos of eDP1 is 1600 = 3200/2.
  
-# After unplugging an external display, some applications appear too large on my HiDPI screen
-# See wlroots issue #1119. This is an Xwayland bug fixed in 1.20.9.
-# exec_always --no-startup-id xrdb -merge ~/.Xresources
-exec --no-startup-id xrdb -load ~/.Xresources
-
-### window colors
-#
-#                       border      background      text	    indicator
-# client.focused		$color0	    $background	    $foreground	    $color7	$background
-# client.unfocused	$color0	    $background	    $foreground	    $color7	$background
-# client.focused_inactive $color0	    $background	    $foreground	    $color7	$background
-# client.urgent		$color0	    $background	    $foreground	    $color7	$background
-#
-# set $opacity 0.95
-# for_window [class=".*"] no_focus opacity $opacity
-# for_window [app_id=".*"] no_focus opacity $opacity
-
 
 ### Monitors
 #
@@ -111,14 +161,12 @@ set $monitor_dell_sii_prawy 'Dell Inc. DELL P2419H 16HR3Q2'
 
 ### Input configuration
 #
-# Example 
-#
 input type:touchpad {
     dwt enabled
     tap enabled
     natural_scroll enabled
     middle_emulation enabled
-    pointer_accel 0.9
+    pointer_accel 1.0
 }
 
 # input "AT Translated Set 2 keyboard" xkb_model "precision_m"
@@ -129,16 +177,8 @@ input * xkb_layout "pl"
 # input * xkb_options "grp:win_space_toggle"
 
 
-# kill focused window
-bindsym $mod+c kill
-
-# thin borders
-hide_edge_borders both
-
-# use Mouse+Mod1 to drag floating windows to their wanted position
-#floating_modifier Mod1
-floating_modifier $mod normal
-
+### Keybindings
+#
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -166,78 +206,63 @@ bindsym $mod+Shift+Right move right
 # split in horizontal orientation
 bindsym $mod+b split h
 
-# sticky window
-bindsym $mod+Shift+s sticky toggle
-
 # split in vertical orientation
 bindsym $mod+v split v
 
-# enter fullscreen mode for the focused container
-bindsym $mod+f fullscreen toggle
-
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
+bindsym $mod+y layout stacking
+
 # bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+t layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+space floating toggle
 
+# use Mouse+Mod1 to drag floating windows to their wanted position
+floating_modifier $mod normal
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# sticky window
+#bindsym $mod+Shift+s sticky toggle
+
 # change focus between tiling / floating windows
-# bindsym $altr+space focus mode_toggle
+#bindsym $altr+space focus mode_toggle
 
 # focus the parent container
-# bindsym $mod+a focus parent
+#bindsym $mod+a focus parent
 
 # focus the child container
-# bindsym Mod1+d focus child
+#bindsym Mod1+d focus child
 
-### i3-gaps settings
+
+### Action definitions
 #
-# You can also use any non-zero value if you'd like to have a border
-for_window [class="^.*"] border pixel 0
-smart_borders on
+# kill focused window
+bindsym $mod+c kill
 
-gaps inner 45
-gaps outer 0
+# restart the configuration file
+#bindsym $mod+Shift+e restart
 
-default_border pixel
-default_floating_border normal
-hide_edge_borders none
-popup_during_fullscreen smart
+# reload sway inplace (preserves your layout/session, can be used to upgrade sway)
+bindsym $mod+Shift+r reload
 
-focus_on_window_activation smart
+# reloads gpg-agent
+bindsym $mod+Shift+a exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/gpg-agent_switch.sh
 
-bindsym $mod+equal gaps inner all plus 5
-bindsym $mod+minus gaps inner all minus 5
-
-bindsym $mod+o border pixel 2
-bindsym $mod+Shift+o border none
- 
-# Only enable outer gaps when there is exactly one container
-# smart_gaps inverse_outer
-
-# Activate smart borders (only when there are effectively no gaps)
-# smart_borders no_gaps
-
-
-######################################################################################
-# reload the configuration file
-bindsym $mod+Shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+q exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit SwayWM?' -b 'Yes, exit SwayWM' 'swaymsg exit'"
+# exit sway (logs you out)
+bindsym $mod+Shift+c exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit SwayWM?' -b 'Yes, exit SwayWM' 'swaymsg exit'"
 
 ### Terminal
 #
-set $term 'alacritty'
+set $term 'alacritty --config-file=/home/fm/.config/alacritty/alacritty.yml'
 bindsym $mod+Return exec $term
-set $term1 xterm
+
+set $term1 'foot --config=/home/fm/.config/foot/foot.ini'
 bindsym Ctrl+Return exec $term1
 
-#####################################################################################
-################################## EXIT
+### Exit
 # 
 # #set $mode_system System (l) lock, (e) logout, (s) suspend, (r) reboot, (Shift+s) shutdown
 # set $mode_system System (l) logout, (r) reboot, (s) shutdown
@@ -254,7 +279,7 @@ bindsym Ctrl+Return exec $term1
 # }
 # 
 
-### XF86 CONTROLS
+### XF86 controls
 #
 # bindsym XF86PowerOff mode "$mode_system"
 # bindsym XF86AudioRaiseVolume exec "amixer sset Master '2%+'"
@@ -280,230 +305,23 @@ bindsym XF86MonBrightnessDown exec brightnessctl s 5%- # decrease screen brightn
 
 # bindsym Scroll_Lock exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/i3lock.sh
 
-##################################################################################
-#################### WORKSPACES
-# Define names for default workspaces for which we configure key bindings later on.
-# We use variables to avoid repeating the names in multiple places.
-
-### MAIN WORKSPACES
+### WORKSPACES
 #
-# $ws0 jest do zapisywania screenshotow jakr notatek
-# set $ws00 "00:!: "
-#     assign [class="flameshot"] $ws00
-#     for_window[class="flameshot"] floating enable
+include "$HOME/.config/sway/conf.d/workspaces"
 
-for_window [class="org.qt-project.qtcreator"] floating enable 
 
-set $ws11 "11:1"
-set $ws21 "21:2"
-set $ws31 "31:3"
-set $ws41 "41:4"
-set $ws51 "51:5"
-set $ws61 "61:6"
-set $ws71 "71:7"
-set $ws81 "81:8"	
-set $ws91 "91:9"
-set $ws101 "101:10"
-
-workspace $ws11 output $laptop_screen
-workspace $ws21 output $laptop_screen
-workspace $ws31 output $laptop_screen
-workspace $ws41 output $laptop_screen
-workspace $ws51 output $laptop_screen
-workspace $ws61 output $laptop_screen
-workspace $ws71 output $laptop_screen
-workspace $ws81 output $laptop_screen
-workspace $ws91 output $laptop_screen
-workspace $ws101 output $laptop_screen
-
-bindsym $mod+1 workspace $ws11
-bindsym $mod+2 workspace $ws21
-bindsym $mod+3 workspace $ws31
-bindsym $mod+4 workspace $ws41
-bindsym $mod+5 workspace $ws51
-bindsym $mod+6 workspace $ws61
-bindsym $mod+7 workspace $ws71
-bindsym $mod+8 workspace $ws81
-bindsym $mod+9 workspace $ws91
-bindsym $mod+0 workspace $ws101
-
-bindsym $mod+Shift+1 move container to workspace $ws11
-bindsym $mod+Shift+2 move container to workspace $ws21
-bindsym $mod+Shift+3 move container to workspace $ws31
-bindsym $mod+Shift+4 move container to workspace $ws41
-bindsym $mod+Shift+5 move container to workspace $ws51
-bindsym $mod+Shift+6 move container to workspace $ws61
-bindsym $mod+Shift+7 move container to workspace $ws71
-bindsym $mod+Shift+8 move container to workspace $ws81
-bindsym $mod+Shift+9 move container to workspace $ws91
-bindsym $mod+Shift+0 move container to workspace $ws101
-
-### Aditional Workspaces
+### Bar
 #
-set $ws12 "12:1a"
-set $ws22 "22:2a"
-set $ws32 "32:3a"
-set $ws42 "42:4a"
-set $ws52 "52:5a"
-set $ws62 "62:6a"
-set $ws72 "72:7a"
-    assign [class="Pidgin"] $ws72
-    for_window [class="Pidgin"] floating window
-set $ws82 "82:8a"
-set $ws92 "92:9a"
-set $ws102 "102:10a"
-
-workspace $ws12 output $laptop_screen
-workspace $ws22 output $laptop_screen 
-workspace $ws32 output $laptop_screen
-workspace $ws42 output $laptop_screen 
-workspace $ws52 output $laptop_screen 
-workspace $ws62 output $laptop_screen
-workspace $ws72 output $laptop_screen
-workspace $ws82 output $laptop_screen
-workspace $ws92 output $laptop_screen
-workspace $ws102 output $laptop_screen
-
-bindsym $alt+1 workspace $ws12 
-bindsym $alt+2 workspace $ws22
-bindsym $alt+3 workspace $ws32
-bindsym $alt+4 workspace $ws42
-bindsym $alt+5 workspace $ws52
-bindsym $alt+6 workspace $ws62
-bindsym $alt+7 workspace $ws72
-bindsym $alt+8 workspace $ws82
-bindsym $alt+9 workspace $ws92
-bindsym $alt+0 workspace $ws102
-
-bindsym $alt+Shift+1 move container to workspace $ws12
-bindsym $alt+Shift+2 move container to workspace $ws22
-bindsym $alt+Shift+3 move container to workspace $ws32
-bindsym $alt+Shift+4 move container to workspace $ws42
-bindsym $alt+Shift+5 move container to workspace $ws52
-bindsym $alt+Shift+6 move container to workspace $ws62
-bindsym $alt+Shift+7 move container to workspace $ws72
-bindsym $alt+Shift+8 move container to workspace $ws82
-bindsym $alt+Shift+9 move container to workspace $ws92
-bindsym $alt+Shift+0 move container to workspace $ws102
-
-### Primary workspaces
-#
-set $ws01primary "1: 1" 
-set $ws02primary "2: 2" 
-set $ws03primary "3: 3" 
-set $ws04primary "4: 4" 
-set $ws05primary "5: 5" 
-set $ws06primary "6: 6" 
-set $ws07primary "7: 7" 
-set $ws08primary "8: 8" 
-set $ws09primary "9: 9" 
-set $ws10primary "10: 10" 
-
-workspace $ws01primary output $primary
-workspace $ws02primary output $primary
-workspace $ws03primary output $primary
-workspace $ws04primary output $primary
-workspace $ws05primary output $primary
-workspace $ws06primary output $primary
-workspace $ws07primary output $primary
-workspace $ws08primary output $primary
-workspace $ws09primary output $primary
-workspace $ws10primary output $primary
-
-bindsym Ctrl+1 workspace $ws01primary 
-bindsym Ctrl+2 workspace $ws02primary 
-bindsym Ctrl+3 workspace $ws03primary
-bindsym Ctrl+4 workspace $ws04primary
-bindsym Ctrl+5 workspace $ws05primary
-bindsym Ctrl+6 workspace $ws06primary
-bindsym Ctrl+7 workspace $ws07primary
-bindsym Ctrl+8 workspace $ws08primary
-bindsym Ctrl+9 workspace $ws09primary
-bindsym Ctrl+0 workspace $ws10primary
-
-bindsym Ctrl+Shift+1 move container to workspace $ws01primary
-bindsym Ctrl+Shift+2 move container to workspace $ws02primary
-bindsym Ctrl+Shift+3 move container to workspace $ws03primary
-bindsym Ctrl+Shift+4 move container to workspace $ws04primary
-bindsym Ctrl+Shift+5 move container to workspace $ws05primary
-bindsym Ctrl+Shift+6 move container to workspace $ws06primary
-bindsym Ctrl+Shift+7 move container to workspace $ws07primary
-bindsym Ctrl+Shift+8 move container to workspace $ws08primary
-bindsym Ctrl+Shift+9 move container to workspace $ws09primary
-bindsym Ctrl+Shift+0 move container to workspace $ws10primary
-
-### Secondary workspaces
-#
-set $ws01secondary "1: 1a" 
-set $ws02secondary "2: 2a" 
-set $ws03secondary "3: 3a" 
-set $ws04secondary "4: 4a" 
-set $ws05secondary "5: 5a" 
-set $ws06secondary "6: 6a" 
-set $ws07secondary "7: 7a" 
-set $ws08secondary "8: 8a" 
-set $ws09secondary "9: 9a" 
-set $ws10secondary "10: 10a" 
-
-workspace $ws01secondary output $secondary 
-workspace $ws02secondary output $secondary
-workspace $ws03secondary output $secondary
-workspace $ws04secondary output $secondary
-workspace $ws05secondary output $secondary
-workspace $ws06secondary output $secondary
-workspace $ws07secondary output $secondary
-workspace $ws08secondary output $secondary
-workspace $ws09secondary output $secondary
-workspace $ws10secondary output $secondary
-
-bindsym $altr+1 workspace $ws01secondary  
-bindsym $altr+2 workspace $ws02secondary  
-bindsym $altr+3 workspace $ws03secondary  
-bindsym $altr+4 workspace $ws04secondary  
-bindsym $altr+5 workspace $ws05secondary  
-bindsym $altr+6 workspace $ws06secondary  
-bindsym $altr+7 workspace $ws07secondary  
-bindsym $altr+8 workspace $ws08secondary  
-bindsym $altr+9 workspace $ws09secondary  
-bindsym $altr+0 workspace $ws10secondary  
-
-bindsym $altr+Shift+1 move container to workspace $ws01secondary
-bindsym $altr+Shift+2 move container to workspace $ws02secondary
-bindsym $altr+Shift+3 move container to workspace $ws03secondary
-bindsym $altr+Shift+4 move container to workspace $ws04secondary
-bindsym $altr+Shift+5 move container to workspace $ws05secondary
-bindsym $altr+Shift+6 move container to workspace $ws06secondary
-bindsym $altr+Shift+7 move container to workspace $ws07secondary
-bindsym $altr+Shift+8 move container to workspace $ws08secondary
-bindsym $altr+Shift+9 move container to workspace $ws09secondary
-bindsym $altr+Shift+0 move container to workspace $ws10secondary
-
-# switching between workspace
-# http://i3wm.org/docs/userguide.html#_changing_named_workspaces_moving_to_workspaces
-# bindsym $mod+p workspace next
-# bindsym $mod+n workspace prev
-
-bindsym $mod+Ctrl+p move container to workspace next
-bindsym $mod+Ctrl+n move container to workspace prev
-
-bindsym $mod+Ctrl+greater move workspace to output right
-bindsym $mod+Ctrl+less move workspace to output left
-# bindsym $mod+d workspace back_and_forth
-
-
-#######################################################################################
-########################## BAR
-
 # bar {
 #     exec --no-startup-id waybar -c /home/fm/.config/sway/waybar.conf
 # }
 
-#########################################################################################
-##################### DMENU 
-
+### DMENU 
+#
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+# set $Lmenu dmenu_path | dmenu | xargs swaymsg exec --
+# set $Rmenu wofi_path | wofi | xargs swaymsg exec --
 
 # j4-dmenu-desktop -- A faster replacement for i3-dmenu-desktop
 # https://github.com/enkore/j4-dmenu-desktop
@@ -518,11 +336,13 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 # bindsym $mod+d exec --no-startup-id dmenu_run -nb "$foreground" -nf "$background" -sb "$background" -sf "$foreground"" # -l 5"
 
 bindsym $mod+d exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/dmenu.sh
-bindsym $mod+p exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/passmenu.sh
+bindsym $mod+s exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/passmenu.sh
 
-#######################################################################################
-################################# RESIZE
+bindsym $altr+j exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/wofi.sh
+bindsym $altr+k exec --no-startup-id ${ENVIRONMENT_SCRIPTS}/web_search.sh
 
+### Resize
+#
 # resize window (you can also use the mouse for that)
 mode "resize" {
         # back to normal: Enter or Escape or Mod1+r
@@ -547,8 +367,8 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-##################################################################################
-#################### SCRATCHPAD
+### Scratchpad
+#
 # move the currently focused window to the scratchpad
 bindsym $mod+Shift+grave move scratchpad
 
@@ -556,9 +376,16 @@ bindsym $mod+Shift+grave move scratchpad
 # If there are multiple scratchpad windows,y this command cycles through them.
 bindsym $mod+grave scratchpad show
 
-#########################################################################################
-################### AUTOSTART
+### Append clipboard to temporary file
+#
+bindsym $altl+$mod+greater exec --no-startup-id wl-paste > "$HOME/Temporary/temp.clipboard"
+bindsym $mod+greater exec --no-startup-id wl-paste >> "$HOME/Temporary/temp.clipboard"
+
+### Autostart
+#
 # seat <name> hide_cursor <timeout>
+
+exec --no-startup-id swaymsg "workspace $ws11; exec $term"
 
 # Unclutter
 # it appears that unclutter-xfixes does not work on wayland
@@ -572,8 +399,9 @@ exec_always --no-startup-id python3 ${ENVIRONMENT_SCRIPTS}/inactive-windows-tran
 # Redshift / gammastep
 # gammastep is better redshift
 # exec_always --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/redshift.sh
-exec --no-startup-id gammastep
+# exec --no-startup-id gammastep
 exec_always ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh
+exec_always ${ENVIRONMENT_SCRIPTS}/mako_launch.sh
 
 # Firefox black theme?
 # exec_always ${ENVIRONMENT_SCRIPTS}/import-gsettings/import-gsettings.sh \

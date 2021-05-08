@@ -564,28 +564,27 @@ cursor:
 # BEGIN ACE
 colors:
   primary:
-    background: '0x0d0c0c'
-    foreground: '0xb4b7b8'
+    background: '#0f0c07'
+    foreground: '#d4c79d'
   cursor:
-    text:       '0x0d0c0c'
-    cursor:     '0xb4b7b8'
+    text:       '#0f0c07'
+    cursor:     '#d4c79d'
   normal:
-    black:      '0x0d0c0c'
-    red:        '0x3E3F41'
-    green:      '0x4F4C4A'
-    yellow:     '0x6C6159'
-    blue:       '0x96642F'
-    magenta:    '0x937057'
-    cyan:       '0xC09360'
-    white:      '0xb4b7b8'
+    black:      '#0f0c07'
+    red:        '#655B56'
+    green:      '#707C51'
+    yellow:     '#A5580A'
+    blue:       '#8F6D21'
+    magenta:    '#8A765E'
+    cyan:       '#A6901C'
+    white:      '#d4c79d'
   bright:
-    black:      '0x7d8080'
-    red:        '0x3E3F41'
-    green:      '0x4F4C4A'
-    yellow:     '0x6C6159'
-    blue:       '0x96642F'
-    magenta:    '0x937057'
-    cyan:       '0xC09360'
-    white:      '0xb4b7b8'
-
+    black:      '#948b6d'
+    red:        '#655B56'
+    green:      '#707C51'
+    yellow:     '#A5580A'
+    blue:       '#8F6D21'
+    magenta:    '#8A765E'
+    cyan:       '#A6901C'
+    white:      '#d4c79d'
 # END ACE
