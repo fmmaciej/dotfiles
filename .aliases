@@ -10,6 +10,12 @@ alias fd='fd --hidden'
 alias less='bat'
 alias cp='cp -v'
 alias mv='mv -v'
+alias dfo='df -h'
+alias duo='du -h'
+alias du='sudo btrfs filesystem du -s --iec /'
+alias df='sudo btrfs filesystem df -h --iec /'
+alias pips='pypisearch'
+
 alias info='info --vi-keys'
 alias clip='watch "cat ~/Temporary/temp.clipboard"'
 
@@ -22,12 +28,10 @@ alias MUS="cd /home/fm/Music"
 alias PBC="cd /home/fm/PinebookPro"
 
 alias GI="cd /home/fm/Git"
-alias GIC="cd /home/fm/Git/C++"
-alias GIB="cd /home/fm/Git/Bash"
-
-alias PR="cd /home/fm/Projects"
-alias PRC="cd /home/fm/Projects/C++"
-alias PRB="cd /home/fm/Projects/Bash"
+alias PRO="cd /home/fm/Programming"
+alias CPP="cd /home/fm/Programming/01_cpp"
+alias PYT="cd /home/fm/Programming/02_python"
+alias BAS="cd /home/fm/Programming/03_bash"
 
 alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
 alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
@@ -43,10 +47,10 @@ alias fgrep='fgrep --color=auto'
 alias pegrep='grep -iP --color=auto'
 alias history='omz_history -t '\''yyyy/mm/dd'\'
 
-alias l='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias l='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 alias l.='ls -d .*'
 alias la='ls -lAh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
-alias ll='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+alias ll='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 
@@ -67,7 +71,7 @@ alias xre='sudo xbps-reconfigure'
 alias xi='sudo xbps-install'
 alias xr='sudo xbps-remove'
 alias xs='$HOME/Git/void-packages/xbps-src'
-alias xu='sudo xbps-install -Su && omz update'
+alias xu='sudo xbps-install -Su ; omz update ; rs -r ; pass git pull'
 
 alias aria2pp='aria2p --port 6801 --secret HeLLo'
 
@@ -79,16 +83,18 @@ alias aria2c-log-clear='rm /home/fm/.config/aria2/aria2.log'
 alias weechat="weechat -d $HOME/.config/weechat"
 alias mail="aerc"
 alias rss="newsboat"
+alias images="imqv"
 alias spt="spotify-tui"
 alias mpsyt='/home/fm/Git/mps-youtube/mpsyt'
-alias yt='/home/fm/Git/ytfzf/ytfzf'
+alias yt='/home/fm/Git/ytfzf/ytfzf --preview-side=bottom'
 alias ts='we-get'
 alias ggl='googler'
 alias img='img2sixel --width=auto --height=auto'
 
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
-alias vsc='/opt/VScode/code'
+alias vsc='/opt/VSCode/VSCode-linux-arm64/code'
 alias vsci='/opt/VScode/code-insider'
 
+alias ifuse='sudo ifuse -o allow_user'
 

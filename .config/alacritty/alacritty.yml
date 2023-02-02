@@ -545,6 +545,13 @@ cursor:
   # Display the time it takes to redraw each frame.
   #render_timer: false
 
+
+  # Renderer override.
+  #   - glsl3
+  #   - gles2
+  #   - gles2_pure
+  # renderer: glsl3
+
   # Keep the log file after quitting Alacritty.
   #persistent_logging: false
 
@@ -564,27 +571,27 @@ cursor:
 # BEGIN ACE
 colors:
   primary:
-    background: '#0f0c07'
-    foreground: '#d4c79d'
+    background: '#0f1012'
+    foreground: '#ccdadd'
   cursor:
-    text:       '#0f0c07'
-    cursor:     '#d4c79d'
+    text:       '#0f1012'
+    cursor:     '#ccdadd'
   normal:
-    black:      '#0f0c07'
-    red:        '#655B56'
-    green:      '#707C51'
-    yellow:     '#A5580A'
-    blue:       '#8F6D21'
-    magenta:    '#8A765E'
-    cyan:       '#A6901C'
-    white:      '#d4c79d'
+    black:      '#0f1012'
+    red:        '#354B4C'
+    green:      '#3E5D5F'
+    yellow:     '#4B6A6A'
+    blue:       '#5F807F'
+    magenta:    '#6D9295'
+    cyan:       '#8EAEB0'
+    white:      '#ccdadd'
   bright:
-    black:      '#948b6d'
-    red:        '#655B56'
-    green:      '#707C51'
-    yellow:     '#A5580A'
-    blue:       '#8F6D21'
-    magenta:    '#8A765E'
-    cyan:       '#A6901C'
-    white:      '#d4c79d'
+    black:      '#8e989a'
+    red:        '#354B4C'
+    green:      '#3E5D5F'
+    yellow:     '#4B6A6A'
+    blue:       '#5F807F'
+    magenta:    '#6D9295'
+    cyan:       '#8EAEB0'
+    white:      '#ccdadd'
 # END ACE

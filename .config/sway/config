@@ -4,7 +4,7 @@ set $mod Mod4
 set $altl Mod1
 set $altr Mod5
 
-# xwayland disable
+xwayland enable
 
 ### Widow Colours
 #
@@ -62,7 +62,7 @@ bindsym $mod+minus gaps inner all minus 5
 ### Themes
 #
 # set $theme Plata-Noir-Compact
-set $icons Papirus-Dark
+# set $icons Papirus-Dark
 # set $schema org.gnome.desktop.interface
 # set $cursor "Breeze_Obsidian"
 # set $cursor_size 20
@@ -93,7 +93,7 @@ exec --no-startup-id xrdb -load ~/.Xresources
 set $wallpapers $HOME/Pictures/Wallpapers/Road2
 exec --no-startup-id wal -R
 output * bg $wallpaper fill
-bindsym $mod+Shift+w exec "wal -i $wallpapers; ${ENVIRONMENT_SCRIPTS}/colors_alacritty.sh; ${ENVIRONMENT_SCRIPTS}/colors_foot.sh; ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh; ${ENVIRONMENT_SCRIPTS}/mako_launch.sh"
+bindsym $mod+Shift+w exec "wal -i $wallpapers ; ${ENVIRONMENT_SCRIPTS}/colors_alacritty.sh; ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh; ${ENVIRONMENT_SCRIPTS}/mako_launch.sh"
 
 ### Clamshell Mode
 #
@@ -128,20 +128,23 @@ bindsym $mod+Shift+w exec "wal -i $wallpapers; ${ENVIRONMENT_SCRIPTS}/colors_ala
 set $tv_samsung_zamenhofa 'Samsung Electric Company SAMSUNG 0x00000001'
 set $tv_hanspree_krosno 'Unknown HSG1116 0x00000101'
 set $tv_samsung_lakowa 'Samsung Electric Company SAMSUNG 0x00000000'
+set $tv_osieki 'Unknown Beyond TV 0x00000100'
+set $projector 'Optoma Corporation Optoma 1080P Q7GAAAAAEC'
 set $monitor_asus 'Ancor Communications Inc ASUS VX279 F6LMTJ001494'
 set $monitor_acer 'Acer Technologies V223HQ LES0C0024000'
 set $monitor_dell_moj 'Dell Inc. DELL U2414H 9TG463AS6R4L'
-set $monitor_dell_sii_lewy 'Dell Inc. DELL P2419H G4YBPM2'
-set $monitor_dell_sii_prawy 'Dell Inc. DELL P2419H 16HR3Q2'
+set $monitor_dell_sii_up 'Dell Inc. DELL P2419H G4YBPM2'
+set $monitor_dell_sii_right 'Dell Inc. DELL P2419H 16HR3Q2'
 
 # set $laptop_screen 'Chimei Innolux Corporation 0x15B1 0x00000000'
-# set $primary $monitor_dell_sii_lewy
-# set $primary $monitor_dell_moj
-# set $secondary $monitor_dell_sii_prawy
+set $laptop_screen '<Unknown> <Unknown> '
+set $primary $projector
+# set $primary $tv_osieki
+# set $secondary $monitor_dell_sii_right
 
-# output $laptop_screen resolution 1920x1080 position 0 0
+output $laptop_screen resolution 1920x1080 position 0 0
+output $primary resolution 1920x1080 position 0 -1080
 # output $primary resolution 1920x1080 position 1920 0 transform 270
-# output $primary resolution 1920x1080 position 1920 0 
 # output $secondary resolution 1920x1080 position 3000 0 transform 90
 
 ### Idle configuration
@@ -208,6 +211,9 @@ bindsym $mod+b split h
 
 # split in vertical orientation
 bindsym $mod+v split v
+
+# default layout
+workspace_layout tabbed
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+y layout stacking
@@ -391,15 +397,14 @@ exec --no-startup-id swaymsg "workspace $ws11; exec $term"
 # it appears that unclutter-xfixes does not work on wayland
 # exec --no-startup-id unclutter --timeout 2 --jitter 2
 # exec --no-startup-id pidgin
-exec --no-startup-id aplay $HOME/.local/share/sounds/Windows98/Windows_98/Windows_98_startup.wav
+# exec --no-startup-id aplay $HOME/.local/share/sounds/Windows98/Windows_98/Windows_98_startup.wav
 
 # Transparent windows
 exec_always --no-startup-id python3 ${ENVIRONMENT_SCRIPTS}/inactive-windows-transparency.py
 
 # Redshift / gammastep
 # gammastep is better redshift
-# exec_always --no-startup-id ${ENVIRONMENT_SCRIPTS}/application_wrappers/redshift.sh
-# exec --no-startup-id gammastep
+exec_always ${ENVIRONMENT_SCRIPTS}/gammastep_launch.sh
 exec_always ${ENVIRONMENT_SCRIPTS}/waybar_launch.sh
 exec_always ${ENVIRONMENT_SCRIPTS}/mako_launch.sh
 

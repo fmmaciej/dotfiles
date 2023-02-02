@@ -59,8 +59,8 @@ DISABLE_AUTO_UPDATE="true"
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
-HIST_STAMPS="yyyy-mm-dd"
 setopt nosharehistory
+HIST_STAMPS="%y.%m.%d %T"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -72,7 +72,7 @@ setopt nosharehistory
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   colored-man-pages
-#  git
+  git
   pass
 #  ssh-agent
 #  gpg-agent
@@ -139,7 +139,7 @@ bindkey -M vicmd "k" up-line-or-beginning-search
 bindkey -M vicmd "j" down-line-or-beginning-search
 
 typeset -U PATH path
-path=("$HOME/.local/bin" "/opt/local/bin" "/opt/gcc-arm-none-eabi/bin")
+path=("$HOME/.local/bin" "/opt/bin" "/opt/gcc-arm-none-eabi/bin")
 path+=("/usr/local/bin" "/usr/local/sbin" "/bin" "/sbin")
 export PATH
 
@@ -183,6 +183,8 @@ export EDITOR="vim"
 export TERMINAL="alacritty"
 export BROWSER="firefox"
 export READER="zathura"
+export IMAGE="qimgv"
+export MULTIMEDIA="mpv"
 
 # wayland
 export MOZ_ENABLE_WAYLAND=1	# In order to work urlview with firefox
@@ -226,6 +228,7 @@ export ENVIRONMENT_SCRIPTS="$HOME/.config/env"
 # useless, it defaults to it
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# usually it's handled by elogind. But I'm using seatd which only manages seats.
 if [ -z "${XDG_RUNTIME_DIR}" ]; then
     export XDG_RUNTIME_DIR="/run/user/${UID}"
 
