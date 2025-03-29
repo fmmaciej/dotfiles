@@ -1,7 +1,6 @@
 #!/bin/bash
-
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$PATH:/Applications/VSCode.app/Contents/Resources/app/bin
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -73,16 +72,16 @@ HIST_STAMPS="%y.%m.%d %T"
 plugins=(
   colored-man-pages
   git
-  pass
+#  pass
 #  ssh-agent
 #  gpg-agent
-  gpg-agent_void
+#  gpg-agent_void
 #  sudo
 #  tmux
 #  transfer
 #  vscode
   vi-mode
-  fzf_void
+#  fzf_void
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -97,10 +96,13 @@ source $ZSH/oh-my-zsh.sh
 # [ -f $HOME/.bashrc ] && source $HOME/.bashrc
 [ -f $HOME/.aliases ] && source $HOME/.aliases
 
-# [ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
-# export FZF_BASE='/usr/share/doc/fzf'
+[ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
+export FZF_BASE='/opt/homebrew/bin/fzf'
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
+export FZF_CTRL_T_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=numbers {}"'
+# --bind shift-up:preview-page-up,shift-down:preview-page-down
 
 # 10ms for key sequences
 KEYTIMEOUT=1
@@ -138,75 +140,29 @@ bindkey "^[OB" down-line-or-beginning-search
 bindkey -M vicmd "k" up-line-or-beginning-search
 bindkey -M vicmd "j" down-line-or-beginning-search
 
-typeset -U PATH path
-path=("$HOME/.local/bin" "/opt/bin" "/opt/gcc-arm-none-eabi/bin")
-path+=("/usr/local/bin" "/usr/local/sbin" "/bin" "/sbin")
-export PATH
-
-# typeset -U LD_LIBRARY_PATH ld_library_path
-# ld_library_path+=("/usr/local/lib" "/opt/local/lib")
-# export LD_LIBRARY_PATH
-
-LD_LIBRARY_PATH=/opt/local/lib:/usr/local/lib:/usr/lib:/opt/gcc-arm-none-eabi/lib
-ld_library_path=("/opt/local/lib" "/usr/local/lib" "/usr/lib" "/opt/gcc-arm-none-eabi/lib")
-export LD_LIBRARY_PATH
-export ld_library_path
-
-typeset -U MANPATH manpath  
-manpath=()
-# for d in $(find /usr/share/man -type d); do manpath+="$d"; done
-# for d in $(find /usr/local/share/man -type d); do manpath+="$d"; done
-# for d in $(find /opt/gcc-arm-none-eabi/share/doc/gcc-arm-none-eabi/man -type d); do manpath+="$d"; done
-manpath=("/opt/local/share/man" "/usr/share/man" "/usr/local/share/man")
-manpath+=("/opt/gcc-arm-none-eabi/share/doc/gcc-arm-none-eabi/man")
-export MANPATH
-
 ########
 # iphone imobiledevice
 #[ ! -d "/opt/local/src" ] && mkdir -p "/opt/local/src"
 
-typeset -U PKG_CONFIG_PATH pkg_config_path
-PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig
-PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
-pkg_config_path=("/usr/lib/pkgconfig" "/usr/share/pkgconfig")
-export PKG_CONFIG_LIBDIR
-export PKG_CONFIG_PATH
-export pkg_config_path
-
-
-# typeset -U CPATH cpath
-# cpath=("/opt/local/include")
-# export CPATH
 ########
 
+export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"
+export LIBRARY_PATH="/opt/homebrew/lib:$LIBRARY_PATH"
+export CPATH="/opt/homebrew/include:$CPATH"
+export PATH="/opt/homebrew/bin:$PATH"
+
 export EDITOR="vim"
-export TERMINAL="alacritty"
-export BROWSER="firefox"
-export READER="zathura"
-export IMAGE="qimgv"
-export MULTIMEDIA="mpv"
+export TERMINAL="iterm"
+export BROWSER="safari"
+# export READER="zathura"
+# export IMAGE="qimgv"
+# export MULTIMEDIA="mpv"
 
-# wayland
-export MOZ_ENABLE_WAYLAND=1	# In order to work urlview with firefox
-export SDL_VIDEODRIVER=wayland	# or x11
-export CLUTTER_BACKEND=wayland
-export BEMENU_BACKEND=wayland
-export XDG_SESSION_TYPE=wayland
-export QT_QPA_PLATFORM=""
-export QT_QPA_PLATFORMTHEME=qt5ct
-export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-
-# export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
-
-# ALACRITY GLES3.3 SUPPORT
-export PAN_MESA_DEBUG=gl3
 
 # CHEAT https://github.com/cheat/cheat
 export CHEAT_CONFIG_PATH="~/.config/cheat/conf.yml"
 
-# My custom scripts localization
-export ENVIRONMENT_SCRIPTS="$HOME/.config/env"
-
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 
 # PINENTRY
 # If stdin is a terminal
@@ -224,19 +180,6 @@ export ENVIRONMENT_SCRIPTS="$HOME/.config/env"
 # fi
  
 # export PYTHONPATH="/home/fm/.local/lib/python3.8/site-packages:/usr/lib/python38.zip:/usr/lib/python3.8:/usr/lib/python3.8/lib-dynload:/usr/lib/python3.8/site-packages"
-
-# useless, it defaults to it
-export XDG_CONFIG_HOME="$HOME/.config"
-
-# usually it's handled by elogind. But I'm using seatd which only manages seats.
-if [ -z "${XDG_RUNTIME_DIR}" ]; then
-    export XDG_RUNTIME_DIR="/run/user/${UID}"
-
-    if [ ! -d "${XDG_RUNTIME_DIR}" ]; then
-	mkdir "${XDG_RUNTIME_DIR}"
-	chmod 0700 "${XDG_RUNTIME_DIR}"
-    fi
-fi
 
 
 cursor_mode() {
@@ -265,4 +208,10 @@ cursor_mode() {
     zle -N zle-line-init
 }
 
-cursor_mode
+# # cursor_mode
+# if command -v pyenv 1>/dev/null 2>&1; then
+#   eval "$(pyenv init -)"
+# fi
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi

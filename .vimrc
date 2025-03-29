@@ -6,16 +6,22 @@
 " :PlugInstall
 " fetches https://github.com/junegunn/fzf 
 
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 " Plug 'w0rp/ale'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-surround'
 " Plug 'terryma/vim-multiple-cursors'
 Plug 'scrooloose/nerdtree',
-Plug 'dylanaraps/wal.vim'
+" Plug 'dylanaraps/wal.vim'
 " Plug 'junegunn/fzf'
 " Plug 'ervandew/supertab'
-Plug 'rhysd/vim-clang-format'
+" Plug 'rhysd/vim-clang-format'
 call plug#end()		" Initialize plugin system
 
 " his enables mouse in all modes, hence a for all. See vim manpages and
@@ -26,8 +32,8 @@ set mouse=a
 let mapleader=","
 map <leader>s :source ~/.vimrc<CR>
 
-colorscheme wal
-" set t_Co=256
+" colorscheme wal
+set t_Co=256
 
 syntax enable
 set nocompatible
@@ -69,15 +75,15 @@ set timeoutlen=1000 ttimeoutlen=0
 " map <C-K> :pyf </usr/local/share/clang/>/clang-format.py<cr>
 " imap <C-K> <c-o>:pyf </usr/local/share/clang/>clang-format.py<cr>
 
-"" For windows
-" set clipboard=unnamed
+"" For windows and MacOS
+set clipboard=unnamed
 "" For linux
-set clipboard=unnamedplus
+" set clipboard=unnamedplus
 
 " the desktop clipboard is the + (quoteplus) register. The * (quotestar) instead refers to X11 visual selections
-xnoremap "+y y:call system("wl-copy", @")<cr>
-nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
-nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
+" xnoremap "+y y:call system("wl-copy", @")<cr>
+" nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
+" nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
 
 nnoremap <F5> "=strftime("%c")<CR>P
 inoremap <F5> <C-R>=strftime("%c")<CR>

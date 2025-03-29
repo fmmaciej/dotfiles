@@ -5,96 +5,66 @@ function xbps-fzf() {
     . $ENVIRONMENT_SCRIPTS/xbps-fzf.sh
 }
 
-alias rm='trash'
 alias fd='fd --hidden'
 alias less='bat'
 alias cp='cp -v'
 alias mv='mv -v'
-alias dfo='df -h'
-alias duo='du -h'
-alias du='sudo btrfs filesystem du -s --iec /'
-alias df='sudo btrfs filesystem df -h --iec /'
-alias pips='pypisearch'
+alias rm='rm -v'
 
+alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias info='info --vi-keys'
-alias clip='watch "cat ~/Temporary/temp.clipboard"'
 
-alias CON="cd /home/fm/.config"
-alias EV="cd /home/fm/.config/env"
-alias REA="cd /home/fm/Documents/readme"
-alias DOW="cd /home/fm/Downloads"
-alias DOC="cd /home/fm/Documents"
-alias MUS="cd /home/fm/Music"
-alias PBC="cd /home/fm/PinebookPro"
+alias CON="cd ${HOME}/.config"
+alias EV="cd ${HOME}/.config/env"
+alias REA="cd ${HOME}/Programming/00_Other/readme"
+alias DOW="cd ${HOME}/Downloads"
+alias DOC="cd ${HOME}/Documents"
+alias MUS="cd ${HOME}/Music"
+alias PBC="cd ${HOME}/PinebookPro"
 
-alias GI="cd /home/fm/Git"
-alias PRO="cd /home/fm/Programming"
-alias CPP="cd /home/fm/Programming/01_cpp"
-alias PYT="cd /home/fm/Programming/02_python"
-alias BAS="cd /home/fm/Programming/03_bash"
+alias GI="cd ${HOME}/Git"
+alias PRO="cd ${HOME}/Programming"
+alias BAS="cd ${HOME}/Programming/01_Bash"
+alias CPP="cd ${HOME}/Programming/02_Cpp"
+alias PYT="cd ${HOME}/Programming/03_Python"
+alias RUS="cd ${HOME}/Programming/04_Rust"
 
 alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
 alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
 
 alias poweroff='sudo poweroff'
 alias reboot='sudo reboot'
-alias zzz=$ENVIRONMENT_SCRIPTS/application_wrappers/zzz.sh
 
 # alias alert='echo -e '\''\a'\'
-alias alert='aplay ~/.local/share/sounds/WindowsMe/NOTIFY.WAV &> /dev/null'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias pegrep='grep -iP --color=auto'
-alias history='omz_history -t '\''yyyy/mm/dd'\'
 
-alias l='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
-alias l.='ls -d .*'
-alias la='ls -lAh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
-alias ll='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
-alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
-alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+# alias l='ls -lh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+# alias l.='ls -d .*'
+# alias la='ls -lAh --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+# alias ll='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+# alias ls='ls --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
+# alias lsa='ls -lah --color=always --group-directories-first --time-style="+%Y-%m-%d %H:%M"'
 
-alias rc='source /home/fm/.zshrc'
-alias rs='/home/fm/.config/env/gpg-agent_switch.sh'
+alias rc='source ${HOME}/.zshrc'
+alias rs='${HOME}/.config/env/gpg-agent_switch.sh'
 
-alias sway=$ENVIRONMENT_SCRIPTS/sway_launch.sh
-alias waybar=${ENVIRONMENT_SCRIPTS}/waybar_launch.sh
-alias whatsmyip=${ENVIRONMENT_SCRIPTS}/whatsmyip.sh
-alias translate=$ENVIRONMENT_SCRIPTS/interactive_translation.sh
 # alias vifm=$ENVIRONMENT_SCRIPTS/application_wrappers/vifmrun
 # alias fzf=$ENVIRONMENT_SCRIPTS/application_wrappers/fzfimg.sh
 
-alias xf='xbps-fzf'
-alias xq='xbps-query'
-alias xp='sudo xbps-pkgdb'
-alias xre='sudo xbps-reconfigure'
-alias xi='sudo xbps-install'
-alias xr='sudo xbps-remove'
-alias xs='$HOME/Git/void-packages/xbps-src'
-alias xu='sudo xbps-install -Su ; omz update ; rs -r ; pass git pull'
-
-alias aria2pp='aria2p --port 6801 --secret HeLLo'
-
-alias aria2c-list='< /home/fm/.config/aria2/aria2.save'
-alias aria2c-list-clear='rm /home/fm/.config/aria2/aria2.save'
-alias aria2c-log='< /home/fm/.config/aria2/aria2.log'
-alias aria2c-log-clear='rm /home/fm/.config/aria2/aria2.log'
+alias bup='brew update; omz update'
+alias bin='brew install'
+alias bun='brew uninstall'
+alias bse='brew search'
+# alias xs='$HOME/Git/void-packages/xbps-src'
 
 alias weechat="weechat -d $HOME/.config/weechat"
 alias mail="aerc"
 alias rss="newsboat"
-alias images="imqv"
-alias spt="spotify-tui"
-alias mpsyt='/home/fm/Git/mps-youtube/mpsyt'
-alias yt='/home/fm/Git/ytfzf/ytfzf --preview-side=bottom'
+alias yt='${HOME}/Git/ytfzf/ytfzf --preview-side=bottom'
 alias ts='we-get'
 alias ggl='googler'
-alias img='img2sixel --width=auto --height=auto'
-
-alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-
-alias vsc='/opt/VSCode/VSCode-linux-arm64/code'
-alias vsci='/opt/VScode/code-insider'
 
 alias ifuse='sudo ifuse -o allow_user'
+
+# alias gcc='/opt/homebrew/bin/gcc-13'
+# alias g++='/opt/homebrew/bin/g++-13'
 

@@ -4,7 +4,7 @@
 
 #What to do with URL
 #COMMAND wem %s
-COMMAND ${ENVIRONMENT_SCRIPTS}/application_wrappers/webview.sh %s
+#COMMAND ${ENVIRONMENT_SCRIPTS}/application_wrappers/webview.sh %s
 
 # WRAP yes
 # 
