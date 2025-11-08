@@ -9,6 +9,8 @@ endif
 
 call plug#begin('~/.vim/plugged')
   Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+  Plug 'tomasiser/vim-code-dark'
   Plug 'tpope/vim-surround'
   Plug 'preservim/nerdtree'
   " Plug 'w0rp/ale'
@@ -20,9 +22,14 @@ call plug#end()
 " Kolorowanie składni
 syntax on
 filetype plugin indent on
-" set termguicolors
-" set background=light     " lub light, zależnie od motywu
-" colorscheme desert
+set termguicolors
+" Jeśli chcesz tylko spójny pasek airline:
+let g:airline_theme = 'codedark'
+
+" Jeśli chcesz cały Vim w VSCode Dark:
+colorscheme codedark
+" i nadal zachowaj dziedziczenie tła:
+hi Normal guibg=NONE ctermbg=NONE
 
 " Podstawy
 set nocompatible
@@ -31,7 +38,7 @@ set number
 set numberwidth=4
 set scrolloff=8
 set linebreak
-set showbreak=↪\ 
+set showbreak=↪\
 set textwidth=100
 set showmatch
 set mouse=a
@@ -79,4 +86,3 @@ let mapleader=","
 nnoremap <leader>s :source $MYVIMRC<CR>
 nnoremap <F5> "=strftime("%c")<CR>P
 inoremap <F5> <C-R>=strftime("%c")<CR>
-

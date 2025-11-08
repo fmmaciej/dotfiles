@@ -30,6 +30,8 @@ alias bse='brew search'
 # Sesyjne
 alias rc='source ~/.zshrc'
 
+alias vifm='~/.config/vifm/scripts/gen-vifm-theme.sh && command vifm'
+
 # Repo dotfiles (jeśli używasz 'bare' repo)
 alias dot="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
 alias dotcode="code --git-dir=$HOME/.dotfiles --work-tree=$HOME ~/"

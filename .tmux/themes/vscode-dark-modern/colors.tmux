@@ -37,7 +37,7 @@ run-shell -b '
   tmux set  -gq clock-mode-colour "$ACC";
 '
 
-# (opcjonalnie) kolor w treści paska:
-set -g status-left  "#[fg=#{@dimfg},bg=#{@bg},bold] #S #[default]"
+# kolor w treści paska:
+set -g status-left  "#[fg=#{@dimfg},bold] #S #[default]"
 set -g status-right "#{?client_prefix,#[fg=#{@accent}] PREFIX ,}#{?window_zoomed_flag,#[fg=#{@accent}] ZOOM ,}#{?pane_synchronized,#[fg=#{@accent}] SYNC ,}#[fg=#{@dimfg}]│ #[fg=#{@fg}]#{?#{battery_percentage},#{battery_icon} #{battery_percentage} #{battery_remain} │ ,}%d.%m.%Y | %H:%M:%S "
 
