@@ -128,3 +128,5 @@ set-window-option -g window-status-current-format '#[fg=color15,bg=color4] #I #[
 set -g pane-border-style bg=color0
 set -g pane-border-style fg=color7
 set -g pane-active-border-style fg=color4
+
+
