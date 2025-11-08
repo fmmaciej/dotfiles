@@ -1,0 +1,66 @@
+# top-level .editorconfig for dotfiles
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# --- General config files (shell, tmux, vim, lua, conf/ini, yaml/toml/json) ---
+[*.{sh,bash,zsh,tmux,tmux.conf,conf,ini,vim,lua,yaml,yml,toml,json,jsonc}]
+indent_style = space
+indent_size  = 2
+
+# WezTerm config
+[*.lua]
+indent_style = space
+indent_size  = 2
+
+# Vim script files (vimrc, *.vim)
+[*.{vim,vimrc}]
+indent_style = space
+indent_size  = 2
+
+# Shell scripts (explicit)
+[*.{sh,bash,zsh}]
+indent_style = space
+indent_size  = 2
+
+# tmux
+[{.tmux.conf,tmux.conf,*.tmux}]
+indent_style = space
+indent_size  = 2
+
+# YAML / TOML / JSON
+[*.{yaml,yml,toml,json,jsonc}]
+indent_style = space
+indent_size  = 2
+
+# Markdown / docs — keep intentional trailing spaces (line breaks)
+[*.{md,markdown,mdx,rst}]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size  = 2
+
+# Python (dot-scripts, tooling)
+[*.py]
+indent_style = space
+indent_size  = 4
+# continuation_indent_size = 4
+# (leave max line length to your formatter: Black/Ruff)
+
+# Makefiles must use tabs
+[Makefile]
+indent_style = tab
+tab_width = 8
+
+# Git config-like files
+[*.gitconfig]
+indent_style = space
+indent_size  = 2
+
+# Patches/diffs — preserve whitespace exactly
+[*.{patch,diff}]
+trim_trailing_whitespace = false
+insert_final_newline = false
