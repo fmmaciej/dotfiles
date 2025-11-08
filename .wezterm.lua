@@ -1,34 +1,25 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
 
--- === VS Code Dark Modern palette ===
-local colors = {
-  foreground = "#d4d4d4",
-  background = "#1e1e1e",
-  cursor_bg  = "#aeafad",
-  cursor_border = "#aeafad",
-  cursor_fg  = "#1e1e1e",
-  selection_bg = "#264f78",
-  selection_fg = "#d4d4d4",
-  ansi = {
-    "#000000","#f44747","#6a9955","#d7ba7d",
-    "#569cd6","#c586c0","#4ec9b0","#d4d4d4",
-  },
-  brights = {
-    "#666666","#f44747","#b5cea8","#dcdcaa",
-    "#9cdcfe","#c586c0","#4fc1ff","#ffffff",
-  },
-  tab_bar = {
-    background = "#1e1e1e",
-    active_tab = { bg_color="#252526", fg_color="#d4d4d4" },
-    inactive_tab = { bg_color="#1e1e1e", fg_color="#858585" },
-    inactive_tab_hover = { bg_color="#2a2a2a", fg_color="#d4d4d4" },
-    new_tab = { bg_color="#1e1e1e", fg_color="#858585" },
-    new_tab_hover = { bg_color="#2a2a2a", fg_color="#d4d4d4" },
-  },
-}
+-- === Ładowanie motywu z modułu ===
+local ok, theme = pcall(require, 'colors.vscode_dark_modern')
+if not ok then
+  wezterm.log_error("Brak palety colors/vscode_dark_modern.lua — używam domyślnej")
+  theme = { colors = wezterm.color.get_builtin_schemes()["Builtin Solarized Dark"] }
+  -- Minimalny fallback env:
+  theme.env = function()
+    return {
+      THEME_BG = "#002b36", THEME_FG = "#eee8d5",
+      THEME_CURSOR = "#93a1a1", THEME_ACCENT = "#268bd2",
+      THEME_SEL_BG = "#073642", THEME_SEL_FG = "#eee8d5",
+      THEME_DIM_FG = "#93a1a1", THEME_BORDER = "#073642",
+    }
+  end
+end
 
--- (opcjonalnie) wykrywanie tmuxa na przyszłość
+local colors = theme.colors
+
+-- wykrywanie tmuxa
 local function in_tmux(pane)
   local p = pane:get_foreground_process_name() or ""
   return p:match("tmux") ~= nil
@@ -81,19 +72,10 @@ return {
   -- paleta + eksport do środowiska (tmux/vifm)
   colors = colors,
 
-  set_environment_variables = {
-    THEME_BG      = colors.background,
-    THEME_FG      = colors.foreground,
-    THEME_CURSOR  = colors.cursor_bg,
-    THEME_ACCENT  = "#007acc",
-    THEME_SEL_BG  = colors.selection_bg,
-    THEME_SEL_FG  = colors.selection_fg,
-    THEME_DIM_FG  = "#858585",
-    THEME_BORDER  = "#3c3c3c",
-  },
+  set_environment_variables = theme.env(),
 
   -- wygląd okna
-  window_background_opacity = 1.0,
+    window_background_opacity = 1.0,
   text_background_opacity = 1.0,
   window_decorations = "RESIZE",
   enable_tab_bar = false,
@@ -102,20 +84,8 @@ return {
   window_frame = {
     font = wezterm.font{ family="SF Mono", weight="Regular" },
     font_size = 12.0,
-    active_titlebar_bg = "#1e1e1e",
-    inactive_titlebar_bg = "#1e1e1e",
-  },
-
-  -- make tmux & others inherit the palette
-  set_environment_variables = {
-    THEME_BG      = colors.background,
-    THEME_FG      = colors.foreground,
-    THEME_CURSOR  = colors.cursor_bg,
-    THEME_ACCENT  = "#007acc",
-    THEME_SEL_BG  = colors.selection_bg,
-    THEME_SEL_FG  = colors.selection_fg,
-    THEME_DIM_FG  = "#858585",
-    THEME_BORDER  = "#3c3c3c",
+    active_titlebar_bg = colors.background,
+    inactive_titlebar_bg = colors.background,
   },
 
   -- render / wydajność

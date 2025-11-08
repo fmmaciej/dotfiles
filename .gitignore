@@ -62,11 +62,3 @@ Library/**
 # --- iCloud rozmaitości ---
 Library/Mobile Documents/**
 
-# --- wszystko inne z .config domyślnie ignoruj
-.config/**
-!.config/vifm/**
-!.config/wezterm/**
-!.config/kitty/**
-!.config/zsh/**
-!.config/starship.toml
-
