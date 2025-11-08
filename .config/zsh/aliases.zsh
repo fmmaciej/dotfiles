@@ -31,10 +31,10 @@ alias bse='brew search'
 alias rc='source ~/.zshrc'
 
 # Repo dotfiles (jeśli używasz 'bare' repo)
-VSCODE_DIR=~/.vscode-dotfiles
-
 alias dot="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
 alias dotcode="code --git-dir=$HOME/.dotfiles --work-tree=$HOME ~/"
+
+VSCODE_DIR=$HOME/.vscode-dotfiles
 
 dot-sync() {
   rm -rf $VSCODE_DIR
