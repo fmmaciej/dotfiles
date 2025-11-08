@@ -136,7 +136,7 @@ return {
   cursor_blink_rate = 0,
   scrollback_lines = 100000,
 
-  -- start przez fzf → wybór/attach/new tmux
+  -- start przez fzf (wybór/attach/new tmux)
   default_prog = {"/bin/zsh","-lc","~/.config/wezterm/tmux-session.sh"},
 
   -- skróty

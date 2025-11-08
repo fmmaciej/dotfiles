@@ -1,0 +1,72 @@
+# --- śmieci systemowe ---
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+.Spotlight-V100
+.fseventsd
+
+# --- prywatne historie / cache ---
+.zsh_history
+.bash_history
+.python_history
+.sqlite_history
+.lesshst
+.node_repl_history
+.irb_history
+
+# --- SSH / GPG (tylko szablony do repo) ---
+.ssh/id_*
+.ssh/known_hosts
+.ssh/authorized_keys
+.ssh/config.local
+.gnupg/**
+
+# --- edytory / IDE cache ---
+.vscode/extensions/
+.vscode-server/**
+.vscode-test/**
+*~
+*.swp
+*.swo
+
+# --- Vim: nie wrzucaj vendorów i runtime-śmieci ---
+.vim/plugged/**
+.vim/pack/**/start/**
+.vim/pack/**/opt/**
+.vim/swap/**
+.vim/undo/**
+.vim/backup/**
+.vim/.netrwhist
+
+# --- Neovim ---
+.config/nvim/plugged/**
+.config/nvim/pack/**/start/**
+.config/nvim/pack/**/opt/**
+.local/state/nvim/**
+.local/share/nvim/**
+.cache/nvim/**
+
+# --- tmux / resurrect / local dumps ---
+.tmux/resurrect/**
+.tmuxinator/**
+
+# --- WezTerm ---
+.local/share/wezterm/**
+
+# --- macOS Library (dużo danych, nie dotykać) ---
+Library/**
+!Library/Application Support/Code/User/settings.json
+!Library/Application Support/Code/User/keybindings.json
+
+# --- iCloud rozmaitości ---
+Library/Mobile Documents/**
+
+# --- wszystko inne z .config domyślnie ignoruj
+.config/**
+!.config/vifm/**
+!.config/wezterm/**
+!.config/kitty/**
+!.config/zsh/**
+!.config/starship.toml
+
