@@ -1,0 +1,143 @@
+" ~/.config/vifm/vifmrc
+" === Minimalny, nowoczesny motyw i integracja z WezTerm ===
+
+" --- Editor / tryby ---
+if executable('nvim')
+  set vicmd=nvim
+elseif executable('vim')
+  set vicmd=vim
+elseif $EDITOR != ''
+  let &vicmd = $EDITOR
+endif
+
+set nocompatible
+set background=dark
+set vimhelp
+set syscalls
+set trash
+set sortnumbers
+set undolevels=200
+set wildmenu
+set wildstyle=popup
+set ignorecase
+set smartcase
+set incsearch
+set nohlsearch
+set scrolloff=4
+set statusline=" %t%m%r%=%A | %T | %D | %c "
+set timefmt='%Y-%m-%d %H:%M'
+set history=200
+set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dirstack,registers,bookmarks,bmarks
+set nofollowlinks
+set columns=2
+set viewcolumns=name,size,time
+
+" --- Integracja z WezTerm / motyw VSCode Dark ---
+if $THEME_BG != ''
+  highlight Win         guibg=$THEME_BG guifg=$THEME_FG
+  highlight TopLine     guibg=$THEME_BG guifg=$THEME_DIM_FG
+  highlight StatusLine  guibg=$THEME_BG guifg=$THEME_FG gui=bold
+  highlight Border      guifg=$THEME_BORDER
+  highlight Directory   guifg=$THEME_ACCENT gui=bold
+  highlight Selected    guibg=$THEME_ACCENT guifg=$THEME_BG gui=bold
+  highlight Link        guifg=$THEME_ACCENT
+  highlight Executable  guifg=#b5cea8
+  highlight BrokenLink  guifg=#f44747
+else
+  " Fallback 256-color palette if not launched from WezTerm
+  highlight Win         ctermfg=252 ctermbg=234
+  highlight TopLine     ctermfg=244 ctermbg=234
+  highlight StatusLine  ctermfg=252 ctermbg=234 cterm=bold
+  highlight Border      ctermfg=237
+  highlight Directory   ctermfg=32  ctermbg=234 cterm=bold
+  highlight Selected    ctermfg=234 ctermbg=32  cterm=bold
+  highlight Link        ctermfg=39
+  highlight Executable  ctermfg=110
+  highlight BrokenLink  ctermfg=196
+endif
+
+" --- Skróty ogólne ---
+nnoremap Q :quit<cr>
+nnoremap R :reload<cr>
+nnoremap ,c :write | edit $MYVIFMRC | restart full<cr>
+nnoremap s :shell<cr>
+nnoremap S :sort<cr>
+nnoremap <c-h> :wincmd h<cr>
+nnoremap <c-l> :wincmd l<cr>
+nnoremap <c-j> :wincmd j<cr>
+nnoremap <c-k> :wincmd k<cr>
+
+" QuickLook pod spacją
+nnoremap <space> :!qlmanage -p %f > /dev/null 2>&1 &<cr>
+
+" Do schowka (macOS)
+nnoremap yd :!printf %d | pbcopy<cr>
+nnoremap yf :!printf %f:p | pbcopy<cr>
+
+" Finder / iTerm w bieżącym katalogu
+nnoremap F :!open %d &<cr>
+nnoremap T :!open -a iTerm %d &<cr>
+
+" MC-like
+nnoremap <f3> :!less %f<cr>
+nnoremap <f4> :edit<cr>
+nnoremap <f5> :copy<cr>
+nnoremap <f6> :move<cr>
+nnoremap <f7> :mkdir<space>
+nnoremap <f8> :delete<cr>
+
+" --- Ulubione / markery ---
+mark D ~/Documents
+mark d ~/Downloads
+mark P ~/Programming
+mark C ~/.config
+mark H ~/
+
+" --- Komendy pomocnicze ---
+command! df df -h %m 2>/dev/null
+command! diff vim -d %f %F
+command! mkcd :mkdir %a | cd %a
+command! reload :write | restart full
+
+" --- Podglądy (fileviewer) i skojarzenia (filetype) ---
+if executable('bat')
+  fileviewer * bat --color=always --style=numbers --paging=never %c
+endif
+
+if executable('pdftotext')
+  fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %c - | sed -n '1,40p'
+endif
+filetype {*.pdf},<application/pdf> open -a Preview.app
+
+if executable('ffprobe')
+  fileviewer {*.wav,*.mp3,*.flac,*.m4a,*.ogg,*.opus} ffprobe -hide_banner -pretty %c 2>&1 | sed -n '1,25p'
+  fileviewer {*.mp4,*.mkv,*.mov,*.avi,*.webm} ffprobe -hide_banner -pretty %c 2>&1 | sed -n '1,25p'
+endif
+filetype {*.mp3,*.m4a,*.flac,*.wav} open -a Music.app
+filetype {*.mp4,*.mkv,*.mov,*.avi,*.webm}
+       \ {IINA} open -a IINA.app,
+       \ {VLC}  open -a VLC.app,
+
+filetype {*.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp} open -a Preview.app
+if executable('identify')
+  fileviewer {*.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp} identify %f
+endif
+
+filetype {*.html,*.htm}
+       \ {Safari}   open -a Safari.app,
+       \ {Firefox}  open -a Firefox.app,
+       \ {Chrome}   open -a "Google Chrome.app",
+       \ {Edit}     vim,
+
+fileviewer {*.zip,*.jar,*.war,*.ear} tar -tf %f
+filetype   {*.zip,*.jar,*.war,*.ear} mkdir %f:r && tar -vxf %f --directory %f:r
+fileviewer {*.tar,*.tar.gz,*.tgz,*.tar.xz,*.txz,*.tar.bz2,*.tbz2} tar -tf %f
+filetype   {*.tar,*.tar.gz,*.tgz,*.tar.xz,*.txz,*.tar.bz2,*.tbz2} tar -vxf %f
+
+if executable('unrar')
+  fileviewer *.rar unrar lb %c
+  filetype   *.rar unrar x -y -c- -ad %f %s
+endif
+
+filetype * open
+
