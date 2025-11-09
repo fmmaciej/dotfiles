@@ -34,44 +34,25 @@ else
   highlight BrokenLink  ctermfg=196
 endif
 
-" --- Fileviewer: tekst, PDF, archiwa ---
-if executable('bat')
-  fileviewer <text/*> bat --color=always --style=numbers --paging=never %c
-  fileviewer {*.md,*.rst,*.toml,*.yaml,*.yml,*.json,*.py,*.rs,*.c,*.cpp,*.h,*.hpp,*.sh,*.zsh,*.bash,*.ts,*.tsx,*.js,*.jsx,*.css,*.scss,*.html,*.htm,.gitignore,.gitattributes,.editorconfig} bat --color=always --style=numbers --paging=never %c
-endif
+" --- Podgląd w pane tmux po prawej ---
+nnoremap ,P :!~/.config/vifm/scripts/tmux-preview-pane.sh<cr>
+nnoremap ,i :!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 
-if executable('pdftotext')
-  fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %c - | sed -n '1,40p'
-endif
-filetype {*.pdf},<application/pdf> open -a Preview.app
+" (opcjonalnie) aktualizuj podgląd przy wejściu w katalog i zmianie selekcji
+" Remapujemy j/k oraz <Up>/<Down>, żeby po ruchu wysłać nową ścieżkę.
+nnoremap j j:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
+nnoremap k k:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
+nnoremap <Up>   <Up>:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
+nnoremap <Down> <Down>:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 
-fileviewer {*.zip,*.jar,*.war,*.ear} tar -tf %f
-filetype   {*.zip,*.jar,*.war,*.ear} mkdir %f:r && tar -vxf %f --directory %f:r
-fileviewer {*.tar,*.tar.gz,*.tgz,*.tar.xz,*.txz,*.tar.bz2,*.tbz2} tar -tf %f
-filetype   {*.tar,*.tar.gz,*.tgz,*.tar.xz,*.txz,*.tar.bz2,*.tbz2} tar -vxf %f
+" (opcjonalnie) aktualizacja po wejściu do katalogu
+autocmd DirEnter * :!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &
 
-if executable('unrar')
-  fileviewer *.rar unrar lb %c
-  filetype   *.rar unrar x -y -c- -ad %f %s
-endif
 
-" --- Podgląd obrazów i wideo INLINE (jedna linia!) ---
-if executable('wezterm')
-  fileviewer {*.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp} ~/.config/vifm/scripts/wezterm-preview.sh --image %c
-  fileviewer {*.mp4,*.mkv,*.mov,*.avi,*.webm,*.ts}  ~/.config/vifm/scripts/wezterm-preview.sh --video %c
-elseif executable('chafa') || executable('viu')
-  fileviewer {*.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp} sh -c 'command -v chafa >/dev/null && chafa %c || viu -n %c'
-  if executable('ffprobe')
-    fileviewer {*.mp4,*.mkv,*.mov,*.avi,*.webm,*.ts} ffprobe -hide_banner -pretty %c 2>&1 | sed -n "1,25p"
-  endif
-else
-  if executable('identify')
-    fileviewer {*.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp} identify %f
-  endif
-  if executable('ffprobe')
-    fileviewer {*.mp4,*.mkv,*.mov,*.avi,*.webm,*.ts} ffprobe -hide_banner -pretty %c 2>&1 | sed -n "1,25p"
-  endif
-endif
+" --- Teksty do bat, ale tylko text/* ---
+fileviewer <text/*> bat --color=always --style=numbers --paging=never %c
+" (opcjonalnie) dodatkowe rozszerzenia, które bywają źle wykrywane:
+fileviewer {*.md,*.rst,*.toml,*.yaml,*.yml,*.json,*.py,*.rs,*.c,*.cpp,*.h,*.hpp,*.sh,*.zsh,*.bash,*.ts,*.tsx,*.js,*.jsx,*.css,*.scss,*.html,*.htm,.gitignore,.gitattributes,.editorconfig} bat --color=always --style=numbers --paging=never %c
 
 " --- Skojarzenia „otwórz” (macOS) ---
 filetype {*.mp3,*.m4a,*.flac,*.wav} open -a Music.app

@@ -19,16 +19,15 @@ call plug#begin('~/.vim/plugged')
   " Plug 'rhysd/vim-clang-format'
 call plug#end()
 
-" Kolorowanie składni
+" Kolorowanie
 syntax on
 filetype plugin indent on
 set termguicolors
-" Jeśli chcesz tylko spójny pasek airline:
-let g:airline_theme = 'codedark'
-
-" Jeśli chcesz cały Vim w VSCode Dark:
+" vscode colorscheme
 colorscheme codedark
-" i nadal zachowaj dziedziczenie tła:
+" vscode airline
+let g:airline_theme = 'codedark'
+" dziedziczenie tła:
 hi Normal guibg=NONE ctermbg=NONE
 
 " Podstawy

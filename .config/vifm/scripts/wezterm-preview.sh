@@ -1,89 +1,53 @@
 #!/usr/bin/env bash
-# Inline preview for Vifm using WezTerm (images + video thumbnails)
-
+# Usage: wezterm-preview.sh --image PATH | --video PATH
 set -euo pipefail
 
-MODE=""
-FILE=""
-
-usage() { echo "Usage: $(basename "$0") --image|--video <path>"; }
-
-# --- parse args ---
-if [[ $# -lt 2 ]]; then usage; exit 2; fi
-MODE="$1"; shift
-FILE="$*"
-
-# unescape %c from vifm if needed
-# (zwykle %c jest już bezpieczne, ale nie zaszkodzi)
-FILE="${FILE/#\~/$HOME}"
+mode="${1:-}"; path="${2:-}"
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
-img_inline() {
-  # Prefer WezTerm's imgcat
-  if have wezterm; then
-    wezterm imgcat "$1"
-    return $?
-  fi
-  # Fallbacks
-  if have chafa; then
-    chafa "$1"
-    return $?
-  fi
-  if have viu; then
-    viu -n "$1"
-    return $?
-  fi
-  return 1
-}
-
-show_meta() {
-  # Generic metadata fallback
-  if have identify; then
-    identify "$1" || true
-  elif have file; then
-    file "$1" || true
+thumb() {
+  local in="$1" out="$2"
+  if have ffmpegthumbnailer; then
+    ffmpegthumbnailer -i "$in" -o "$out" -s 0 -q 8 >/dev/null 2>&1
   else
-    echo "$1"
+    ffmpeg -y -i "$in" -vf "thumbnail,scale='min(800,iw)':'-2'" -frames:v 1 "$out" -loglevel error
   fi
 }
 
-case "$MODE" in
+run_imgcat() {
+  # Jeśli stdout to TTY → prosto; jeśli nie → opakuj w `script` (daje pty).
+  if [ -t 1 ]; then
+    wezterm imgcat "$1"
+  else
+    # macOS/BSD `script`: plik docelowy, potem komenda
+    /usr/bin/script -q /dev/null wezterm imgcat "$1"
+  fi
+}
+
+case "$mode" in
   --image)
-    if ! img_inline "$FILE"; then
-      show_meta "$FILE"
+    if have wezterm; then
+      run_imgcat "$path"
+    elif have chafa; then
+      exec chafa "$path"
+    elif have identify; then
+      exec identify "$path"
+    else
+      exec file "$path"
     fi
     ;;
   --video)
-    # Make a temp thumbnail
-    TMPPNG="$(mktemp -t vifm-thumbXXXXXX.png)"
-    # Prefer ffmpegthumbnailer if available (szybki i prosty)
-    if have ffmpegthumbnailer; then
-      ffmpegthumbnailer -i "$FILE" -o "$TMPPNG" -s 0 -f || true
-    elif have ffmpeg; then
-      # 10% w głąb timeline, 960px szerokości
-      DUR=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FILE" 2>/dev/null || echo 0)
-      TS=00:00:01
-      if [[ "$DUR" =~ ^[0-9]+(\.[0-9]+)?$ ]] && (( $(echo "$DUR > 10" | bc -l) )); then
-        # ~10% długości, ale nie za duży offset
-        TS=$(printf "%02d:%02d:%02d" 0 0 "$(awk "BEGIN{printf \"%d\", $DUR*0.1}")")
-      fi
-      ffmpeg -loglevel error -ss "$TS" -i "$FILE" -frames:v 1 -vf "scale='min(960,iw)':-1" "$TMPPNG" || true
-    fi
-
-    if [[ -s "$TMPPNG" ]]; then
-      img_inline "$TMPPNG" || ffprobe -hide_banner -pretty "$FILE" 2>&1 | sed -n '1,25p'
-      rm -f "$TMPPNG"
+    t="$(mktemp -t vifm-thumb.XXXXXX).jpg"
+    trap 'rm -f "$t"' EXIT
+    thumb "$path" "$t"
+    if have wezterm; then
+      run_imgcat "$t"
+    elif have chafa; then
+      exec chafa "$t"
     else
-      # żadnej miniatury -> pokaż metadane
-      if have ffprobe; then
-        ffprobe -hide_banner -pretty "$FILE" 2>&1 | sed -n '1,25p'
-      else
-        show_meta "$FILE"
-      fi
+      exec file "$path"
     fi
     ;;
-  *)
-    usage; exit 2;;
+  *) echo "Usage: $0 --image|--video PATH" >&2; exit 2;;
 esac
-
