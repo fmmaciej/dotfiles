@@ -34,20 +34,18 @@ else
   highlight BrokenLink  ctermfg=196
 endif
 
-" --- Podgląd w pane tmux po prawej ---
-nnoremap ,P :!~/.config/vifm/scripts/tmux-preview-pane.sh<cr>
+" --- Toggle auto-preview ---
+" włącz/utwórz pane PREVIEW po prawej
+nnoremap ,p :!~/.config/vifm/scripts/tmux-preview-pane.sh<cr>
+
+" wyślij bieżący plik (tylko image/video) i wróć do vifm
 nnoremap ,i :!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 
-" (opcjonalnie) aktualizuj podgląd przy wejściu w katalog i zmianie selekcji
-" Remapujemy j/k oraz <Up>/<Down>, żeby po ruchu wysłać nową ścieżkę.
+" wygodny follow: strzałki/j/k wysyłają tylko gdy to obraz/wideo
 nnoremap j j:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 nnoremap k k:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
-nnoremap <Up>   <Up>:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 nnoremap <Down> <Down>:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
-
-" (opcjonalnie) aktualizacja po wejściu do katalogu
-autocmd DirEnter * :!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &
-
+nnoremap <Up>   <Up>:!~/.config/vifm/scripts/tmux-preview-send.sh %c >/dev/null 2>&1 &<cr>
 
 " --- Teksty do bat, ale tylko text/* ---
 fileviewer <text/*> bat --color=always --style=numbers --paging=never %c
