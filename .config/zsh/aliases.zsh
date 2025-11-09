@@ -27,23 +27,25 @@ alias bin='brew install'
 alias bun='brew uninstall'
 alias bse='brew search'
 
-# Sesyjne
 alias rc='source ~/.zshrc'
 
-alias vifm='~/.config/vifm/scripts/gen-vifm-theme.sh && command vifm'
+alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
-# Repo dotfiles (jeśli używasz 'bare' repo)
-alias dot="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
-alias dotcode="code --git-dir=$HOME/.dotfiles --work-tree=$HOME ~/"
+# Repo dotfiles
+VSCODE_LINKS_DIR=$HOME/.vscode-dotfiles
+DOTFILES_GIT_DIR=$HOME/.dotfiles
 
-VSCODE_DIR=$HOME/.vscode-dotfiles
+alias dot="/usr/bin/git --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME"
+alias dot-code="code --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME ~/"
 
 dot-sync() {
-  rm -rf $VSCODE_DIR
-  mkdir -p $VSCODE_DIR
-  git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME \
+  cd $HOME
+  rm -rf $VSCODE_LINKS_DIR
+  mkdir -p $VSCODE_LINKS_DIR
+  git --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME \
     ls-tree -r --name-only HEAD | while read f; do
-      mkdir -p "$(dirname $VSCODE_DIR/$f)"
-      ln -sf "$HOME/$f" "$VSCODE_DIR/$f"
+      mkdir -p "$(dirname $VSCODE_LINKS_DIR/$f)"
+      ln -sf "$HOME/$f" "$VSCODE_LINKS_DIR/$f"
   done
+  cd -
 }
