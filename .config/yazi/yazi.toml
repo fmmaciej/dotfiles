@@ -1,0 +1,11 @@
+# Minimalne, sensowne domyślne
+[mgr]
+# Domyślnie ukryte pliki są wyłączone, ale masz toggla "." w keymapie
+show_hidden = false
+sort_by = "natural"
+sort_dir_first = true
+case_sensitive = false
+
+# Opcjonalnie: wielkość podglądu (w nowszych Yazi to auto)
+# preview_ratio = 0.5
+
