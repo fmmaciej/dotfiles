@@ -7,5 +7,29 @@ sort_dir_first = true
 case_sensitive = false
 
 # Opcjonalnie: wielkość podglądu (w nowszych Yazi to auto)
-# preview_ratio = 0.5
+# [preview]
+# max_width = 800
+# max_height = 600
 
+[opener]
+# domyślny "open"
+open = [
+  # macOS
+  { run = 'open "$0"', for = "macos", orphan = true },
+]
+
+preview-vid = [
+  { run = 'open -a VLC "$0"',  for = "macos", orphan = true },
+]
+
+preview-pic = [
+  { run = 'open -a Preview "$0"',  for = "macos", orphan = true },
+]
+
+[[open.rules]]
+mime = "image/*"
+use  = "preview-pic"
+
+[[open.rules]]
+mime = "video/*"
+use  = "preview-vid"
