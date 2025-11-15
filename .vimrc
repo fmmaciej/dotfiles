@@ -16,7 +16,6 @@ call plug#begin('~/.vim/plugged')
   " Plug 'w0rp/ale'
   " Plug 'junegunn/fzf'
   " Plug 'ervandew/supertab'
-  " Plug 'rhysd/vim-clang-format'
 call plug#end()
 
 " Kolorowanie
@@ -60,18 +59,24 @@ set undolevels=1000
 set backspace=indent,eol,start
 
 " Clipboard – na macOS najlepiej:
-set clipboard=unnamedplus
+set clipboard=unnamed,unnamedplus
 
-" Kursor w Vim (DECSCUSR):
-" insert/replace = beam (5=blink/6=steady),
-" normal = block
-let &t_SI = "\e[6 q"
-let &t_SR = "\e[6 q"
-let &t_EI = "\e[2 q"
+" --- Kursor tylko w Vim:
+"  Normal = blok,
+"  Insert = "beam"
+if !has('nvim')
+  " Normal/Visual/Command: migający blok
+  let &t_EI = "\e[1 q"
+  " Insert/Replace: migająca pionowa kreska (beam)
+  let &t_SI = "\e[5 q"
+endif
 
-" Force block on startup and restore on exit
-let &t_ti .= "\e[2 q"  " when Vim initializes the terminal, set block
-let &t_te .= "\e[0 q"  " on exit, restore terminal default cursor
+" F2 = tryb bezpiecznego wklejania z zewnątrz (Cmd+V)
+set pastetoggle=<F2>
+
+" Normal-mode wklejka prosto z systemowego schowka
+nnoremap <leader>p "+p
+vnoremap <leader>p "+p
 
 " Timeouty dla ESC
 set ttimeout
@@ -85,3 +90,4 @@ let mapleader=","
 nnoremap <leader>s :source $MYVIMRC<CR>
 nnoremap <F5> "=strftime("%c")<CR>P
 inoremap <F5> <C-R>=strftime("%c")<CR>
+

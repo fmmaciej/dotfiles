@@ -20,9 +20,6 @@ setopt NO_BEEP
 setopt nosharehistory
 HIST_STAMPS="%y.%m.%d %T"
 
-# Klawisze: KEYTIMEOUT=1 bywa zbyt agresywne (0.1 s). 10 = 1 s na ESC-sekwencje.
-KEYTIMEOUT=10
-
 # Oh My Zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="frisk"
