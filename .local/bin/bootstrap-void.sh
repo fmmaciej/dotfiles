@@ -2,32 +2,32 @@
 set -euo pipefail
 
 echo "─────────────────────────────────────────────"
-echo " 🧩 Bootstrap (Void Linux) – CLI deps setup  "
+echo " 🧩 Bootstrap (Void Linux) - CLI deps setup  "
 echo "─────────────────────────────────────────────"
 
 need() { command -v "$1" >/dev/null 2>&1; }
 pkg()  { sudo xbps-install -y "$@"; }
 
-echo "→ Sync & upgrade system (xbps)…"
+echo "-> Sync & upgrade system (xbps)…"
 sudo xbps-install -Syu
 
-echo "→ Core toolchain & shells…"
+echo "-> Core toolchain & shells…"
 pkg git curl wget zsh tmux neovim \
     gcc make pkgconf clang
 
-echo "→ Productivity & search…"
+echo "-> Productivity & search…"
 pkg fzf fd ripgrep bat eza zoxide jq \
     ncdu duf dust gdu git-delta
 
-echo "→ Media/preview stack…"
+echo "-> Media/preview stack…"
 pkg ffmpeg poppler chafa ImageMagick
 
-echo "→ Dev runtimes…"
+echo "-> Dev runtimes…"
 pkg python3 python3-pip rust cargo nodejs
 
-echo "→ TUI/CLI extras…"
+echo "-> TUI/CLI extras…"
 # w Void nazwy pakietów najczęściej pokrywają się 1:1
-# próbujemy z repo; jeśli brak – instalujemy z cargo (fallback)
+# próbujemy z repo; jeśli brak - instalujemy z cargo (fallback)
 MISSING=()
 
 # atuin
@@ -62,7 +62,7 @@ fi
 
 # Fallbacky przez cargo (tylko dla braków)
 if ((${#MISSING[@]})); then
-  echo "→ Cargo fallback for: ${MISSING[*]} (if not in repo)"
+  echo "-> Cargo fallback for: ${MISSING[*]} (if not in repo)"
   mapfile -t TO_INSTALL < <(printf '%s\n' "${MISSING[@]}" | sort -u)
   for crate in "${TO_INSTALL[@]}"; do
     case "$crate" in
@@ -75,7 +75,7 @@ if ((${#MISSING[@]})); then
   done
 fi
 
-echo "→ fzf key-bindings/completion (zsh)…"
+echo "-> fzf key-bindings/completion (zsh)…"
 # Void zwykle instaluje do /usr/share/fzf/*
 if [[ -n "${ZSH_VERSION:-}" ]]; then
   mkdir -p "$HOME/.zshrc.d"
@@ -85,7 +85,7 @@ if [[ -n "${ZSH_VERSION:-}" ]]; then
   } > "$HOME/.zshrc.d/20-fzf.zsh"
 fi
 
-echo "→ Initialize atuin/tldr (best effort)…"
+echo "-> Initialize atuin/tldr (best effort)…"
 if need atuin; then
   atuin import auto || true
   atuin sync || true
@@ -94,11 +94,11 @@ if need tldr; then
   tldr --update || true
 fi
 
-echo "→ Create config dirs…"
+echo "-> Create config dirs…"
 mkdir -p "$HOME/.config/{yazi,vifm,wezterm,starship}" "$HOME/.local/bin"
 
-# Opcjonalnie: WezTerm (brak w repo Void) – AppImage/flatpak/źródła:
-# echo "→ (optional) Install WezTerm:"
+# Opcjonalnie: WezTerm (brak w repo Void) - AppImage/flatpak/źródła:
+# echo "-> (optional) Install WezTerm:"
 # echo "   - AppImage: https://github.com/wez/wezterm/releases"
 # echo "   - Flatpak:  flatpak install flathub org.wezfurlong.wezterm"
 

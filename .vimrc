@@ -58,7 +58,7 @@ set expandtab      " (opcjonalnie: spacje zamiast tabów)
 set undolevels=1000
 set backspace=indent,eol,start
 
-" Clipboard – na macOS najlepiej:
+" Clipboard - na macOS najlepiej:
 set clipboard=unnamed,unnamedplus
 
 " --- Kursor tylko w Vim:

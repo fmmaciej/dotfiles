@@ -2,22 +2,22 @@
 set -euo pipefail
 
 echo "─────────────────────────────────────────────"
-echo " 🧩 Bootstrap – install all CLI dependencies "
+echo " 🧩 Bootstrap - install all CLI dependencies "
 echo "─────────────────────────────────────────────"
 
 # --- Homebrew ---
 if ! command -v brew >/dev/null 2>&1; then
-  echo "→ Installing Homebrew..."
+  echo "-> Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-echo "→ Updating Homebrew..."
+echo "-> Updating Homebrew..."
 brew update
 
 # --- Core CLI tools ---
-echo "→ Installing core packages..."
+echo "-> Installing core packages..."
 brew install \
   git curl wget zsh tmux neovim \
   fzf fd ripgrep bat eza zoxide atuin starship \
@@ -30,16 +30,16 @@ brew install \
 # brew install --cask wezterm visual-studio-code vlc iina
 
 # --- fzf setup (bindings + completions) ---
-echo "→ Setting up fzf..."
+echo "-> Setting up fzf..."
 "$(brew --prefix)/opt/fzf/install" --key-bindings --completion --no-update-rc --no-bash --zsh
 
 # --- atuin setup (shell history) ---
-echo "→ Initializing atuin..."
+echo "-> Initializing atuin..."
 atuin import auto || true
 atuin sync || true
 
 # --- tldr cache update ---
-echo "→ Updating tldr cache..."
+echo "-> Updating tldr cache..."
 tldr --update || true
 
 # --- Create required dirs for configs if missing ---

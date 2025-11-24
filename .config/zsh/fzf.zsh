@@ -1,4 +1,4 @@
-# FZF – konfiguracja pod Homebrew
+# FZF - konfiguracja pod Homebrew
 # Zależności: fd, ripgrep, bat
 
 # Podstawy
