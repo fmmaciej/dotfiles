@@ -33,8 +33,3 @@ use  = "preview-pic"
 [[open.rules]]
 mime = "video/*"
 use  = "preview-vid"
-
-[[manager.prepend_cmd]]
-name = "v"
-run  = 'shell --block -- echo "$@"'
-desc = "Open in vim"
