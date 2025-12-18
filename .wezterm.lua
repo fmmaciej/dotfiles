@@ -27,7 +27,7 @@ if not ok then
   }
 end
 
--- asekuracja: jeśli moduł motywu nie zdefiniował env()
+-- Moduł motywu nie zdefiniował env()
 if type(theme.env) ~= "function" then
   theme.env = function()
     return {}

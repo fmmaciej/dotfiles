@@ -1,9 +1,13 @@
-# Aliasy: macOS-friendly
+# Aliases
+
 alias fd='fd --hidden'
 alias less='bat'
 alias cp='cp -v'
 alias mv='mv -v'
 alias rm='rm -v'
+
+alias v='vim'
+alias y='yazi'
 
 # Skroty cd
 alias CON="cd $HOME/.config"
@@ -22,10 +26,11 @@ alias todo="rg 'TODO' -A5 ~/Documents/README/TODO/todo.md"
 alias buy="rg 'BUY|ORDERED' -A2 ~/Documents/README/buy/shopping_list.md"
 
 # Homebrew
-alias bup='brew update && omz update'
-alias bin='brew install'
-alias bun='brew uninstall'
-alias bse='brew search'
+alias bupd='brew update && omz update'
+alias bupg='brew upgrade'
+alias bins='brew install'
+alias buni='brew uninstall'
+alias bsea='brew search'
 
 alias rc='source ~/.zshrc'
 

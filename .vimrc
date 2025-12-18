@@ -52,13 +52,13 @@ set autoindent
 set smartindent
 set shiftwidth=4
 set softtabstop=4
-set expandtab      " (opcjonalnie: spacje zamiast tabów)
+set expandtab      " spacje zamiast tabów
 
 " Undo / backspace
 set undolevels=1000
 set backspace=indent,eol,start
 
-" Clipboard - na macOS najlepiej:
+" MacOS
 set clipboard=unnamed,unnamedplus
 
 " --- Kursor tylko w Vim:
@@ -67,7 +67,7 @@ set clipboard=unnamed,unnamedplus
 if !has('nvim')
   " Normal/Visual/Command: migający blok
   let &t_EI = "\e[1 q"
-  " Insert/Replace: migająca pionowa kreska (beam)
+  " Insert/Replace: beam
   let &t_SI = "\e[5 q"
 endif
 
@@ -82,7 +82,7 @@ vnoremap <leader>p "+p
 set ttimeout
 set ttimeoutlen=10
 
-" Znaki niewidoczne (opcjonalnie)
+" Znaki niewidoczne
 set listchars=tab:»\ ,trail:·,extends:>,precedes:<,space:·
 
 " Mapy

@@ -1,9 +1,6 @@
-##### vscode-dark-modern.colors.tmux — kolory (WezTerm-aware) #####
+##### vscode-dark-modern.colors.tmux - kolory (WezTerm-aware) #####
 
-# Truecolor + kształt kursora (raz w całej konfiguracji)
-set -ag terminal-overrides ',xterm*:Tc,Ss=\E[2 q:Se=\E[2 q'
-
-# Wstrzyknij kolory literalnie (tmux nie rozwija #{…} w stylach)
+# Wstrzykiwanie kolorów (tmux nie rozwija #{...} w stylach)
 run-shell -b '
   BG="${THEME_BG:-#1e1e1e}";
   FG="${THEME_FG:-#d4d4d4}";
