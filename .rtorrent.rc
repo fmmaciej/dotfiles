@@ -1,10 +1,10 @@
 ##### CORE #####
-directory = ~/downloads/torrents
-session = ~/.rtorrent/session
+directory = /Users/fm/downloads/torrents
+session = /Users/fm/.rtorrent/session
 session.use_lock = no
 
 ##### WATCH DIR #####
-schedule2 = watch,5,5,load.start=~/.rtorrent/watch/*.torrent
+schedule2 = watch,5,5,load.start=/Users/fm/.rtorrent/watch/*.torrent
 
 ##### NETWORK #####
 port_range = 50000-50010
@@ -12,21 +12,7 @@ port_random = no
 check_hash = yes
 
 ##### RPC (LOCAL SOCKET) #####
-network.scgi.open_local = ~/.rtorrent/rpc.socket
-
-##### UI – VIM STYLE #####
-bind = j, down
-bind = k, up
-bind = h, left
-bind = l, right
-bind = g, first
-bind = G, last
-
-bind = s, start
-bind = S, stop
-bind = d, close
-bind = D, erase
+network.scgi.open_local = /Users/fm/.rtorrent/rpc.socket
 
 ##### SAFETY #####
 pieces.hash.on_completion = yes
-

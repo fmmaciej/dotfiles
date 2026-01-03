@@ -39,4 +39,3 @@ source "$ZSH/oh-my-zsh.sh"
 for f in ${ZSH_FILES}/*.zsh; do
   [ -r "$f" ] && source "$f"
 done
-

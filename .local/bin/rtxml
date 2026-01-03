@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+import os
+import sys
+import socket
+import xmlrpc.client
+
+SOCK_PATH = os.path.expanduser("/User/fm/.rtorrent/rpc.socket")
+
+def scgi_request_unix(sock_path: str, body: bytes) -> bytes:
+    # SCGI headers (null-separated key/value pairs)
+    headers = {
+        "CONTENT_LENGTH": str(len(body)),
+        "SCGI": "1",
+        "REQUEST_METHOD": "POST",
+    }
+    hdr = b"".join(k.encode() + b"\x00" + v.encode() + b"\x00" for k, v in headers.items())
+    netstring = str(len(hdr)).encode() + b":" + hdr + b","
+
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        s.connect(sock_path)
+        s.sendall(netstring + body)
+        chunks = []
+        while True:
+            data = s.recv(65536)
+            if not data:
+                break
+            chunks.append(data)
+    return b"".join(chunks)
+
+def main() -> int:
+    if len(sys.argv) < 2:
+        print("usage: rtxml <method> [args...]", file=sys.stderr)
+        return 2
+
+    method = sys.argv[1]
+    args = sys.argv[2:]
+
+    # Treat everything as string (good enough for rtorrent methods we use)
+    params = tuple(args)
+
+    xml_body = xmlrpc.client.dumps(params, methodname=method, allow_none=True).encode("utf-8")
+    raw = scgi_request_unix(SOCK_PATH, xml_body)
+
+    # rtorrent may return either raw XML or HTTP-like response; handle both
+    if b"\r\n\r\n" in raw:
+        raw = raw.split(b"\r\n\r\n", 1)[1]
+
+    try:
+        result, _ = xmlrpc.client.loads(raw)
+    except Exception as e:
+        print("RPC parse error:", e, file=sys.stderr)
+        sys.stderr.buffer.write(raw + b"\n")
+        return 1
+
+    # Print single value nicely, otherwise print tuple
+    if len(result) == 1:
+        val = result[0]
+        if isinstance(val, (list, tuple)):
+            for x in val:
+                print(x)
+        else:
+            print(val)
+    else:
+        print(result)
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+

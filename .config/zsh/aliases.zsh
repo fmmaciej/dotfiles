@@ -1,13 +1,16 @@
 # Aliases
 
-alias fd='fd --hidden'
-alias less='bat'
 alias cp='cp -v'
 alias mv='mv -v'
 alias rm='rm -v'
 
 alias v='vim'
 alias y='yazi'
+alias less='bat'
+
+alias rc='source ~/.zshrc'
+alias rt='~/.local/bin/rt.sh'
+alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
 # Skroty cd
 alias CON="cd $HOME/.config"
@@ -31,10 +34,6 @@ alias bupg='brew upgrade'
 alias bins='brew install'
 alias buni='brew uninstall'
 alias bsea='brew search'
-
-alias rc='source ~/.zshrc'
-
-alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
 # Repo dotfiles
 VSCODE_LINKS_DIR=$HOME/.vscode-dotfiles
