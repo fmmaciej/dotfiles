@@ -4,7 +4,7 @@ import sys
 import socket
 import xmlrpc.client
 
-SOCK_PATH = os.path.expanduser("/User/fm/.rtorrent/rpc.socket")
+SOCK_PATH = os.path.expanduser("~/.rtorrent/rpc.socket")
 
 def scgi_request_unix(sock_path: str, body: bytes) -> bytes:
     # SCGI headers (null-separated key/value pairs)
@@ -47,6 +47,9 @@ def main() -> int:
 
     try:
         result, _ = xmlrpc.client.loads(raw)
+    except xmlrpc.client.Fault as f:
+        print(f"RPC fault {f.faultCode}: {f.faultString}", file=sys.stderr)
+        return 1
     except Exception as e:
         print("RPC parse error:", e, file=sys.stderr)
         sys.stderr.buffer.write(raw + b"\n")

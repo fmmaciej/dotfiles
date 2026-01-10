@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-RPC="http://localhost/RPC2"
-
 XMLRPC="$HOME/.local/bin/rtxml"
 RTORRENT_DIR="$HOME/.rtorrent"
 
-SOCKET="$RTORRENT_DIR/rpc.socket"
 WATCH_DIR="$RTORRENT_DIR/watch"
 
 usage() {
@@ -18,29 +15,30 @@ usage() {
 }
 
 rpc() {
-  $XMLRPC --unix-socket "$SOCKET" "$RPC" "$@"
+  "$XMLRPC" "$@"
 }
 
 list() {
-  rpc download_list |
-      tr -d '[],' |
-      while read -r hash; do
-	name=$(rpc d.name "$hash" | tr -d '"')
-	percent=$(rpc d.completed_chunks "$hash")
-	total=$(rpc d.size_chunks "$hash")
+  rpc download_list '' |
+    while read -r hash; do
+      name=$(rpc d.name "$hash" | tr -d '"')
+      percent=$(rpc d.completed_chunks "$hash")
+      total=$(rpc d.size_chunks "$hash")
 
-	if [[ "$total" -gt 0 ]]; then
-	  prog=$((percent * 100 / total))
-	else
-    prog=0
-	fi
+      if [[ "$total" -gt 0 ]]; then
+        prog=$((percent * 100 / total))
+      else
+        prog=0
+      fi
 
-	printf "%-8s | %3s%% | %s\n" "${hash:0:8}" "$prog" "$name"
-      done
+      printf "%s | %3s%% | %s\n" "$hash" "$prog" "$name"
+    done
 }
 
 sel() {
-  list | fzf --delimiter='|' --with-nth=2,3 --prompt="rtorrent> "
+  list | fzf --delimiter='|' --with-nth=2,3 \
+    --preview 'echo HASH: {1} | cut -c1-8' \
+    --prompt="rtorrent> "
 }
 
 PARAM="$1"
@@ -50,7 +48,10 @@ case "$PARAM" in
     cp "$2" "$WATCH_DIR"
     ;;
   magnet)
-    rpc load.start "${*:2}"
+    uri="${*:2}"
+    rpc load.start_verbose '' "$uri" 2>/dev/null \
+      || rpc load.start '' "$uri" 2>/dev/null \
+      || rpc load.normal '' "$uri"
     ;;
   start)
     sel | awk '{print $1}' | while read -r h; do rpc d.start "$h"; done
