@@ -34,3 +34,8 @@ export JAVA_HOME="$(
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
+# Android Studio
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
+

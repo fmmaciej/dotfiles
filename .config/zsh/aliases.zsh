@@ -13,6 +13,7 @@ alias rt='~/.local/bin/rt.sh'
 alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
 # Skroty cd
+alias SKY="cd $HOME/Programming/03_Python/02_Projects/skylark"
 alias CON="cd $HOME/.config"
 alias GI="cd $HOME/Git"
 alias PRO="cd $HOME/Programming"
