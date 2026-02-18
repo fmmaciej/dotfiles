@@ -37,11 +37,11 @@ alias buni='brew uninstall'
 alias bsea='brew search'
 
 # Repo dotfiles
-VSCODE_LINKS_DIR=$HOME/.vscode-dotfiles
-DOTFILES_GIT_DIR=$HOME/.dotfiles
+VSCODE_LINKS_DIR="$HOME/.vscode-dotfiles"
+DOTFILES_GIT_DIR="$HOME/.dotfiles"
 
 alias dot="/usr/bin/git --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME"
-alias dot-code="code --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME ~/"
+alias dot-code="code $VSCODE_LINKS_DIR"
 
 dot-sync() {
   (

@@ -49,7 +49,6 @@
 
 # --- tmux / resurrect / local dumps ---
 .tmux/resurrect/**
-.tmuxinator/**
 
 # --- WezTerm ---
 .local/share/wezterm/**
