@@ -53,6 +53,9 @@
 # --- WezTerm ---
 .local/share/wezterm/**
 
+# --- Dotfiles generated VS Code view ---
+.vscode-dotfiles/
+
 # --- macOS Library (dużo danych, nie dotykać) ---
 Library/**
 !Library/Application Support/Code/User/settings.json

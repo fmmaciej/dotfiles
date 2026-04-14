@@ -35,23 +35,3 @@ alias bupg='brew upgrade'
 alias bins='brew install'
 alias buni='brew uninstall'
 alias bsea='brew search'
-
-# Repo dotfiles
-VSCODE_LINKS_DIR="$HOME/.vscode-dotfiles"
-DOTFILES_GIT_DIR="$HOME/.dotfiles"
-
-alias dot="/usr/bin/git --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME"
-alias dot-code="code $VSCODE_LINKS_DIR"
-
-dot-sync() {
-  (
-    cd $HOME
-    rm -rf $VSCODE_LINKS_DIR
-    mkdir -p $VSCODE_LINKS_DIR
-    git --git-dir=$DOTFILES_GIT_DIR --work-tree=$HOME \
-      ls-tree -r --name-only HEAD | while read f; do
-        mkdir -p "$(dirname $VSCODE_LINKS_DIR/$f)"
-        ln -sf "$HOME/$f" "$VSCODE_LINKS_DIR/$f"
-      done
-  )
-}
