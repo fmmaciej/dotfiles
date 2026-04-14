@@ -4,6 +4,8 @@ export DOTFILES_GIT_DIR="${DOTFILES_GIT_DIR:-$HOME/.dotfiles}"
 export DOTFILES_WORK_TREE="${DOTFILES_WORK_TREE:-$HOME}"
 export DOTFILES_VIEW_DIR="${DOTFILES_VIEW_DIR:-$HOME/.vscode-dotfiles}"
 
+unalias dot dot-help dot-code dot-sync 2>/dev/null
+
 dot() {
   /usr/bin/git --git-dir="$DOTFILES_GIT_DIR" --work-tree="$DOTFILES_WORK_TREE" "$@"
 }
