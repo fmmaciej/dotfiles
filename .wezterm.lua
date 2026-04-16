@@ -152,10 +152,13 @@ config.scrollback_lines     = 100000
 -- ======================
 -- Start
 -- ======================
-config.default_prog = {
-  "cmd.exe",
-  "/c",
-  "where pwsh.exe >nul 2>nul && pwsh.exe -NoLogo || powershell.exe -NoLogo",
+config.default_prog = { "pwsh.exe", "-NoLogo" }
+
+config.launch_menu = {
+  {
+    label = "Windows PowerShell",
+    args = { "powershell.exe", "-NoLogo" },
+  },
 }
 
 -- ======================
