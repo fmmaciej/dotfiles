@@ -8,11 +8,11 @@ $env:DOTFILES_GIT_DIR = $script:DotfilesGitDir
 $env:DOTFILES_WORK_TREE = $script:DotfilesWorkTree
 $env:DOTFILES_VIEW_DIR = $script:DotfilesViewDir
 
-function dot {
+function global:dot {
     git --git-dir="$script:DotfilesGitDir" --work-tree="$script:DotfilesWorkTree" @args
 }
 
-function dot-help {
+function global:dot-help {
     @"
 dotfiles helpers
 
@@ -30,7 +30,7 @@ Notes:
 "@
 }
 
-function dot-code {
+function global:dot-code {
     if (-not (Test-Path -LiteralPath $script:DotfilesViewDir)) {
         dot-sync
     }
@@ -38,7 +38,7 @@ function dot-code {
     code $script:DotfilesViewDir
 }
 
-function dot-sync {
+function global:dot-sync {
     $expectedViewDir = Join-Path $HOME ".vscode-dotfiles"
     if ($script:DotfilesViewDir -ne $expectedViewDir) {
         Write-Error "dot-sync: refusing to replace unexpected view dir: $script:DotfilesViewDir"

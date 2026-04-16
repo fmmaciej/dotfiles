@@ -9,25 +9,25 @@ Remove-Item Alias:la -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:v -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:y -Force -ErrorAction SilentlyContinue
 
-Set-Alias -Name v -Value vim
-Set-Alias -Name y -Value yazi
+Set-Alias -Name v -Value vim -Scope Global
+Set-Alias -Name y -Value yazi -Scope Global
 
-function ls {
+function global:ls {
     eza --group-directories-first @args
 }
 
-function ll {
+function global:ll {
     eza --long --group --git --group-directories-first @args
 }
 
-function la {
+function global:la {
     eza --all --group-directories-first @args
 }
 
-function lla {
+function global:lla {
     eza --long --all --group --git --group-directories-first @args
 }
 
-function lt {
+function global:lt {
     eza --tree --level=2 --group-directories-first @args
 }
