@@ -18,7 +18,8 @@ dotfiles helpers
 
   dot status          show dotfiles repo status
   dot diff            show unstaged changes
-  dot add <path>      track a file from `$HOME
+  dot add <path>      stage a tracked file from `$HOME
+  dot add -f <path>   track a new ignored file from `$HOME
   dot commit          commit staged dotfiles changes
   dot-sync            recreate ~/.vscode-dotfiles symlink view
   dot-code            open ~/.vscode-dotfiles in VS Code

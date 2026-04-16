@@ -7,7 +7,7 @@ Use the `dot` command from the shell configuration to interact with the repo:
 
 ```sh
 dot status
-dot add .zshrc
+dot add -f .zshrc
 dot commit
 ```
 
@@ -46,9 +46,13 @@ dot commit
 When a new dotfile should be tracked, add the real path from `$HOME`:
 
 ```sh
-dot add .config/example/tool.conf
+dot add -f .config/example/tool.conf
 dot-sync
 ```
+
+The tracked `.gitignore` ignores all untracked files in `$HOME` by default, so
+`dot status` stays focused on files already managed by the repo. Use
+`dot add -f <path>` when adding a new dotfile.
 
 Do not edit `~/.dotfiles` directly. It is the Git metadata directory, not the
 project root. It is safe to remove `~/.vscode-dotfiles`; run `dot-sync` to
@@ -78,7 +82,7 @@ The Windows helpers provide:
 ```powershell
 dot status
 dot diff
-dot add README.md
+dot add -f README.md
 dot-sync
 dot-code
 dot-help

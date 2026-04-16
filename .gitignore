@@ -1,3 +1,8 @@
+# --- dotfiles repo default ---
+# Hide every untracked file in $HOME by default.
+# Track new files explicitly with: dot add -f <path>
+*
+
 # --- śmieci systemowe ---
 .DS_Store
 .AppleDouble
@@ -81,4 +86,3 @@ Library/**
 
 # --- iCloud rozmaitości ---
 Library/Mobile Documents/**
-
