@@ -45,27 +45,31 @@ function dot-sync {
         return
     }
 
-    if (Test-Path -LiteralPath $script:DotfilesViewDir) {
-        Remove-Item -LiteralPath $script:DotfilesViewDir -Recurse -Force
-    }
-
-    New-Item -ItemType Directory -Path $script:DotfilesViewDir -Force | Out-Null
-
-    dot ls-files | ForEach-Object {
-        $file = $_
-        if ([string]::IsNullOrWhiteSpace($file)) {
-            return
+    try {
+        if (Test-Path -LiteralPath $script:DotfilesViewDir) {
+            Remove-Item -LiteralPath $script:DotfilesViewDir -Recurse -Force -ErrorAction Stop
         }
 
-        $source = Join-Path $script:DotfilesWorkTree $file
-        $target = Join-Path $script:DotfilesViewDir $file
-        $targetDir = Split-Path -Parent $target
+        New-Item -ItemType Directory -Path $script:DotfilesViewDir -Force -ErrorAction Stop | Out-Null
 
-        if (-not (Test-Path -LiteralPath $source)) {
-            return
+        dot ls-files | ForEach-Object {
+            $file = $_
+            if ([string]::IsNullOrWhiteSpace($file)) {
+                return
+            }
+
+            $source = Join-Path $script:DotfilesWorkTree $file
+            $target = Join-Path $script:DotfilesViewDir $file
+            $targetDir = Split-Path -Parent $target
+
+            if (-not (Test-Path -LiteralPath $source)) {
+                return
+            }
+
+            New-Item -ItemType Directory -Path $targetDir -Force -ErrorAction Stop | Out-Null
+            New-Item -ItemType SymbolicLink -Path $target -Target $source -Force -ErrorAction Stop | Out-Null
         }
-
-        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-        New-Item -ItemType SymbolicLink -Path $target -Target $source -Force | Out-Null
+    } catch {
+        Write-Error "dot-sync failed: $($_.Exception.Message). Enable Windows Developer Mode or run PowerShell as Administrator to create symbolic links."
     }
 }

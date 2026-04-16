@@ -68,6 +68,8 @@ PowerShell loads modules from:
 
 ```text
 Documents/PowerShell/Microsoft.PowerShell_profile.ps1
+Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1
+.config/powershell/profile.ps1
 .config/powershell/*.ps1
 ```
 

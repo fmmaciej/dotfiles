@@ -116,7 +116,7 @@ config.window_padding = {
 }
 
 config.window_frame = {
-  font = wezterm.font{ family = "SF Mono", weight = "Regular" },
+  font = wezterm.font{ family = "Cascadia Mono", weight = "Regular" },
   font_size = 14.0,
   active_titlebar_bg = bg,
   inactive_titlebar_bg = bg,
@@ -134,7 +134,6 @@ config.automatically_reload_config = true
 -- Font
 -- ======================
 config.font = wezterm.font_with_fallback({
-  { family = "SF Mono",          weight = "Regular" },
   { family = "Cascadia Mono",    weight = "Regular" },
   { family = "Symbols Nerd Font", weight = "Regular" },
 })

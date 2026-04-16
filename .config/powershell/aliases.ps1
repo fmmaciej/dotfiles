@@ -8,6 +8,7 @@ Remove-Item Alias:ll -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:la -Force -ErrorAction SilentlyContinue
 
 Set-Alias -Name v -Value vim
+Set-Alias -Name y -Value yazi
 
 function ls {
     eza --group-directories-first @args
