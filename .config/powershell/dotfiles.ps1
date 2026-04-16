@@ -3,10 +3,12 @@
 $script:DotfilesGitDir = if ($env:DOTFILES_GIT_DIR) { $env:DOTFILES_GIT_DIR } else { Join-Path $HOME ".dotfiles" }
 $script:DotfilesWorkTree = if ($env:DOTFILES_WORK_TREE) { $env:DOTFILES_WORK_TREE } else { $HOME }
 $script:DotfilesViewDir = if ($env:DOTFILES_VIEW_DIR) { $env:DOTFILES_VIEW_DIR } else { Join-Path $HOME ".vscode-dotfiles" }
+$script:DotfilesCodeProfile = if ($env:DOTFILES_CODE_PROFILE) { $env:DOTFILES_CODE_PROFILE } else { "Dotfiles" }
 
 $env:DOTFILES_GIT_DIR = $script:DotfilesGitDir
 $env:DOTFILES_WORK_TREE = $script:DotfilesWorkTree
 $env:DOTFILES_VIEW_DIR = $script:DotfilesViewDir
+$env:DOTFILES_CODE_PROFILE = $script:DotfilesCodeProfile
 
 function global:dot {
     git --git-dir="$script:DotfilesGitDir" --work-tree="$script:DotfilesWorkTree" @args
@@ -22,7 +24,7 @@ dotfiles helpers
   dot add -f <path>   track a new ignored file from `$HOME
   dot commit          commit staged dotfiles changes
   dot-sync            recreate ~/.vscode-dotfiles editor view
-  dot-code            open ~/.vscode-dotfiles in VS Code
+  dot-code            open ~/.vscode-dotfiles in VS Code profile Dotfiles
 
 Notes:
   ~/.dotfiles is the Git metadata directory.
@@ -36,7 +38,7 @@ function global:dot-code {
         dot-sync
     }
 
-    code $script:DotfilesViewDir
+    code --profile $script:DotfilesCodeProfile $script:DotfilesViewDir
 }
 
 function New-DotfilesViewLink {
