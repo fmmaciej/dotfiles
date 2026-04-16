@@ -2,7 +2,6 @@
 
 local wezterm = require 'wezterm'
 local act = wezterm.action
-local is_windows = wezterm.target_triple:find("windows") ~= nil
 
 -- ======================
 -- Motyw / paleta
@@ -37,14 +36,14 @@ end
 
 local colors = theme.colors or {}
 local bg = colors.background or "#000000"
-local window_decorations = is_windows and "TITLE|RESIZE" or "RESIZE"
+local window_decorations = "TITLE|RESIZE"
 
 -- ======================
 -- Config builder
 -- ======================
 local config = wezterm.config_builder()
 
--- paleta + zmienne środowiskowe dla tmux/vifm/cmus itp.
+-- paleta + zmienne środowiskowe dla narzędzi terminalowych
 config.colors = colors
 config.set_environment_variables = theme.env()
 
@@ -151,13 +150,13 @@ config.cursor_blink_rate    = 500
 config.scrollback_lines     = 100000
 
 -- ======================
--- Start: PowerShell on Windows, tmux chooser elsewhere
+-- Start
 -- ======================
-if is_windows then
-  config.default_prog = { "pwsh.exe", "-NoLogo" }
-else
-  config.default_prog = { "/bin/zsh", "-lc", "~/.config/wezterm/tmux-session.sh" }
-end
+config.default_prog = {
+  "cmd.exe",
+  "/c",
+  "where pwsh.exe >nul 2>nul && pwsh.exe -NoLogo || powershell.exe -NoLogo",
+}
 
 -- ======================
 -- Skróty
