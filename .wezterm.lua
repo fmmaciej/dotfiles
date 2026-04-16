@@ -151,12 +151,35 @@ config.scrollback_lines     = 100000
 -- ======================
 -- Start
 -- ======================
-config.default_prog = { "pwsh.exe", "-NoLogo" }
+local powershell_profile = "$p = Join-Path $HOME '.config/powershell/profile.ps1'; if (Test-Path -LiteralPath $p) { . $p }"
+
+local function has_executable(name)
+  local ok = wezterm.run_child_process({ "where.exe", name })
+  return ok
+end
+
+local powershell_exe = has_executable("pwsh.exe") and "pwsh.exe" or "powershell.exe"
+
+config.default_prog = {
+  powershell_exe,
+  "-NoLogo",
+  "-NoProfile",
+  "-NoExit",
+  "-Command",
+  powershell_profile,
+}
 
 config.launch_menu = {
   {
     label = "Windows PowerShell",
-    args = { "powershell.exe", "-NoLogo" },
+    args = {
+      "powershell.exe",
+      "-NoLogo",
+      "-NoProfile",
+      "-NoExit",
+      "-Command",
+      powershell_profile,
+    },
   },
 }
 

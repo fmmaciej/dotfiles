@@ -6,6 +6,8 @@ $env:TERMINAL = "wezterm"
 Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:ll -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:la -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:v -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:y -Force -ErrorAction SilentlyContinue
 
 Set-Alias -Name v -Value vim
 Set-Alias -Name y -Value yazi
