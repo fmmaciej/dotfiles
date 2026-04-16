@@ -1,13 +1,26 @@
 " --- ~/.vimrc ---
 
 " VimPlug bootstrap
-let s:data_dir = has('nvim') ? stdpath('data') . '/site' : expand('~/.vim')
-if empty(glob(s:data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo ' . s:data_dir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+if has('nvim')
+  let s:vim_dir = stdpath('data') . '/site'
+elseif has('win32') || has('win64')
+  let s:vim_dir = expand('~/vimfiles')
+else
+  let s:vim_dir = expand('~/.vim')
+endif
+
+let s:plug_file = s:vim_dir . '/autoload/plug.vim'
+let s:plugged_dir = s:vim_dir . '/plugged'
+
+execute 'set runtimepath^=' . fnameescape(s:vim_dir)
+execute 'set runtimepath+=' . fnameescape(s:vim_dir . '/after')
+
+if empty(glob(s:plug_file))
+  silent execute '!curl -fLo ' . shellescape(s:plug_file) . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-call plug#begin('~/.vim/plugged')
+call plug#begin(s:plugged_dir)
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'tomasiser/vim-code-dark'
@@ -23,7 +36,7 @@ syntax on
 filetype plugin indent on
 set termguicolors
 " vscode colorscheme
-colorscheme codedark
+silent! colorscheme codedark
 " vscode airline
 let g:airline_theme = 'codedark'
 " dziedziczenie tła:
@@ -90,4 +103,3 @@ let mapleader=","
 nnoremap <leader>s :source $MYVIMRC<CR>
 nnoremap <F5> "=strftime("%c")<CR>P
 inoremap <F5> <C-R>=strftime("%c")<CR>
-
