@@ -21,13 +21,13 @@ dotfiles helpers
   dot add <path>      stage a tracked file from `$HOME
   dot add -f <path>   track a new ignored file from `$HOME
   dot commit          commit staged dotfiles changes
-  dot-sync            recreate ~/.vscode-dotfiles symlink view
+  dot-sync            recreate ~/.vscode-dotfiles editor view
   dot-code            open ~/.vscode-dotfiles in VS Code
 
 Notes:
   ~/.dotfiles is the Git metadata directory.
   ~/.vscode-dotfiles is disposable and can be rebuilt with dot-sync.
-  Symbolic links on Windows require Developer Mode or an elevated shell.
+  dot-sync uses symbolic links when possible and file hard links otherwise.
 "@
 }
 
@@ -37,6 +37,37 @@ function global:dot-code {
     }
 
     code $script:DotfilesViewDir
+}
+
+function New-DotfilesViewLink {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Source,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Target
+    )
+
+    if (-not $script:DotfilesViewLinkType) {
+        try {
+            New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
+            $script:DotfilesViewLinkType = "SymbolicLink"
+            return
+        } catch {
+            $script:DotfilesViewLinkType = "HardLink"
+        }
+    }
+
+    if ($script:DotfilesViewLinkType -eq "SymbolicLink") {
+        New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
+        return
+    }
+
+    if (-not (Test-Path -LiteralPath $Source -PathType Leaf)) {
+        throw "Cannot create a hard link for non-file path: $Source"
+    }
+
+    New-Item -ItemType HardLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
 }
 
 function global:dot-sync {
@@ -52,6 +83,7 @@ function global:dot-sync {
         }
 
         New-Item -ItemType Directory -Path $script:DotfilesViewDir -Force -ErrorAction Stop | Out-Null
+        $script:DotfilesViewLinkType = $null
 
         dot ls-files | ForEach-Object {
             $file = $_
@@ -68,9 +100,11 @@ function global:dot-sync {
             }
 
             New-Item -ItemType Directory -Path $targetDir -Force -ErrorAction Stop | Out-Null
-            New-Item -ItemType SymbolicLink -Path $target -Target $source -Force -ErrorAction Stop | Out-Null
+            New-DotfilesViewLink -Source $source -Target $target
         }
+
+        Write-Host "dot-sync: recreated $script:DotfilesViewDir using $script:DotfilesViewLinkType links"
     } catch {
-        Write-Error "dot-sync failed: $($_.Exception.Message). Enable Windows Developer Mode or run PowerShell as Administrator to create symbolic links."
+        Write-Error "dot-sync failed: $($_.Exception.Message)"
     }
 }
