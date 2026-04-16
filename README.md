@@ -53,3 +53,49 @@ dot-sync
 Do not edit `~/.dotfiles` directly. It is the Git metadata directory, not the
 project root. It is safe to remove `~/.vscode-dotfiles`; run `dot-sync` to
 recreate it.
+
+## Windows
+
+The `windows` branch uses the same bare-repo layout:
+
+```powershell
+$HOME\.dotfiles          # Git metadata
+$HOME                    # work tree
+$HOME\.vscode-dotfiles   # disposable VS Code symlink view
+```
+
+PowerShell loads modules from:
+
+```text
+Documents/PowerShell/Microsoft.PowerShell_profile.ps1
+.config/powershell/*.ps1
+```
+
+The Windows helpers provide:
+
+```powershell
+dot status
+dot diff
+dot add README.md
+dot-sync
+dot-code
+dot-help
+```
+
+`dot-sync` recreates `$HOME\.vscode-dotfiles` with symbolic links to tracked
+files. On Windows, symbolic links require Developer Mode or an elevated
+PowerShell session.
+
+Useful shell aliases:
+
+```powershell
+v       # vim
+ls      # eza --group-directories-first
+ll      # eza --long --group --git --group-directories-first
+la      # eza --all --group-directories-first
+lla     # eza --long --all --group --git --group-directories-first
+lt      # eza --tree --level=2 --group-directories-first
+```
+
+WezTerm starts `pwsh.exe -NoLogo` on Windows and keeps the tmux startup flow on
+macOS/Linux.

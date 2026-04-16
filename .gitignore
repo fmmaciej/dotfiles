@@ -56,6 +56,14 @@
 # --- Dotfiles generated VS Code view ---
 .vscode-dotfiles/
 
+# --- Windows user profile noise ---
+AppData/**
+NTUSER.*
+ntuser.*
+*.lnk
+Thumbs.db
+desktop.ini
+
 # --- macOS Library (dużo danych, nie dotykać) ---
 Library/**
 !Library/Application Support/Code/User/settings.json

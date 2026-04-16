@@ -2,6 +2,7 @@
 
 local wezterm = require 'wezterm'
 local act = wezterm.action
+local is_windows = wezterm.target_triple:find("windows") ~= nil
 
 -- ======================
 -- Motyw / paleta
@@ -36,6 +37,7 @@ end
 
 local colors = theme.colors or {}
 local bg = colors.background or "#000000"
+local window_decorations = is_windows and "TITLE|RESIZE" or "RESIZE"
 
 -- ======================
 -- Config builder
@@ -58,7 +60,7 @@ wezterm.on("toggle-focus-mode", function(window, _)
     window:set_config_overrides({
       window_background_opacity = 1.0,
       enable_tab_bar = false,
-      window_decorations = "RESIZE",
+      window_decorations = window_decorations,
       window_padding = { left = 2, right = 2, top = 1, bottom = 1 },
     })
   else
@@ -106,7 +108,7 @@ end)
 config.window_background_opacity = 1.0
 config.text_background_opacity   = 1.0
 
-config.window_decorations = "RESIZE"
+config.window_decorations = window_decorations
 config.enable_tab_bar = false
 config.use_fancy_tab_bar = false
 
@@ -134,6 +136,7 @@ config.automatically_reload_config = true
 -- ======================
 config.font = wezterm.font_with_fallback({
   { family = "SF Mono",          weight = "Regular" },
+  { family = "Cascadia Mono",    weight = "Regular" },
   { family = "Symbols Nerd Font", weight = "Regular" },
 })
 
@@ -148,9 +151,13 @@ config.cursor_blink_rate    = 500
 config.scrollback_lines     = 100000
 
 -- ======================
--- Start: wybór / attach / new tmux przez fzf
+-- Start: PowerShell on Windows, tmux chooser elsewhere
 -- ======================
-config.default_prog = { "/bin/zsh", "-lc", "~/.config/wezterm/tmux-session.sh" }
+if is_windows then
+  config.default_prog = { "pwsh.exe", "-NoLogo" }
+else
+  config.default_prog = { "/bin/zsh", "-lc", "~/.config/wezterm/tmux-session.sh" }
+end
 
 -- ======================
 -- Skróty
