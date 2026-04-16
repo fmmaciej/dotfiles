@@ -50,53 +50,16 @@ function New-DotfilesViewLink {
         [string] $Target
     )
 
-    if (-not $script:DotfilesViewLinkType) {
-        try {
-            New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
-            $script:DotfilesViewLinkType = "SymbolicLink"
-            return
-        } catch {
-            $script:DotfilesViewLinkType = "HardLink"
-        }
-    }
-
-    if ($script:DotfilesViewLinkType -eq "SymbolicLink") {
+    try {
         New-Item -ItemType SymbolicLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
         return
-    }
-
-    if (-not (Test-Path -LiteralPath $Source -PathType Leaf)) {
-        throw "Cannot create a hard link for non-file path: $Source"
-    }
-
-    New-Item -ItemType HardLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
-}
-
-function Write-DotfilesCodeSettings {
-    $settingsDir = Join-Path $script:DotfilesViewDir ".vscode"
-    $settingsPath = Join-Path $settingsDir "settings.json"
-    $sharedProfileCommand = "`$p = Join-Path `$HOME '.config/powershell/profile.ps1'; if (Test-Path -LiteralPath `$p) { . `$p }"
-
-    $settings = [ordered]@{
-        "terminal.integrated.defaultProfile.windows" = "Dotfiles PowerShell"
-        "terminal.integrated.profiles.windows" = [ordered]@{
-            "Dotfiles PowerShell" = [ordered]@{
-                "path" = "pwsh.exe"
-                "args" = @(
-                    "-NoLogo",
-                    "-NoProfile",
-                    "-ExecutionPolicy",
-                    "Bypass",
-                    "-NoExit",
-                    "-Command",
-                    $sharedProfileCommand
-                )
-            }
+    } catch {
+        if (-not (Test-Path -LiteralPath $Source -PathType Leaf)) {
+            throw "Cannot create a hard link for non-file path: $Source"
         }
-    }
 
-    New-Item -ItemType Directory -Path $settingsDir -Force -ErrorAction Stop | Out-Null
-    $settings | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $settingsPath -Encoding utf8
+        New-Item -ItemType HardLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
+    }
 }
 
 function global:dot-sync {
@@ -112,9 +75,8 @@ function global:dot-sync {
         }
 
         New-Item -ItemType Directory -Path $script:DotfilesViewDir -Force -ErrorAction Stop | Out-Null
-        $script:DotfilesViewLinkType = $null
 
-        dot ls-files | ForEach-Object {
+        dot ls-tree -r --name-only HEAD | ForEach-Object {
             $file = $_
             if ([string]::IsNullOrWhiteSpace($file)) {
                 return
@@ -132,8 +94,7 @@ function global:dot-sync {
             New-DotfilesViewLink -Source $source -Target $target
         }
 
-        Write-DotfilesCodeSettings
-        Write-Host "dot-sync: recreated $script:DotfilesViewDir using $script:DotfilesViewLinkType links"
+        Write-Host "dot-sync: recreated $script:DotfilesViewDir"
     } catch {
         Write-Error "dot-sync failed: $($_.Exception.Message)"
     }

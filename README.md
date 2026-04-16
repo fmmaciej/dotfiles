@@ -93,9 +93,7 @@ dot-help
 `dot-sync` recreates `$HOME\.vscode-dotfiles` with links to tracked files. It
 uses symbolic links when Windows allows them and falls back to file hard links
 otherwise, so an elevated PowerShell session should not be required for normal
-tracked files. It also writes `$HOME\.vscode-dotfiles\.vscode\settings.json`,
-so VS Code terminals opened from `dot-code` start `pwsh.exe` and explicitly load
-the shared PowerShell profile.
+tracked files.
 
 Useful shell aliases:
 
