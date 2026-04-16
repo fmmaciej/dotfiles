@@ -72,6 +72,33 @@ function New-DotfilesViewLink {
     New-Item -ItemType HardLink -Path $Target -Target $Source -Force -ErrorAction Stop | Out-Null
 }
 
+function Write-DotfilesCodeSettings {
+    $settingsDir = Join-Path $script:DotfilesViewDir ".vscode"
+    $settingsPath = Join-Path $settingsDir "settings.json"
+    $sharedProfileCommand = "`$p = Join-Path `$HOME '.config/powershell/profile.ps1'; if (Test-Path -LiteralPath `$p) { . `$p }"
+
+    $settings = [ordered]@{
+        "terminal.integrated.defaultProfile.windows" = "Dotfiles PowerShell"
+        "terminal.integrated.profiles.windows" = [ordered]@{
+            "Dotfiles PowerShell" = [ordered]@{
+                "path" = "pwsh.exe"
+                "args" = @(
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-NoExit",
+                    "-Command",
+                    $sharedProfileCommand
+                )
+            }
+        }
+    }
+
+    New-Item -ItemType Directory -Path $settingsDir -Force -ErrorAction Stop | Out-Null
+    $settings | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $settingsPath -Encoding utf8
+}
+
 function global:dot-sync {
     $expectedViewDir = Join-Path $HOME ".vscode-dotfiles"
     if ($script:DotfilesViewDir -ne $expectedViewDir) {
@@ -105,6 +132,7 @@ function global:dot-sync {
             New-DotfilesViewLink -Source $source -Target $target
         }
 
+        Write-DotfilesCodeSettings
         Write-Host "dot-sync: recreated $script:DotfilesViewDir using $script:DotfilesViewLinkType links"
     } catch {
         Write-Error "dot-sync failed: $($_.Exception.Message)"
