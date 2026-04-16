@@ -47,8 +47,18 @@
 .local/share/nvim/**
 .cache/nvim/**
 
-# --- tmux / resurrect / local dumps ---
-.tmux/resurrect/**
+# --- tmux (not used on Windows branch) ---
+.tmux.conf
+.tmux/**
+.config/wezterm/tmux-session.sh
+
+# --- Unix-only tools (not used on Windows branch) ---
+.config/zsh/**
+.zprofile
+.zshenv
+.zshrc
+.rtorrent.rc
+.urlview
 
 # --- WezTerm ---
 .local/share/wezterm/**

@@ -97,5 +97,5 @@ lla     # eza --long --all --group --git --group-directories-first
 lt      # eza --tree --level=2 --group-directories-first
 ```
 
-WezTerm starts `pwsh.exe -NoLogo` on Windows and keeps the tmux startup flow on
-macOS/Linux.
+The Windows branch does not use tmux, Zsh, urlview, or rtorrent. WezTerm starts
+`pwsh.exe -NoLogo` directly.
