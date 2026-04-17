@@ -86,3 +86,5 @@ Library/**
 
 # --- iCloud rozmaitości ---
 Library/Mobile Documents/**
+
+.config/powershell/proxy.local.psd1

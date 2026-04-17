@@ -1,5 +1,7 @@
 # Shared PowerShell profile loader
 
+. (Join-Path $HOME '.config/powershell/proxy.ps1')
+
 $PowerShellConfigDir = Join-Path $HOME ".config/powershell"
 
 if (Test-Path -LiteralPath $PowerShellConfigDir) {
