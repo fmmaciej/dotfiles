@@ -49,3 +49,46 @@ alias bupg='brew upgrade'
 alias bins='brew install'
 alias buni='brew uninstall'
 alias bsea='brew search'
+
+unalias hh 2>/dev/null
+hh() {
+  cat <<'EOF'
+custom shell helpers
+
+  rc            reload ~/.zshrc
+
+  v             vim
+  y             yazi
+  less          bat
+  rt            run ~/.local/bin/rt.sh
+  cmus          regenerate cmus theme, then start cmus
+
+  NOT           cd to notes directory from NOTES_DIR
+  SKY           cd to skylark project
+  CON           cd to ~/.config
+  GI            cd to ~/Git
+  PRO           cd to ~/Programming
+  BAS           cd to ~/Programming/01_Bash
+  CPP           cd to ~/Programming/02_Cpp
+  PYT           cd to ~/Programming/03_Python
+  RUS           cd to ~/Programming/04_Rust
+  DOW           cd to ~/Downloads
+  DOC           cd to ~/Documents
+  MUS           cd to ~/Music
+
+  bupd          brew update and omz update
+  bupg          brew upgrade
+  bins          brew install
+  buni          brew uninstall
+  bsea          brew search
+
+  dot           run dotfiles git
+  dot-help      show dotfiles helper help
+  dot-code      open dotfiles view in VS Code
+  dot-sync      rebuild dotfiles symlink view
+
+  cc            run claude with configured model profile
+  cc list       list claude model profiles
+  pt            run local python-template helper
+EOF
+}
