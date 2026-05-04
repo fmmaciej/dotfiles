@@ -34,8 +34,10 @@ plugins=(
 )
 source "$ZSH/oh-my-zsh.sh"
 
-# Aliasy, fzf, kursor, pluginy - moduły
-# (tylko w shellu interaktywnym)
-for f in ${ZSH_FILES}/*.zsh; do
+# Prywatne zmienne lokalne: sekrety, tokeny, lokalne sciezki.
+[ -r "${ZSH_FILES}/env.local" ] && source "${ZSH_FILES}/env.local"
+
+# Numerowane moduly interaktywne, ladowane w kolejnosci leksykalnej.
+for f in ${ZSH_FILES}/[0-9][0-9]-*.zsh(N); do
   [ -r "$f" ] && source "$f"
 done

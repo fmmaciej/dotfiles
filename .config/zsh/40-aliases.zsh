@@ -13,6 +13,20 @@ alias rt='~/.local/bin/rt.sh'
 alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
 # Skroty cd
+unalias NOT 2>/dev/null
+NOT() {
+  if [[ -z "$NOTES_DIR" ]]; then
+    print -u2 "NOT: ustaw NOTES_DIR w ~/.config/zsh/env.local"
+    return 1
+  fi
+
+  if [[ ! -d "$NOTES_DIR" ]]; then
+    print -u2 "NOT: NOTES_DIR nie wskazuje na istniejący katalog"
+    return 1
+  fi
+
+  cd -- "$NOTES_DIR"
+}
 alias SKY="cd $HOME/Programming/03_Python/02_Projects/skylark"
 alias CON="cd $HOME/.config"
 alias GI="cd $HOME/Git"

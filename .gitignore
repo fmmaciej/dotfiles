@@ -14,6 +14,7 @@
 .lesshst
 .node_repl_history
 .irb_history
+.config/zsh/env.local
 
 # --- SSH / GPG (tylko szablony do repo) ---
 .ssh/id_*
@@ -63,4 +64,3 @@ Library/**
 
 # --- iCloud rozmaitości ---
 Library/Mobile Documents/**
-
