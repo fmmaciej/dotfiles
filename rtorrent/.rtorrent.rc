@@ -1,0 +1,29 @@
+# Paths
+directory.default.set = /Users/fm/downloads/torrents
+session.path.set = /Users/fm/.rtorrent/session
+
+# Prevent multiple rTorrent instances using the same session
+session.use_lock.set = yes
+
+# Vim-style navigation
+ui.keymap.style.set = "vi"
+
+# Watch directory
+schedule = watch,5,5,load.start=/Users/fm/.rtorrent/watch/*.torrent
+
+# Incoming BitTorrent port
+network.listen.port.range.set = 50000-50000
+network.listen.port.random.set = no
+
+# Verify data after download completes
+pieces.hash.on_completion.set = yes
+
+# RPC
+network.rpc.use_xmlrpc.set = true
+network.scgi.open_local = /Users/fm/.rtorrent/rpc.socket
+
+# Public torrents
+trackers.use_udp.set = yes
+dht.mode.set = auto
+dht.port.set = 6881
+protocol.pex.set = yes

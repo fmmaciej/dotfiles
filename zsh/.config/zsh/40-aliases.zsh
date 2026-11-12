@@ -12,6 +12,11 @@ alias rc='source ~/.zshrc'
 alias rt='~/.local/bin/rt.sh'
 alias cmus='~/.local/bin/gen-cmus-theme-from-wez.sh && command cmus'
 
+alias storrent='~/.local/scripts/storrent.sh'
+
+alias stor='storrent'
+alias rtor='rtorrent'
+
 # Skroty cd
 unalias NOT 2>/dev/null
 NOT() {
@@ -82,10 +87,10 @@ custom shell helpers
   buni          brew uninstall
   bsea          brew search
 
-  dot           run dotfiles git
-  dot-help      show dotfiles helper help
-  dot-code      open dotfiles view in VS Code
-  dot-sync      rebuild dotfiles symlink view
+  dot           run git in ~/.dotfiles (paths relative to repo root)
+  code ~/.dotfiles
+                edit the real dotfiles repository in VS Code
+  kei help      show Kei entry-point commands
 
   cc            run claude with configured model profile
   cc list       list claude model profiles

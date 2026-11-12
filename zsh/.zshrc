@@ -1,5 +1,5 @@
-# ~/.zshrc — interaktywne: oh-my-zsh, pluginy, bindy, fzf, itp.
-#
+# ~/.zshrc — dyspozytor konfiguracji interaktywnej.
+# Wspólne środowisko jest w ~/.zshenv, inicjalizacja loginowa w ~/.zprofile.
 
 # Historia i znaki czasu
 HISTFILE="${HOME}/.zsh_history"
@@ -16,7 +16,6 @@ setopt INC_APPEND_HISTORY
 setopt NO_SHARE_HISTORY        # historia per-shell
 setopt NO_BEEP
 
-setopt nosharehistory
 HIST_STAMPS="%y.%m.%d %T"
 
 # Oh My Zsh
@@ -41,3 +40,4 @@ source "$ZSH/oh-my-zsh.sh"
 for f in ${ZSH_FILES}/[0-9][0-9]-*.zsh(N); do
   [ -r "$f" ] && source "$f"
 done
+unset f

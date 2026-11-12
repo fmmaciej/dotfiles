@@ -1,0 +1,66 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "theme": {
+    "name": "carbonfox",
+    "mode": "dark"
+  },
+  "diffs": {
+    "wrap": "word"
+  },
+  "session": {
+    "sidebar": "auto",
+    "scrollbar": false,
+    "thinking": "hide",
+    "markdown": "rendered",
+    "verbosity": "high"
+  },
+  "animations": true,
+  "attention": {
+    "sound": true,
+    "notifications": true,
+    "volume": 0.5
+  },
+  "keybinds": {
+    "leader": "ctrl+b",
+    "input.line.home": "home",
+    "input.move.left": "left",
+    "session.background": "none",
+    "session.new": "<leader>c",
+    "session.rename": "ctrl+r",
+    "session.tab.close": "none",
+    "session.tab.next": "none",
+    "session.tab.previous": "none",
+    "session.compact": "none",
+    "session.export": "none",
+    "session.tab.select.1": "none",
+    "session.tab.select.2": "none",
+    "session.tab.select.3": "none",
+    "session.tab.select.4": "none",
+    "session.tab.select.5": "none",
+    "session.tab.select.6": "none",
+    "session.tab.select.7": "none",
+    "session.tab.select.8": "none",
+    "session.tab.select.9": "none",
+    "session.tab.select.10": "none",
+    "session.quick_switch.1": "none",
+    "session.quick_switch.2": "none",
+    "session.quick_switch.3": "none",
+    "session.quick_switch.4": "none",
+    "session.quick_switch.5": "none",
+    "session.quick_switch.6": "none",
+    "session.quick_switch.7": "none",
+    "session.quick_switch.8": "none",
+    "session.quick_switch.9": "none"
+  },
+  "tabs": {
+    "mode": "off"
+  },
+  "plugins": [
+    {
+      "package": "./plugins/personal-ui",
+      "options": {
+        "animations": true
+      }
+    }
+  ]
+}

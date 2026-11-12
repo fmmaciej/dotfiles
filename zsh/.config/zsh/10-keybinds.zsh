@@ -1,4 +1,4 @@
-# ~/.config/zsh/keybinds.zsh
+# ~/.config/zsh/10-keybinds.zsh
 
 # 10ms na sekwencje klawiszy
 KEYTIMEOUT=1
@@ -12,4 +12,3 @@ bindkey "^[OA" up-line-or-beginning-search
 bindkey "^[OB" down-line-or-beginning-search
 bindkey -M vicmd "k" up-line-or-beginning-search
 bindkey -M vicmd "j" down-line-or-beginning-search
-
