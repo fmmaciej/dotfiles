@@ -30,6 +30,24 @@ test("keybinds retain the existing leader and resolve native tab conflicts", () 
   }
 })
 
+test("personal UI owns one integrated Vim runtime without the native footer", () => {
+  const entry = config.plugins.find((item) => item.package === "./plugins/personal-ui")
+  assert.deepEqual(entry.options.vim, {
+    enabled: true,
+    vim_initial_mode: "insert",
+    vim_system_clipboard_register: false,
+  })
+  assert.equal(entry.options.preservePromptFooter, undefined)
+  assert.ok(!config.plugins.some((item) => String(typeof item === "string" ? item : item.package).includes("opencode-vim-plugin")))
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  assert.match(source, /const vim = setupVim\(/)
+  assert.match(source, /vim\.dispose\(\)/)
+  assert.match(source, /context\.ui\.slot\(\{ replace: "prompt\.footer", render: \(\) => null \}\)/)
+  assert.match(source, /vimField\(vim\.mode\(\), vim\.enabled\(\)\)/)
+  assert.match(source, /dimensions\(\)\.width - vimPrefixWidth - layout\(\)\.width\)/)
+  assert.match(source, /priority: 200/)
+})
+
 test("plugin keeps its identity and storage keys without depending on Kei", () => {
   const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
   const manifest = JSON.parse(readFileSync(new URL("package.json", plugin), "utf8"))

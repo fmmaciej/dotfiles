@@ -1,12 +1,14 @@
 import { Plugin } from "@opencode/plugin/tui"
 import { createHash } from "node:crypto"
 import { useTerminalDimensions } from "@opentui/solid"
-import { RGBA, type KeyEvent } from "@opentui/core"
+import type { KeyEvent } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import {
   cleanTitle, closeTab, contextBar, contextUsage, cycleTab,
-  openTab, scannerFrame, sessionState, statusLayout, tabBindings, tabIcon, tabSpinnerFrames, tokenTotal, visibleTabs,
+  openTab, sessionState, statusLayout, tabBindings, tabIcon, tabSpinnerFrames, tokenTotal, visibleTabs,
+  vimField, vimPrefixWidth,
 } from "./state.mjs"
+import { setupVim } from "./vendor/vim.js"
 
 type Context = Plugin.Context
 const number = new Intl.NumberFormat("en-US")
@@ -106,6 +108,7 @@ export default Plugin.define({
   id: "kei.terminal-ui",
   setup(context) {
     const animations = context.options.animations !== false
+    const vim = setupVim({ ...context, options: context.options.vim ?? {} })
     const directory = context.location?.directory ?? context.data.location.default().directory
     const scope = createHash("sha256").update(directory).digest("hex")
     const [state, updateState] = context.storage.store(`tabs-${scope}`, { initial: { tabs: [] as string[] } })
@@ -126,7 +129,7 @@ export default Plugin.define({
 
     // Base mode only: these shortcuts must not steal input from dialogs or panels.
     context.keymap.layer(() => ({
-      priority: 10,
+      priority: 200,
       commands: [
         { id: "kei.tabs.close", title: "Kei: close tab", bind: "<leader>x", palette: true,
           run: () => close().catch(reportError) },
@@ -157,24 +160,15 @@ export default Plugin.define({
 
     function BottomBar() {
       const dimensions = useTerminalDimensions()
-      const [frame, setFrame] = createSignal(0)
       const [tabFrame, setTabFrame] = createSignal(0)
       const status = createMemo(() => activity(context, active()))
       const tabItems = createMemo(() => state.tabs.map((sessionID) => ({
         sessionID, title: context.data.session.get(sessionID)?.title, activity: activity(context, sessionID),
       })))
-      const layout = createMemo(() => statusLayout(status(), dimensions().width))
-      const tabs = createMemo(() => visibleTabs(tabItems(), active(), dimensions().width - layout().width - 3))
-      const gap = createMemo(() => layout().gap)
-      const animated = createMemo(() => status().kind === "running" && animations)
-      const animateTabs = createMemo(() => animations
-        && tabItems().some((tab) => tab.activity.kind === "running"))
-      const dots = createMemo(() => scannerFrame(gap(), frame()))
-      const colors = createMemo(() => {
-        const color = context.theme.text.base
-        return [0, 0.11, 0.17, 0.27, 0.42, 0.65, 0.85].map((alpha) =>
-          RGBA.fromValues(color.r, color.g, color.b, color.a * alpha))
-      })
+      const layout = createMemo(() => statusLayout(status(), dimensions().width - vimPrefixWidth))
+      const tabs = createMemo(() => visibleTabs(tabItems(), active(), dimensions().width - vimPrefixWidth - layout().width))
+      const animateIcons = createMemo(() => animations
+        && (status().kind === "running" || tabItems().some((tab) => tab.activity.kind === "running")))
 
       createEffect(on(active, (id) => {
         if (!id) return
@@ -196,16 +190,8 @@ export default Plugin.define({
         }))
       }))
       createEffect(() => {
-        const width = gap()
-        setFrame(0)
-        if (!animated() || !width) return
-        const cycle = width * 2 - 1 + 9 + 30
-        const timer = setInterval(() => setFrame((value) => (value + 1) % cycle), 40)
-        onCleanup(() => clearInterval(timer))
-      })
-      createEffect(() => {
         setTabFrame(0)
-        if (!animateTabs()) return
+        if (!animateIcons()) return
         const timer = setInterval(() => setTabFrame((value) => (value + 1) % tabSpinnerFrames.length), 100)
         onCleanup(() => clearInterval(timer))
       })
@@ -217,20 +203,14 @@ export default Plugin.define({
           marginTop={context.ui.router.current().type === "session" ? -1 : 0}
           backgroundColor={context.theme.background.raised.base}
         >
+          <box width={vimPrefixWidth} flexShrink={0} overflow="hidden">
+            <text fg={context.theme.text.base} wrapMode="none">{vimField(vim.mode(), vim.enabled())}</text>
+          </box>
           <box width={layout().width} flexShrink={0} flexDirection="row" overflow="hidden">
             <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}> Kei: </text>
-            <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}>{`${layout().text} `}</text>
-            <Show when={layout().icon}>
-              <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}>{layout().icon}</text>
-            </Show>
-            <box width={layout().gap} flexShrink={0} flexDirection="row">
-              <Show when={animated()} fallback={<text>{" ".repeat(layout().gap)}</text>}>
-                <For each={dots()}>{(level) => (
-                  <text fg={colors()[level]} wrapMode="none" flexShrink={0}>{level ? "·" : " "}</text>
-                )}</For>
-              </Show>
-            </box>
-            <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}>{layout().icon ? "│" : " │"}</text>
+            <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}>
+              {`${layout().text} ${tabIcon(status(), tabFrame(), animations)} │`}
+            </text>
           </box>
           <box flexDirection="row" flexGrow={1} minWidth={0} overflow="hidden">
             <For each={tabs()}>{(tab) => (
@@ -264,6 +244,7 @@ export default Plugin.define({
       context.ui.slot({ replace: "sidebar.footer", render: () => <Shortcuts context={context} /> }),
     ]
     return () => {
+      vim.dispose()
       context.renderer.keyInput.removeListener("keypress", renameOnComma)
       stopDeleted()
       claims.forEach((remove) => remove())

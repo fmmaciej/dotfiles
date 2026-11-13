@@ -61,59 +61,41 @@ export function sessionState({ running, permissions = 0, forms = 0, outcome }) {
   if (forms) return { kind: "attention", label: "reply", icon: "?" }
   if (running) return { kind: "running", label: "working", icon: "" }
   if (outcome === "failed") return { kind: "error", label: "error", icon: "✗" }
-  if (outcome === "interrupted") return { kind: "idle", label: "interrupted", icon: "–" }
+  if (outcome === "interrupted") return { kind: "idle", label: "stopped", icon: "–" }
   return { kind: "idle", label: "ready", icon: "✓" }
 }
 
 export const tabSpinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+
+export const vimLabels = Object.freeze({
+  insert: "INSERT", normal: "NORMAL", visual: "VISUAL", "visual-line": "VISUAL",
+  replace: "REPLACE", copy: "COPY", off: "OFF",
+})
+export const vimLabelWidth = Math.max(...Object.values(vimLabels).map((label) => label.length))
+export const vimPrefixWidth = vimLabelWidth + 2 // Exactly one space, then the separator.
+
+export function vimField(mode, enabled = true) {
+  const label = enabled ? vimLabels[mode] ?? "?" : vimLabels.off
+  return label.padStart(vimLabelWidth) + " │"
+}
 
 export function tabIcon(state, frame = 0, animations = true) {
   if (state.kind !== "running") return state.icon
   return animations ? tabSpinnerFrames[frame % tabSpinnerFrames.length] : "⋯"
 }
 
-// " Kei: " + label + " " + icon + gap + "│"; work uses gap for a scanner, then " │".
-// Labels and glyphs here occupy one cell each. The longest label needs a one-cell gap.
+export const statusLabelWidth = 7
+export const statusSegmentWidth = statusLabelWidth + 10 // " Kei: " + label + " " + icon + " │".
+
+// Pad labels before the icon so every status and spinner frame uses the same column.
 // Only terminal resizing may move the separator, never a status transition.
 export function statusLayout(state, terminalWidth) {
-  const width = Math.max(0, Math.min(21, Math.floor(terminalWidth) - 8))
-  const available = Math.max(0, width - 9)
+  const width = Math.max(0, Math.min(statusSegmentWidth, Math.floor(terminalWidth) - 8))
+  const available = Math.max(0, width - 10)
   const full = state.label
   const text = full.length <= available ? full
     : available ? full.slice(0, available - 1) + "…" : ""
-  return { width, icon: state.icon, text, gap: Math.max(0, available - text.length) }
-}
-
-// A bidirectional scanner with a fading, directional tail and endpoint pauses,
-// following OC's Knight Rider timing: 40 ms ticks, 30/9 endpoint hold frames.
-// Levels 1–6 describe dot brightness; 0 is an empty cell (no visible track).
-export function scannerFrame(width, frame) {
-  width = Math.max(0, Math.floor(width))
-  if (!width) return []
-  const endHold = 9
-  const backwardEnd = width + endHold + width - 1
-  const cycle = backwardEnd + 30
-  const phase = ((Math.floor(frame) % cycle) + cycle) % cycle
-  let position, direction, fade = 0
-  if (phase < width) {
-    position = phase
-    direction = 1
-  } else if (phase < width + endHold) {
-    position = width - 1
-    direction = 1
-    fade = phase - width + 1
-  } else if (phase < backwardEnd) {
-    position = width - 2 - (phase - width - endHold)
-    direction = -1
-  } else {
-    position = 0
-    direction = -1
-    fade = phase - backwardEnd + 1
-  }
-  return Array.from({ length: width }, (_, index) => {
-    const distance = direction === 1 ? position - index : index - position
-    return distance < 0 ? 0 : Math.max(0, 6 - distance - fade)
-  })
+  return { width, text: text.padEnd(available), labelWidth: available }
 }
 
 const titleSegmenter = new Intl.Segmenter("en", { granularity: "grapheme" })

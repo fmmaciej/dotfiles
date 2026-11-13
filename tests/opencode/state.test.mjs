@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import test from "node:test"
 import {
   cleanTitle, closeTab, contextBar, contextUsage, cycleTab,
-  openTab, scannerFrame, sessionState, statusLayout, tabBindings, tabIcon, tabSpinnerFrames, tabTitle, tokenTotal, visibleTabs,
+  openTab, sessionState, statusLabelWidth, statusLayout, statusSegmentWidth, tabBindings, tabIcon, tabSpinnerFrames, tabTitle, tokenTotal, visibleTabs,
 } from "../../opencode/.config/opencode/plugins/personal-ui/state.mjs"
 
 const tokens = { input: 100, output: 20, reasoning: 10, cache: { read: 60, write: 10 } }
@@ -74,7 +74,9 @@ test("permission and question waiting take precedence over running and past erro
   assert.equal(sessionState({ running: true, forms: 1 }).kind, "attention")
   assert.equal(sessionState({ running: true, outcome: "failed" }).kind, "running")
   assert.equal(sessionState({ running: false, outcome: "failed" }).kind, "error")
-  assert.equal(sessionState({ running: false, outcome: "interrupted" }).label, "interrupted")
+  assert.equal(sessionState({ running: false, outcome: "interrupted" }).label, "stopped")
+  assert.equal(sessionState({ outcome: "interrupted" }).label.length, sessionState({ running: true }).label.length)
+  assert.equal(sessionState({ outcome: "interrupted" }).label.length, sessionState({ permissions: 1 }).label.length)
 })
 
 test("all six lowercase statuses precede their icon and keep the same separator", () => {
@@ -82,23 +84,23 @@ test("all six lowercase statuses precede their icon and keep the same separator"
     sessionState({}), sessionState({ running: true }), sessionState({ permissions: 1 }),
     sessionState({ forms: 1 }), sessionState({ outcome: "failed" }), sessionState({ outcome: "interrupted" }),
   ]
-  assert.deepEqual(states.map((state) => state.label), ["ready", "working", "approve", "reply", "error", "interrupted"])
+  assert.deepEqual(states.map((state) => state.label), ["ready", "working", "approve", "reply", "error", "stopped"])
   for (const state of states) {
     const layout = statusLayout(state, 120)
-    const segment = ` Kei: ${layout.text} ${layout.icon}${" ".repeat(layout.gap)}${layout.icon ? "│" : " │"}`
-    assert.equal(layout.width, 21)
-    assert.equal(segment.length, 21)
-    assert.equal(segment.indexOf("│"), 20)
-    assert.equal(segment.indexOf(layout.text), 6)
-    if (layout.icon) assert.equal(segment[7 + layout.text.length], layout.icon)
+    const segment = ` Kei: ${layout.text} ${tabIcon(state)} │`
+    assert.equal(layout.width, 17)
+    assert.equal(segment.length, 17)
+    assert.equal(segment.indexOf("│"), 16)
+    assert.equal(segment.indexOf(state.label), 6)
+    assert.equal(segment[14], tabIcon(state))
+    assert.equal(layout.labelWidth, 7)
+    assert.equal(layout.text.trim(), state.label)
   }
-  assert.equal(statusLayout(states[1], 120).gap, 5)
-  assert.equal(statusLayout(states[2], 120).gap, 5)
-  assert.equal(statusLayout(states[3], 120).gap, 7)
-  assert.equal(statusLayout(states[5], 120).gap, 1)
+  assert.equal(statusLabelWidth, 7)
+  assert.equal(statusSegmentWidth, 17)
   assert.equal(statusLayout(states[2], 120).text, "approve")
-  assert.equal(statusLayout(states[3], 120).text, "reply")
-  assert.equal(statusLayout(states[5], 120).text, "interrupted")
+  assert.equal(statusLayout(states[3], 120).text, "reply  ")
+  assert.equal(statusLayout(states[5], 120).text, "stopped")
 })
 
 test("narrow status layouts stay bounded and keep space for a tab", () => {
@@ -109,57 +111,27 @@ test("narrow status layouts stay bounded and keep space for a tab", () => {
     assert.equal(idle.width, running.width)
     assert.equal(idle.width, waiting.width)
     assert.ok(waiting.width <= Math.max(0, width - 8))
-    assert.ok(waiting.gap >= 0)
-    assert.ok(waiting.text.length <= Math.max(0, waiting.width - 9))
+    assert.ok(waiting.labelWidth >= 0)
+    assert.equal(waiting.text.length, Math.max(0, waiting.width - 10))
   }
-  assert.ok(statusLayout(sessionState({ outcome: "interrupted" }), 24).text.endsWith("…"))
+  assert.ok(statusLayout(sessionState({ outcome: "interrupted" }), 20).text.endsWith("…"))
 })
 
-test("scanner crosses all fifteen cells and returns with a fading directional tail", () => {
-  assert.deepEqual(scannerFrame(15, 0), [6, ...Array(14).fill(0)])
-  assert.deepEqual(scannerFrame(15, 3).slice(0, 6), [3, 4, 5, 6, 0, 0])
-  assert.equal(scannerFrame(15, 14)[14], 6)
-  assert.equal(scannerFrame(15, 15)[14], 5)
-  assert.deepEqual(scannerFrame(15, 24).slice(11), [0, 0, 6, 5])
-  assert.equal(scannerFrame(15, 37)[0], 6)
-  assert.equal(scannerFrame(15, 38)[0], 5)
-  assert.deepEqual(scannerFrame(15, 68), scannerFrame(15, 0))
-  for (let frame = 0; frame < 68; frame++) {
-    const levels = scannerFrame(15, frame)
-    assert.equal(levels.length, 15)
-    assert.ok(levels.every((level) => Number.isInteger(level) && level >= 0 && level <= 6))
-  }
-})
-
-test("scanner handles empty and one-cell gaps", () => {
-  assert.deepEqual(scannerFrame(0, 10), [])
-  assert.deepEqual(scannerFrame(-1, 0), [])
-  assert.deepEqual(scannerFrame(1, 0), [6])
-  assert.deepEqual(scannerFrame(1, 1), [5])
-  assert.deepEqual(scannerFrame(1, 40), [6])
-})
-
-test("English status scanner uses exactly five cells and completes a bidirectional cycle", () => {
-  const width = statusLayout(sessionState({ running: true }), 120).gap
-  assert.equal(width, 5)
-  assert.deepEqual(scannerFrame(width, 0), [6, 0, 0, 0, 0])
-  assert.deepEqual(scannerFrame(width, 1), [5, 6, 0, 0, 0])
-  assert.deepEqual(scannerFrame(width, 4), [2, 3, 4, 5, 6])
-  assert.deepEqual(scannerFrame(width, 14), [0, 0, 0, 6, 5])
-  assert.deepEqual(scannerFrame(width, 17), [6, 5, 4, 3, 2])
-  assert.deepEqual(scannerFrame(width, 48), scannerFrame(width, 0))
-})
-
-test("every animation frame follows working and leaves the separator fixed", () => {
-  const layout = statusLayout(sessionState({ running: true }), 120)
-  for (let frame = 0; frame < 48; frame++) {
-    const dots = scannerFrame(layout.gap, frame).map((level) => level ? "·" : " ").join("")
-    const segment = ` Kei: ${layout.text} ${dots} │`
+test("working uses a one-cell spinner in the same icon column for every frame", () => {
+  const state = sessionState({ running: true })
+  const layout = statusLayout(state, 120)
+  assert.equal(new Set(tabSpinnerFrames).size, 10)
+  for (let frame = 0; frame < tabSpinnerFrames.length; frame++) {
+    const icon = tabIcon(state, frame)
+    const segment = ` Kei: ${layout.text} ${icon} │`
     assert.ok(segment.startsWith(" Kei: working "))
-    assert.equal(segment.length, 21)
-    assert.equal(segment.indexOf("│"), 20)
-    assert.equal(segment[19], " ")
+    assert.equal(icon.length, 1)
+    assert.equal(segment[14], icon)
+    assert.equal(segment.length, 17)
+    assert.equal(segment.indexOf("│"), 16)
+    assert.equal(segment[15], " ")
   }
+  assert.equal(tabIcon(state, 0, false), "⋯")
 })
 
 test("displayed tab numbers and keyboard shortcuts both start at zero", () => {
