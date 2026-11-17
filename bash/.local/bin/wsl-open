@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if [[ $# != 1 ]]; then
+  printf 'Usage: wsl-open PATH\n' >&2
+  exit 2
+fi
+
+if command -v wslview >/dev/null 2>&1; then
+  exec wslview "$1"
+fi
+
+if command -v wslpath >/dev/null 2>&1 && command -v explorer.exe >/dev/null 2>&1; then
+  path="$1"
+  case "$path" in
+    /*) ;;
+    *) path="$PWD/$path" ;;
+  esac
+  path="$(wslpath -w "$path")" || exit
+  exec explorer.exe "$path"
+fi
+
+printf 'wsl-open: install wslview or enable wslpath and Windows interop.\n' >&2
+exit 127

@@ -47,3 +47,6 @@
 # Other application runtime state
 **/.tmux/resurrect/
 **/.cache/
+
+# Locally prepared release assets; publish separately, never commit binaries.
+/dist/flyline/

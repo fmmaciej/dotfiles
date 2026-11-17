@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# Manually maintained command list for the planned WSL/Void configuration.
+# Manually maintained command list for the WSL/Void configuration.
 programs=(
   bash git stow
   starship atuin
   fd sd sk rg bat
+  zoxide yazi
   tmux vim opencode
 )
 

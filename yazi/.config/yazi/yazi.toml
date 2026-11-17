@@ -1,35 +1,22 @@
-# ~/.config/yazi.toml
-
+# Yazi 26.9 configuration for a terminal-only WSL environment.
 [mgr]
 show_hidden = true
 sort_by = "natural"
 sort_dir_first = true
-case_sensitive = false
-
-# Opcjonalnie: wielkość podglądu
-# [preview]
-# max_width = 800
-# max_height = 600
+sort_sensitive = false
 
 [opener]
-# Default
+edit = [
+  { run = '${EDITOR:-vim} %s', block = true, for = "unix" },
+]
 open = [
-  # macOS
-  { run = 'open "$0"', for = "macos", orphan = true },
+  { run = 'wsl-open %s1', orphan = true, for = "linux" },
 ]
 
-preview-vid = [
-  { run = 'open -a VLC "$0"',  for = "macos", orphan = true },
+[open]
+rules = [
+  { mime = "text/*", use = "edit" },
+  { mime = "application/json", use = "edit" },
+  { mime = "application/javascript", use = "edit" },
+  { url = "*", use = ["open", "edit"] },
 ]
-
-preview-pic = [
-  { run = 'open -a Preview "$0"',  for = "macos", orphan = true },
-]
-
-[[open.rules]]
-mime = "image/*"
-use  = "preview-pic"
-
-[[open.rules]]
-mime = "video/*"
-use  = "preview-vid"
