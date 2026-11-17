@@ -173,16 +173,17 @@ cp "$FIXTURE_ARCHIVE" "$output"
 
 
 class LoaderTests(Fixture):
-    def simulate(self, extra=None, before=""):
+    def simulate(self, extra=None, before="", installed=True):
         bash = shutil.which("bash")
         version = subprocess.check_output([bash, "--noprofile", "--norc", "-c", 'printf "%s.%s" "${BASH_VERSINFO[0]}" "${BASH_VERSINFO[1]}"'], text=True)
         if version != "5.3":
             self.skipTest("Loader mock tests require Bash 5.3 (the target version)")
         prefix = self.home / ".local/share/dotfiles/flyline"
         library = prefix / ("a" * 64) / "libflyline.so"
-        library.parent.mkdir(parents=True)
-        (prefix / "current").symlink_to(library.parent, target_is_directory=True)
-        library.write_text("Synthetic fixture, never loaded")
+        if installed:
+            library.parent.mkdir(parents=True)
+            (prefix / "current").symlink_to(library.parent, target_is_directory=True)
+            library.write_text("Synthetic fixture, never loaded")
         rc = self.home / "mock-rc"
         rc.write_text('''
 # These host markers and builtin calls are mocked, not native Linux evidence.
@@ -225,14 +226,30 @@ declare -p FLYLINE_LOAD_DIR FLYLINE_VERSION > "$HOME/markers" 2>/dev/null || :
         log = self.home / "flyline-log"
         return (self.home / "result").read_text().strip(), log.read_text() if log.exists() else ""
 
-    def test_default_keeps_readline_even_with_an_installed_library(self):
+    def test_default_loads_vim_editor_once(self):
         state, log = self.simulate()
+        self.assertEqual(state, "flyline bash active")
+        self.assertEqual(log.splitlines().count("load"), 1)
+        self.assertIn("key --vim-mode true", log)
+
+    def test_explicit_disable_keeps_readline_even_with_an_installed_library(self):
+        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "0"})
         self.assertEqual(state, "readline bash disabled")
         self.assertEqual(log, "")
 
-    def test_enabled_editor_uses_vim_bash_history_and_skim_without_reload(self):
+    def test_missing_library_keeps_readline(self):
+        state, log = self.simulate(installed=False)
+        self.assertEqual(state, "readline bash skipped")
+        self.assertEqual(log, "")
+
+    def test_default_skips_unsupported_host(self):
+        state, log = self.simulate(before="OSTYPE=darwin\n")
+        self.assertEqual(state, "readline bash skipped")
+        self.assertEqual(log, "")
+
+    def test_default_editor_uses_vim_bash_history_and_skim_without_reload(self):
         self.command("sk", "exit 0")
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1"})
+        state, log = self.simulate()
         self.assertEqual(state, "flyline bash active")
         self.assertEqual(log.splitlines().count("load"), 1)
         self.assertIn("key --vim-mode true", log)
@@ -243,13 +260,13 @@ declare -p FLYLINE_LOAD_DIR FLYLINE_VERSION > "$HOME/markers" 2>/dev/null || :
 
     def test_atuin_history_owns_storage_and_insert_search_only(self):
         self.command("atuin", "printf '%s\\n' '__atuin_initialized=true' 'bash_preexec_imported=defined' 'atuin-bind() { :; }' '__atuin_history() { :; }'")
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1"})
+        state, log = self.simulate()
         self.assertEqual(state, "flyline atuin active")
         self.assertIn("vimInsertMode=runBashCommand(_dotfiles_flyline_history_vi)", log)
         self.assertNotIn("vimNormalMode=", log)
 
     def test_failed_load_restores_readline_and_inherited_environment(self):
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1", "FAIL_LOAD": "1", "FLYLINE_VERSION": "inherited", "FLYLINE_LOAD_DIR": "previous"})
+        state, log = self.simulate({"FAIL_LOAD": "1", "FLYLINE_VERSION": "inherited", "FLYLINE_LOAD_DIR": "previous"})
         self.assertEqual(state, "readline bash failed")
         markers = (self.home / "markers").read_text()
         self.assertIn('declare -x FLYLINE_VERSION="inherited"', markers)
@@ -258,12 +275,12 @@ declare -p FLYLINE_LOAD_DIR FLYLINE_VERSION > "$HOME/markers" 2>/dev/null || :
 
     def test_atuin_nobind_preserves_the_users_search_bindings(self):
         self.command("atuin", "printf '%s\\n' '__atuin_initialized=true' 'bash_preexec_imported=defined' 'atuin-bind() { :; }' '__atuin_history() { :; }'")
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1", "ATUIN_NOBIND": "1"})
+        state, log = self.simulate({"ATUIN_NOBIND": "1"})
         self.assertEqual(state, "flyline atuin active")
         self.assertNotIn("bind Ctrl+r", log)
 
     def test_failed_settings_unload_before_readline_fallback(self):
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1", "FAIL_SETTINGS": "1"})
+        state, log = self.simulate({"FAIL_SETTINGS": "1"})
         self.assertEqual(state, "readline bash failed")
         self.assertIn("unload", log)
         self.assertEqual((self.home / "markers").read_text(), "")
@@ -274,7 +291,7 @@ declare -p FLYLINE_LOAD_DIR FLYLINE_VERSION > "$HOME/markers" 2>/dev/null || :
         self.assertIn("unload", log)
 
     def test_external_editor_is_not_taken_over(self):
-        state, log = self.simulate({"DOTFILES_ENABLE_FLYLINE": "1"}, before="flyline() { :; }\n")
+        state, log = self.simulate(before="flyline() { :; }\n")
         self.assertEqual(state, "readline bash skipped")
         self.assertEqual(log, "")
 

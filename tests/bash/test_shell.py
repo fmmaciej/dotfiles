@@ -57,7 +57,7 @@ class ShellTests(Fixture):
         self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_flyline_never_loads_without_a_terminal(self):
-        r = self.bash('[[ $_DOTFILES_FLYLINE_STATE == skipped && $_DOTFILES_LINE_EDITOR == readline ]]', extra={"DOTFILES_ENABLE_FLYLINE": "1"})
+        r = self.bash('[[ $_DOTFILES_FLYLINE_STATE == skipped && $_DOTFILES_LINE_EDITOR == readline ]]')
         self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_inherited_init_marker_does_not_disable_a_new_process(self):

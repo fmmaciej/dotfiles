@@ -68,4 +68,4 @@ else
 fi
 ln -s -- "$release" "$work/current"
 mv -Tf -- "$work/current" "$prefix/current"
-printf 'Installed %s\nNo startup files changed. Test in a disposable WSL terminal:\n  DOTFILES_ENABLE_FLYLINE=1 bash\n' "$release/libflyline.so"
+printf 'Installed %s\nFlyline loads automatically in new interactive Bash sessions using the dotfiles configuration.\n' "$release/libflyline.so"

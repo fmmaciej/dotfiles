@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Optional, experimental editor. Called once, after history and prompt setup.
+# Default Vim-enabled editor. Called once, after history and prompt setup.
 
 _dotfiles_flyline_history_vi() { __atuin_history --keymap-mode=vim-insert; }
 _dotfiles_flyline_history_emacs() { __atuin_history --keymap-mode=emacs; }
@@ -31,7 +31,7 @@ _dotfiles_flyline_settings() {
 
 _dotfiles_flyline_initialize() {
   _DOTFILES_FLYLINE_STATE=disabled
-  [[ ${DOTFILES_ENABLE_FLYLINE:-0} == 1 ]] || return 0
+  [[ ${DOTFILES_ENABLE_FLYLINE:-1} == 1 ]] || return 0
   _DOTFILES_FLYLINE_STATE=skipped
   [[ -t 0 && -t 1 ]] || return 0
   case ${TERM:-} in ''|dumb|unknown) return 0 ;; esac
