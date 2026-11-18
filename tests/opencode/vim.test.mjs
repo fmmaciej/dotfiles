@@ -27,8 +27,30 @@ test("character and line visual modes share VISUAL, not VISUAL LINE", () => {
   assert.equal(vimField("visual-line"), vimField("visual"))
 })
 
-test("disabled Vim keeps the same field width without retaining a stale mode label", () => {
-  for (const mode of Object.keys(vimLabels)) assert.equal(vimField(mode, false), "    OFF │")
+test("the real pending leader token temporarily replaces every mode without resizing", () => {
+  const pending = [{ key: "ctrl+b", token: "leader" }]
+  for (const mode of Object.keys(vimLabels)) {
+    assert.equal(vimField(mode, pending), " LEADER │")
+    assert.equal(vimField(mode, pending).length, vimPrefixWidth)
+  }
+  assert.deepEqual(pending, [{ key: "ctrl+b", token: "leader" }])
+})
+
+test("clearing the leader displays the current mode rather than a cached earlier mode", () => {
+  const pending = [{ token: "leader" }]
+  assert.equal(vimField("insert", pending), " LEADER │")
+  assert.equal(vimField("normal", pending), " LEADER │")
+  assert.equal(vimField("normal", []), " NORMAL │")
+  assert.equal(vimField("insert", []), " INSERT │")
+  assert.equal(vimField("visual", []), " VISUAL │")
+  assert.equal(vimField("replace", []), "REPLACE │")
+})
+
+test("ordinary pending keys do not show LEADER and the field has no OFF label", () => {
+  assert.equal(vimField("normal", [{ token: "other" }]), " NORMAL │")
+  assert.equal(vimField("insert", [{ key: "leader" }]), " INSERT │")
+  assert.equal(vimLabels.off, undefined)
+  assert.ok(!Object.values(vimLabels).includes("OFF"))
   assert.equal(vimField("unknown"), "      ? │")
 })
 
@@ -44,12 +66,16 @@ test("Vim modes, all six Kei states, and spinner frames never move either separa
         const layout = statusLayout(state, columns - vimPrefixWidth)
         assert.equal(layout.width, keiWidth)
         for (let frame = 0; frame < tabSpinnerFrames.length; frame++) {
-          const kei = ` Kei: ${layout.text} ${tabIcon(state, frame)} │`
-          const row = vimField(mode) + kei + " 0: session"
+          const kei = ` ${layout.text} ${tabIcon(state, frame)} │`
+          const row = vimField(mode) + kei + " 0 oc"
           assert.equal(kei.length, keiWidth)
           assert.equal(row.indexOf("│"), 8)
           assert.equal(row.indexOf("│", 9), vimPrefixWidth + keiWidth - 1)
-          assert.equal(row.indexOf("0: "), vimPrefixWidth + keiWidth + 1)
+          assert.equal(row.indexOf("0 oc"), vimPrefixWidth + keiWidth + 1)
+          const leaderRow = vimField(mode, [{ token: "leader" }]) + kei + " 0 oc"
+          assert.equal(leaderRow.length, row.length)
+          assert.equal(leaderRow.indexOf("│", 9), row.indexOf("│", 9))
+          assert.equal(leaderRow.indexOf("0 oc"), row.indexOf("0 oc"))
         }
       }
     }
@@ -76,7 +102,7 @@ test("a 32-column bar still budgets enough room for the active tab number and ic
   const kei = statusLayout(sessionState({}), columns - vimPrefixWidth)
   const budget = columns - vimPrefixWidth - kei.width
   const [tab] = visibleTabs([{ sessionID: "a", title: "A long session title" }], "a", budget)
-  assert.ok(tab.label.startsWith("0: "))
+  assert.ok(tab.label.startsWith("0 "))
   assert.ok(tab.label.length + 5 <= tab.width)
   assert.ok(vimPrefixWidth + kei.width + tab.width <= columns)
 })

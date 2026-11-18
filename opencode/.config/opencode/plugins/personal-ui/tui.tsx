@@ -130,6 +130,9 @@ export default Plugin.define({
     // Base mode only: these shortcuts must not steal input from dialogs or panels.
     context.keymap.layer(() => ({
       priority: 200,
+      // Keep the configured native rename shortcut ahead of Vim's Ctrl+R,
+      // without owning or replacing the host's rename command.
+      bindings: ["session.rename"],
       commands: [
         { id: "kei.tabs.close", title: "Kei: close tab", bind: "<leader>x", palette: true,
           run: () => close().catch(reportError) },
@@ -204,12 +207,11 @@ export default Plugin.define({
           backgroundColor={context.theme.background.raised.base}
         >
           <box width={vimPrefixWidth} flexShrink={0} overflow="hidden">
-            <text fg={context.theme.text.base} wrapMode="none">{vimField(vim.mode(), vim.enabled())}</text>
+            <text fg={context.theme.text.base} wrapMode="none">{vimField(vim.mode(), context.keymap.pending())}</text>
           </box>
           <box width={layout().width} flexShrink={0} flexDirection="row" overflow="hidden">
-            <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}> Kei: </text>
             <text fg={context.theme.text.base} wrapMode="none" flexShrink={0}>
-              {`${layout().text} ${tabIcon(status(), tabFrame(), animations)} │`}
+              {` ${layout().text} ${tabIcon(status(), tabFrame(), animations)} │`}
             </text>
           </box>
           <box flexDirection="row" flexGrow={1} minWidth={0} overflow="hidden">
@@ -220,7 +222,7 @@ export default Plugin.define({
                 onMouseUp={() => navigate(tab.sessionID)}
               >
                 <text fg={tab.sessionID === active() ? context.theme.text.base : context.theme.text.muted}
-                  wrapMode="none" truncate flexGrow={1} flexShrink={1} minWidth={0}> {tab.label}</text>
+                  wrapMode="none" flexGrow={1} flexShrink={1} minWidth={0}> {tab.label}</text>
                 <text fg={tab.sessionID === active() ? context.theme.text.base : context.theme.text.muted}
                   wrapMode="none" flexShrink={0}>
                   {` ${tabIcon(tab.activity, tabFrame(), animations)} │`}

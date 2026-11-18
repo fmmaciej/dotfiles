@@ -15,8 +15,8 @@ the plugin. Unrelated plugins should remain in the list when editing it.
 The plugin keeps its historical package name `kei-terminal-ui`, TUI ID
 `kei.terminal-ui`, and per-directory `tabs-<hash>` storage keys. This avoids an
 unnecessary identity change. Session data and saved tab state stay in OpenCode's
-runtime storage, never in this repository. The visible `Kei:` label and existing
-layout are retained; this migration is not a UI redesign.
+runtime storage, never in this repository. The historical identity is retained
+even though the compact bottom bar no longer shows a `Kei` label.
 
 The plugin's `options.animations` controls its status and tab spinners. Set it
 to `false` for static activity indicators. Native UI motion is separately
@@ -43,7 +43,8 @@ separate npm Vim entry and no `preservePromptFooter` workaround.
 The Vim toggle persists in the personal UI's storage namespace, including
 across UI reloads. The old standalone plugin's saved flag is left untouched;
 on first use here, `options.vim.enabled` supplies the initial value. Use `/vim`
-to switch editing off or on; `OFF` keeps the same field width.
+to switch editing off or on. The bar has no `OFF` label: when Vim is disabled,
+the engine's current editing mode is `INSERT`, and that is what the field shows.
 
 Do not add the standalone npm plugin alongside this integration. To roll back
 to that version, restore the previous `cli.json`, `tui.tsx`, and `state.mjs`
@@ -61,27 +62,57 @@ The bottom bar contains a Vim field, the six activity states, and compact
 numbered tabs:
 
 ```text
- INSERT │ Kei: ready   ✓ │ 0: …
- NORMAL │ Kei: working ⠋ │ 0: …
- VISUAL │ Kei: stopped – │ 0: …
-REPLACE │ Kei: approve ! │ 0: …
+ INSERT │ READY   ✓ │ 0 oc ✓ │
+ LEADER │ READY   ✓ │ 0 oc ✓ │
+ NORMAL │ WORKING ⠋ │ 0 audyt ⠋ │
+ VISUAL │ STOPPED – │ 0 projekt – │
+REPLACE │ APPROVE ! │ 0 projekt ! │
 ```
 
 The Vim label occupies seven cells, right-aligned, followed by exactly one
 space and the separator. Character/line selections both display `VISUAL`;
-`COPY` and `OFF` also fit without resizing. Pending commands/search text never
-expand this mode field. The Kei segment uses a 17-cell budget including its
-right separator (18 cells counting both separators). Status labels are padded
+`COPY` and `LEADER` also fit without resizing. While OC's public keymap reports
+a pending `leader` token, `LEADER` temporarily replaces the mode label. Completing
+the shortcut, cancellation, or OC's own timeout reveals the current Vim mode
+again, not a cached earlier mode or `OFF`. This only reads reactive keymap state;
+it adds no keyboard handler or timer and does not alter the cursor or selection.
+Other pending commands/search text never expand this mode field.
+The status segment uses a 12-cell budget including its
+right separator (13 cells counting both separators), without a `Kei` prefix.
+All six labels are uppercase: `READY`, `WORKING`, `APPROVE`, `REPLY`, `ERROR`,
+and `STOPPED`. Status labels are padded
 to seven cells before a one-cell icon, so every icon occupies the same column
-as `approve !` and `stopped –`. `working` cycles through the same ten Braille
+as `APPROVE !` and `STOPPED –`. `WORKING` cycles through the same ten Braille
 spinner frames as running tabs, using one 100 ms timer; disabling animations
-shows a static `⋯`. The multi-cell scanner is removed. Neither mode/state transitions nor animation
-frames move the separators or the start of the tabs. Resizing can reduce the
-Kei budget and truncate tab titles; the nine-cell Vim prefix stays fixed.
+shows a static `⋯`. The multi-cell scanner is removed. Neither mode/state
+transitions nor animation frames move the separators or the start of the tabs.
+Resizing can reduce the status budget and clip tab names; the nine-cell Vim
+prefix stays fixed. Structural colons are omitted from numbered cards.
 
 Closing a tab does not delete its session. Restored tabs synchronize metadata
 and pending questions/permissions, including child sessions, without calling
 a model. Tabs are stored separately for each launch directory.
+
+### Tab names
+
+The native session title is the only source of truth. The sidebar header keeps
+the full title; the bottom bar always displays its first whitespace-delimited
+word, whether generated automatically or entered manually. For example,
+`audyt konfiguracji` becomes `audyt`, and a later rename to `projekt strony`
+becomes `projekt`. `oc` is only a fallback while the title is missing or blank.
+There is no ten-character limit or automatically added ellipsis. An unusually
+long first word is clipped, without dots, only when the active card cannot fit
+the available terminal width.
+
+**Ctrl+R**, **Ctrl+B then comma**, and **/rename** use OpenCode's native rename
+command and full-title dialog again. The plugin only gives the configured
+rename shortcut priority over Vim's Ctrl+R; it does not replace the command or
+write titles itself. Changes from other clients or the native session list
+also update the bar through the same reactive session data.
+
+The former separate `tab-titles-v1` name store is no longer read or written.
+Any old entries are left inert, not deleted or migrated. No existing sessions
+are renamed as part of this change.
 
 The sidebar shows the selected model and variant, the agent recorded in the
 session, the last reported context sample, total usage, and OC-reported cost.
@@ -183,3 +214,39 @@ typecheck. Isolated PTY runs at 160×42 (animated) and 72×18 (static) each pass
 fixed icon/separator/tab columns, and unchanged Vim behavior. The animated run
 observed all ten spinner glyphs in one cell; the static run observed only `⋯`.
 No model requests or real private sessions were used.
+
+### Compact names verified on 2026-11-17
+
+The separate-name policy below was superseded by the single-title policy on
+2026-11-18; this entry records the earlier verification only.
+
+33 JS regression tests and the strict UI typecheck passed. Two isolated real-PTY
+runs (160×42 animated and 72×18 static) each passed 57 checks, including default
+`oc`, ignoring automatic server title changes, manual rename by Ctrl+R and
+inline command, first-word display without a ten-character cap, blank/cancel
+handling, Ctrl+B comma, persistence through UI reload, geometry, and Vim editing.
+Three additional checks confirmed the saved name and full rename-dialog value
+survive closing the test TUI and starting a fresh one with the same storage.
+Only synthetic sessions were renamed; prompt submission remained stubbed and
+no model requests were made.
+
+### Single session title verified on 2026-11-18
+
+34 JS regression tests and the strict UI typecheck passed. Two isolated real-PTY
+runs (160×42 animated and 72×18 static) each passed 60 checks. These covered
+missing-title `oc`, automatic and manual title updates, first-word-only labels,
+the full sidebar title, native rename dialogs, inline rename, Ctrl+R in normal
+and insert modes, Ctrl+B comma, UI reload, fixed geometry, and Vim editing.
+The fixture seeded obsolete separate aliases to prove that they are ignored.
+Only synthetic sessions were used; prompt submission stayed stubbed and no
+model requests were made.
+
+The uppercase-status follow-up also passed 34 JS tests, the strict typecheck,
+and both 60-check PTY runs. All six statuses and every spinner frame retained
+fixed icon/separator columns after removing the `Kei` prefix.
+
+The leader-indicator follow-up passed 36 JS tests, the strict typecheck, and
+two 90-check PTY runs (160×42 animated and 72×18 static). These verified leader
+completion, Escape cancellation, native timeouts in insert/normal/visual/replace,
+preserved cursors and selections, Vim toggling/reload, no `OFF` label, and fixed
+bar geometry. All sessions and prompt inputs were synthetic; no model was called.

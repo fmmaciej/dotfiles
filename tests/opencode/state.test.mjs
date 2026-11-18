@@ -74,33 +74,34 @@ test("permission and question waiting take precedence over running and past erro
   assert.equal(sessionState({ running: true, forms: 1 }).kind, "attention")
   assert.equal(sessionState({ running: true, outcome: "failed" }).kind, "running")
   assert.equal(sessionState({ running: false, outcome: "failed" }).kind, "error")
-  assert.equal(sessionState({ running: false, outcome: "interrupted" }).label, "stopped")
+  assert.equal(sessionState({ running: false, outcome: "interrupted" }).label, "STOPPED")
   assert.equal(sessionState({ outcome: "interrupted" }).label.length, sessionState({ running: true }).label.length)
   assert.equal(sessionState({ outcome: "interrupted" }).label.length, sessionState({ permissions: 1 }).label.length)
 })
 
-test("all six lowercase statuses precede their icon and keep the same separator", () => {
+test("all six uppercase statuses omit Kei and keep the same icon and separator columns", () => {
   const states = [
     sessionState({}), sessionState({ running: true }), sessionState({ permissions: 1 }),
     sessionState({ forms: 1 }), sessionState({ outcome: "failed" }), sessionState({ outcome: "interrupted" }),
   ]
-  assert.deepEqual(states.map((state) => state.label), ["ready", "working", "approve", "reply", "error", "stopped"])
+  assert.deepEqual(states.map((state) => state.label), ["READY", "WORKING", "APPROVE", "REPLY", "ERROR", "STOPPED"])
   for (const state of states) {
     const layout = statusLayout(state, 120)
-    const segment = ` Kei: ${layout.text} ${tabIcon(state)} │`
-    assert.equal(layout.width, 17)
-    assert.equal(segment.length, 17)
-    assert.equal(segment.indexOf("│"), 16)
-    assert.equal(segment.indexOf(state.label), 6)
-    assert.equal(segment[14], tabIcon(state))
+    const segment = ` ${layout.text} ${tabIcon(state)} │`
+    assert.equal(layout.width, 12)
+    assert.equal(segment.length, 12)
+    assert.equal(segment.indexOf("│"), 11)
+    assert.equal(segment.indexOf(state.label), 1)
+    assert.equal(segment[9], tabIcon(state))
+    assert.ok(!segment.includes("Kei"))
     assert.equal(layout.labelWidth, 7)
     assert.equal(layout.text.trim(), state.label)
   }
   assert.equal(statusLabelWidth, 7)
-  assert.equal(statusSegmentWidth, 17)
-  assert.equal(statusLayout(states[2], 120).text, "approve")
-  assert.equal(statusLayout(states[3], 120).text, "reply  ")
-  assert.equal(statusLayout(states[5], 120).text, "stopped")
+  assert.equal(statusSegmentWidth, 12)
+  assert.equal(statusLayout(states[2], 120).text, "APPROVE")
+  assert.equal(statusLayout(states[3], 120).text, "REPLY  ")
+  assert.equal(statusLayout(states[5], 120).text, "STOPPED")
 })
 
 test("narrow status layouts stay bounded and keep space for a tab", () => {
@@ -112,9 +113,9 @@ test("narrow status layouts stay bounded and keep space for a tab", () => {
     assert.equal(idle.width, waiting.width)
     assert.ok(waiting.width <= Math.max(0, width - 8))
     assert.ok(waiting.labelWidth >= 0)
-    assert.equal(waiting.text.length, Math.max(0, waiting.width - 10))
+    assert.equal(waiting.text.length, Math.max(0, waiting.width - 5))
   }
-  assert.ok(statusLayout(sessionState({ outcome: "interrupted" }), 20).text.endsWith("…"))
+  assert.ok(statusLayout(sessionState({ outcome: "interrupted" }), 18).text.endsWith("…"))
 })
 
 test("working uses a one-cell spinner in the same icon column for every frame", () => {
@@ -123,13 +124,13 @@ test("working uses a one-cell spinner in the same icon column for every frame", 
   assert.equal(new Set(tabSpinnerFrames).size, 10)
   for (let frame = 0; frame < tabSpinnerFrames.length; frame++) {
     const icon = tabIcon(state, frame)
-    const segment = ` Kei: ${layout.text} ${icon} │`
-    assert.ok(segment.startsWith(" Kei: working "))
+    const segment = ` ${layout.text} ${icon} │`
+    assert.ok(segment.startsWith(" WORKING "))
     assert.equal(icon.length, 1)
-    assert.equal(segment[14], icon)
-    assert.equal(segment.length, 17)
-    assert.equal(segment.indexOf("│"), 16)
-    assert.equal(segment[15], " ")
+    assert.equal(segment[9], icon)
+    assert.equal(segment.length, 12)
+    assert.equal(segment.indexOf("│"), 11)
+    assert.equal(segment[10], " ")
   }
   assert.equal(tabIcon(state, 0, false), "⋯")
 })
@@ -137,8 +138,8 @@ test("working uses a one-cell spinner in the same icon column for every frame", 
 test("displayed tab numbers and keyboard shortcuts both start at zero", () => {
   const tabs = Array.from({ length: 10 }, (_, index) => ({ sessionID: `${index}`, title: `Sesja ${index}` }))
   const items = visibleTabs(tabs, "0", 200)
-  assert.equal(items[0].label, "0: Sesja 0")
-  assert.equal(items[9].label, "9: Sesja 9")
+  assert.equal(items[0].label, "0 Sesja")
+  assert.equal(items[9].label, "9 Sesja")
   assert.equal(tabBindings.length, 10)
   for (const binding of tabBindings) {
     assert.equal(binding.bind, `<leader>${binding.index}`)
@@ -148,20 +149,34 @@ test("displayed tab numbers and keyboard shortcuts both start at zero", () => {
   }
 })
 
-test("untitled tabs use an English fallback without translating existing titles", () => {
+test("missing titles use oc and all current session titles use their first word", () => {
   const tabs = [{ sessionID: "a" }, { sessionID: "b", title: "Moja rozmowa" }]
   const items = visibleTabs(tabs, "a", 100)
-  assert.equal(items[0].label, "0: Session")
-  assert.equal(items[1].label, "1: Moja rozmo...")
+  assert.equal(items[0].label, "0 oc")
+  assert.equal(items[1].label, "1 Moja")
   assert.equal(tabs[1].title, "Moja rozmowa")
+})
+
+test("automatic and manual title updates both replace the displayed first word", () => {
+  const tab = { sessionID: "a" }
+  assert.equal(visibleTabs([tab], "a", 100)[0].label, "0 oc")
+  tab.title = "Generated automatic description"
+  assert.equal(visibleTabs([tab], "a", 100)[0].label, "0 Generated")
+  tab.title = "audyt konfiguracji OpenCode"
+  assert.equal(visibleTabs([tab], "a", 100)[0].label, "0 audyt")
+  tab.title = "Another generated description"
+  assert.equal(visibleTabs([tab], "a", 100)[0].label, "0 Another")
+  tab.title = " \t "
+  assert.equal(visibleTabs([tab], "a", 100)[0].label, "0 oc")
 })
 
 test("narrow bars keep the active tab and its actual number visible", () => {
   const tabs = Array.from({ length: 20 }, (_, i) => ({ sessionID: `${i}`, title: "Długi tytuł sesji" }))
   const items = visibleTabs(tabs, "18", 30)
-  assert.equal(items.length, 1)
-  assert.equal(items[0].number, 18)
-  assert.equal(items[0].sessionID, "18")
+  assert.ok(items.length >= 1)
+  const active = items.find((tab) => tab.sessionID === "18")
+  assert.equal(active.number, 18)
+  assert.equal(active.sessionID, "18")
   assert.ok(!items[0].label.includes("\n"))
   assert.deepEqual(visibleTabs([], undefined, 0), [])
 })
@@ -190,12 +205,13 @@ test("inactive tabs retain their own activity and are not assigned the active st
   ]
   const items = visibleTabs(tabs, "idle", 90)
   assert.deepEqual(items.map((tab) => tabIcon(tab.activity, 2)), ["✓", "⠹", "!"])
-  assert.deepEqual(items.map((tab) => tab.width), [12, 12, 14])
+  assert.deepEqual(items.map((tab) => tab.width), [11, 11, 13])
 })
 
 test("truncated tab titles reserve space for an icon and a stationary separator", () => {
-  const [tab] = visibleTabs([{ sessionID: "a", title: "A very long session title that must be truncated" }], "a", 17)
-  assert.ok(tab.label.endsWith("..."))
+  const [tab] = visibleTabs([{ sessionID: "a", title: "averylongsessiontitle description" }], "a", 17)
+  assert.equal(tab.label, "0 averylongs")
+  assert.ok(!tab.label.includes("..."))
   assert.equal(tab.width, 17)
   const states = [
     sessionState({}), sessionState({ running: true }), sessionState({ permissions: 1 }),
@@ -212,21 +228,26 @@ test("truncated tab titles reserve space for an icon and a stationary separator"
   assert.equal(visibleTabs([{ sessionID: "a", title: "Title" }], "a", 1)[0].width, 4)
 })
 
-test("tab titles keep ten characters before literal dots and preserve shorter names", () => {
+test("tab titles keep the first word without a ten-character cap or added dots", () => {
   assert.equal(tabTitle("1234567890"), "1234567890")
-  assert.equal(tabTitle("1234567890extra"), "1234567890...")
+  assert.equal(tabTitle("1234567890extra description"), "1234567890extra")
   assert.equal(tabTitle("Plan"), "Plan")
-  assert.equal(tabTitle(""), "Session")
-  assert.equal(tabTitle("😀".repeat(11)), "😀".repeat(10) + "...")
-  assert.equal(tabTitle("e\u0301".repeat(11)), "e\u0301".repeat(10) + "...")
+  assert.equal(tabTitle(""), "oc")
+  assert.equal(tabTitle(undefined), "oc")
+  assert.equal(tabTitle("  audyt\t konfiguracji\nOC  "), "audyt")
+  assert.equal(tabTitle("audyt\u00a0konfiguracji"), "audyt")
+  assert.equal(tabTitle("audyt konfiguracji", 3), "aud")
+  assert.equal(tabTitle("audyt", 0), "")
+  assert.equal(tabTitle("😀".repeat(11)), "😀".repeat(11))
+  assert.equal(tabTitle("e\u0301".repeat(11), 2), "e\u0301".repeat(2))
 })
 
 test("compact cards leave exactly one space between the displayed name and its icon", () => {
   const items = visibleTabs([
     { sessionID: "a", title: "Plan" }, { sessionID: "b", title: "1234567890extra" },
   ], "a", 136)
-  assert.deepEqual(items.map((tab) => tab.width), [12, 21])
-  assert.equal(items[1].label, "1: 1234567890...")
+  assert.deepEqual(items.map((tab) => tab.width), [11, 22])
+  assert.equal(items[1].label, "1 1234567890extra")
   for (const tab of items) {
     const row = ` ${tab.label} ✓ │`
     assert.equal(row.length, tab.width)
