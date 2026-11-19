@@ -1,17 +1,19 @@
-# --- dotfiles repo default ---
-# Hide every untracked file in $HOME by default.
-# Track new files explicitly with: dot add -f <path>
-*
+# This is a normal checkout, not a work tree covering all of $HOME.
+# New source files must be visible to Git; never restore the old blanket '*'.
 
-# --- śmieci systemowe ---
-.DS_Store
-.AppleDouble
-.LSOverride
-.Trashes
-.Spotlight-V100
-.fseventsd
+# Local settings and credentials stay outside the managed package contents.
+**/proxy.local.psd1
+**/env.local
+**/.env
+**/.env.*
+!**/.env.example
+**/.ssh/id_*
+**/.ssh/known_hosts
+**/.ssh/authorized_keys
+**/.ssh/config.local
+**/.gnupg/
 
-# --- prywatne historie / cache ---
+# Histories and application runtime state, including paths inside packages.
 .zsh_history
 .bash_history
 .python_history
@@ -19,72 +21,47 @@
 .lesshst
 .node_repl_history
 .irb_history
+**/.viminfo
+**/_viminfo
+**/.cache/
+**/.local/state/nvim/
+**/.local/share/nvim/
+**/.local/share/wezterm/
 
-# --- SSH / GPG (tylko szablony do repo) ---
-.ssh/id_*
-.ssh/known_hosts
-.ssh/authorized_keys
-.ssh/config.local
-.gnupg/**
-
-# --- edytory / IDE cache ---
-.vscode/extensions/
-.vscode-server/**
-.vscode-test/**
+# Editor dependencies and caches; keep the tracked vim-plug bootstrap.
+**/.vim/plugged/
+**/.vim/pack/
+**/.vim/swap/
+**/.vim/undo/
+**/.vim/backup/
+**/.vim/.netrwhist
+**/vimfiles/plugged/
+**/vimfiles/pack/
+**/vimfiles/swap/
+**/vimfiles/undo/
+**/vimfiles/backup/
+**/.psmux/plugins/
+**/.psmux/logs/
+**/.config/nvim/plugged/
+**/.config/nvim/pack/
+**/.vscode/extensions/
+**/.vscode-server/
+**/.vscode-test/
+**/__pycache__/
+*.py[cod]
 *~
 *.swp
 *.swo
 
-# --- Vim: nie wrzucaj vendorów i runtime-śmieci ---
-.vim/plugged/**
-.vim/pack/**/start/**
-.vim/pack/**/opt/**
-.vim/swap/**
-.vim/undo/**
-.vim/backup/**
-.vim/.netrwhist
-
-# --- Neovim ---
-.config/nvim/plugged/**
-.config/nvim/pack/**/start/**
-.config/nvim/pack/**/opt/**
-.local/state/nvim/**
-.local/share/nvim/**
-.cache/nvim/**
-
-# --- tmux (not used on Windows branch) ---
-.tmux.conf
-.tmux/**
-.config/wezterm/tmux-session.sh
-
-# --- Unix-only tools (not used on Windows branch) ---
-.config/zsh/**
-.zprofile
-.zshenv
-.zshrc
-.rtorrent.rc
-.urlview
-
-# --- WezTerm ---
-.local/share/wezterm/**
-
-# --- Dotfiles generated VS Code view ---
-.vscode-dotfiles/
-
-# --- Windows user profile noise ---
-AppData/**
+# OS metadata and the retired generated editor view.
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+.Spotlight-V100
+.fseventsd
 NTUSER.*
 ntuser.*
-*.lnk
 Thumbs.db
 desktop.ini
-
-# --- macOS Library (dużo danych, nie dotykać) ---
-Library/**
-!Library/Application Support/Code/User/settings.json
-!Library/Application Support/Code/User/keybindings.json
-
-# --- iCloud rozmaitości ---
-Library/Mobile Documents/**
-
-.config/powershell/proxy.local.psd1
+.vscode-dotfiles/

@@ -1,0 +1,7 @@
+# Keep text configuration consistent with .editorconfig and mac/wsl.
+* text=auto eol=lf
+# Shell scripts must remain usable by Bash after a Git for Windows checkout.
+*.sh text eol=lf
+# Keep new PowerShell helpers/tests predictable across worktrees.
+*.ps1 text eol=lf
+*.psd1 text eol=lf
