@@ -46,7 +46,7 @@ Keep deployment commands explicit: do not use `stow *`.
 
 Repository organization is shared with the WSL branch: application packages at
 the root, documentation in `docs/`, setup and diagnostic scripts in `scripts/`,
-and tests in `tests/<area>/`. See [branches and worktrees](docs/worktrees.md).
+and tests in `tests/<area>/`.
 
 ## Check tools
 
