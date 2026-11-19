@@ -1,7 +1,7 @@
 function Ensure-DotfilesCheckout {
     param([string] $Path, [string] $Revision)
     if (-not (Test-Path -LiteralPath $Path)) {
-        & git clone --branch windows https://github.com/fmmaciej/dotfiles.git $Path
+        & git clone --branch windows-next https://github.com/fmmaciej/dotfiles.git $Path
         if ($LASTEXITCODE -ne 0) { throw 'Could not clone dotfiles. Any partial checkout has been left untouched.' }
     }
     $TopLevel = & git -C $Path rev-parse --show-toplevel

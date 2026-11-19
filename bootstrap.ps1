@@ -29,7 +29,7 @@ try {
         # No Git is required to obtain the helper files. Pin the archive to one
         # commit so a branch update cannot mix helpers from different revisions.
         if (-not $Revision) {
-            $Commit = Invoke-RestMethod 'https://api.github.com/repos/fmmaciej/dotfiles/commits/windows'
+            $Commit = Invoke-RestMethod 'https://api.github.com/repos/fmmaciej/dotfiles/commits/windows-next'
             $Revision = $Commit.sha
         }
         if ($Revision -notmatch '^[0-9a-f]{40}$') { throw 'Expected a full Git commit SHA.' }
