@@ -78,7 +78,7 @@ try {
     Ensure-ScoopPackage git
     Ensure-ScoopPackage pwsh
     if ($PSVersionTable.PSVersion.Major -lt 7) {
-        $Pwsh = Join-Path (Get-ScoopRoot) 'apps/pwsh/current/pwsh.exe'
+        $Pwsh = Join-Path (Invoke-Scoop -Arguments @('prefix', 'pwsh')) 'pwsh.exe'
         $Parameters = @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $Source 'bootstrap.ps1'), '-RepositoryPath', $RepositoryPath)
         if ($Revision) { $Parameters += @('-Revision', $Revision) }
         & $Pwsh @Parameters
@@ -92,7 +92,7 @@ try {
     # Existing checkouts keep their own helpers and changes; no pull/reset/stash.
     . (Join-Path $Repository 'scripts/windows/tools.ps1')
     . (Join-Path $Repository 'scripts/windows/dotfiles.ps1')
-    $MsysRoot = Join-Path (Get-ScoopRoot) 'apps/msys2/current'
+    $MsysRoot = Invoke-Scoop -Arguments @('prefix', 'msys2')
     Assert-DotfilesHost
     Assert-NativeSymlinks
     Ensure-Stow -MsysRoot $MsysRoot

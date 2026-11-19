@@ -29,6 +29,7 @@ The bootstrap:
 - Installs WezTerm, psmux, Starship, Yazi and Vim.
 - Installs skim, fd, bat, eza, ripgrep, ffmpeg, 7zip, jq and poppler.
 - Installs MSYS2 and Stow.
+- Updates existing Scoop packages; already current packages are left as-is.
 - Clones `windows-next` into `$HOME\.dotfiles`.
 - Links configurations with Stow.
 - Installs Vim and psmux plugins.
@@ -55,7 +56,7 @@ pwsh -NoProfile -File "$HOME\.dotfiles\scripts\check-tools.ps1"
 ## Scripts
 
 - `bootstrap.ps1` - obtains helpers and coordinates setup in PowerShell 7.
-- `scripts/windows/tools.ps1` - installs applications with Scoop and Stow with MSYS2/pacman.
+- `scripts/windows/tools.ps1` - installs/updates applications with Scoop and installs Stow with MSYS2/pacman.
 - `scripts/windows/dotfiles.ps1` - creates/reuses the checkout, checks conflicts, links configs and installs plugins.
 - `scripts/check-tools.ps1` - checks native Windows commands.
 - `scripts/check-tools.sh` - checks Bash, Perl, Stow and cygpath inside MSYS2.

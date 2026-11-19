@@ -1,4 +1,4 @@
-# Small bootstrap helpers. No automatic application upgrades or global installs.
+# Small bootstrap helpers. Scoop installs missing packages and updates existing ones.
 function Get-ScoopRoot {
     if ($env:SCOOP) { return $env:SCOOP }
     $UserRoot = [Environment]::GetEnvironmentVariable('SCOOP', 'User')
@@ -34,9 +34,10 @@ function Invoke-Scoop {
 
 function Ensure-ScoopPackage {
     param([string] $Name)
-    $Manifest = Join-Path (Get-ScoopRoot) "apps/$Name/current/manifest.json"
-    if (-not (Test-Path -LiteralPath $Manifest)) { Invoke-Scoop -Arguments @('install', $Name) }
-    if (-not (Test-Path -LiteralPath $Manifest)) { throw "Scoop package is not installed: $Name" }
+    $global:LASTEXITCODE = 0
+    $null = & scoop prefix $Name 2>$null 6>$null
+    $Action = if ($LASTEXITCODE -eq 0) { 'update' } else { 'install' }
+    Invoke-Scoop -Arguments @($Action, $Name)
 }
 
 function Ensure-WindowsTools {

@@ -19,6 +19,8 @@ $OriginalThemeAccent = $env:THEME_ACCENT
 $OriginalPsmuxSession = $env:PSMUX_TARGET_SESSION
 $OriginalLocation = Get-Location
 $script:ScoopCalls = [Collections.Generic.List[string]]::new()
+$script:ScoopPaths = @{}
+$script:ScoopFailure = ''
 $script:GitCalls = [Collections.Generic.List[string]]::new()
 $global:DotfilesTestThemeOptions = @{}
 try {
@@ -29,21 +31,62 @@ try {
 
     function global:scoop {
         $script:ScoopCalls.Add($args -join ' ')
+        $global:LASTEXITCODE = 0
+        if (($args -join ' ') -eq $script:ScoopFailure) {
+            $global:LASTEXITCODE = 1
+            return
+        }
+        if ($args[0] -eq 'prefix') {
+            if ($script:ScoopPaths.ContainsKey($args[1])) { return $script:ScoopPaths[$args[1]] }
+            $global:LASTEXITCODE = 1
+            return
+        }
         if ($args[0] -eq 'install') {
-            $Directory = Join-Path $env:SCOOP "apps/$($args[1])/current"
+            $Directory = Join-Path $env:SCOOP "apps/$($args[1])/synthetic-version"
             New-Item -ItemType Directory -Path $Directory -Force | Out-Null
-            Set-Content -LiteralPath (Join-Path $Directory 'manifest.json') -Value '{}'
+            Set-Content -LiteralPath (Join-Path $Directory 'scoop-manifest.json') -Value '{}'
+            $script:ScoopPaths[$args[1]] = $Directory
+        } elseif ($args[0] -eq 'update') {
+            Assert-True ($script:ScoopPaths.ContainsKey($args[1])) 'Only installed packages should be updated'
         } elseif ($args[0] -eq 'bucket') {
             New-Item -ItemType Directory -Path (Join-Path $env:SCOOP 'buckets/extras') -Force | Out-Null
+        } else {
+            throw 'Unexpected Scoop command'
         }
-        $global:LASTEXITCODE = 0
     }
     Ensure-Scoop
     Ensure-WindowsTools
-    $CallCount = $script:ScoopCalls.Count
-    Assert-True ($CallCount -eq 18) 'Expected 17 package installs and one extras bucket addition'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'install *' }).Count -eq 17) 'Expected 17 missing packages to be installed'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'update *' }).Count -eq 0) 'New packages do not need another update'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -eq 'bucket add extras' }).Count -eq 1) 'Expected one extras bucket addition'
+    $script:ScoopCalls.Clear()
     Ensure-WindowsTools
-    Assert-True ($CallCount -eq $script:ScoopCalls.Count) 'Rerun should not reinstall or upgrade packages'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'update *' }).Count -eq 17) 'Rerun must ask Scoop to update all existing packages, including already current ones'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'install *' -or $_ -like 'bucket *' }).Count -eq 0) 'Rerun must not reinstall packages or re-add extras'
+
+    # Existing installations need neither a legacy manifest nor a current junction.
+    $MsysPath = Join-Path $Fixture 'existing MSYS2 with spaces'
+    New-Item -ItemType Directory -Path $MsysPath | Out-Null
+    $script:ScoopPaths['msys2'] = $MsysPath
+    $script:ScoopCalls.Clear()
+    Ensure-ScoopPackage msys2
+    Assert-True (($script:ScoopCalls -join '|') -eq 'prefix msys2|update msys2') 'Existing MSYS2 must be updated without checking manifest.json'
+    Assert-True ((Invoke-Scoop -Arguments @('prefix', 'msys2')) -eq $MsysPath) 'Use the installation path returned by Scoop, preserving spaces'
+
+    foreach ($Case in @(
+        @{ Name = 'msys2'; Command = 'update msys2' },
+        @{ Name = 'missing-package'; Command = 'install missing-package' }
+    )) {
+        $script:ScoopFailure = $Case.Command
+        $script:ScoopCalls.Clear()
+        $Rejected = $false
+        try { Ensure-ScoopPackage $Case.Name } catch {
+            $Rejected = $_.Exception.Message -eq "Scoop failed: $($Case.Command)"
+        }
+        Assert-True $Rejected 'Install/update failures must stop bootstrap'
+        Assert-True (($script:ScoopCalls -join '|') -eq "prefix $($Case.Name)|$($Case.Command)") 'A failed update must not fall back to reinstalling'
+    }
+    $script:ScoopFailure = ''
 
     $Checkout = Join-Path $Fixture 'checkout with spaces'
     New-Item -ItemType Directory -Path (Join-Path $Checkout '.git') -Force | Out-Null
@@ -180,7 +223,7 @@ try {
     $Output = & (Join-Path $Repository 'scripts/check-tools.ps1')
     Assert-True ($LASTEXITCODE -eq 1 -and ($Output -match '^MISSING  sk ')) 'Missing-command check should fail with code 1'
 
-    Write-Output 'PASS: mocked install/rerun, checkout guards, dry-run ordering, existing plugins, loader, Yazi wrapper, shared palette and availability-only checker'
+    Write-Output 'PASS: mocked Scoop install/update/rerun and failures, checkout guards, dry-run ordering, existing plugins, loader, Yazi wrapper, shared palette and availability-only checker'
 } finally {
     Set-Location -LiteralPath $OriginalLocation.Path
     Set-Variable -Name HOME -Value $OriginalHome -Force

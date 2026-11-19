@@ -48,7 +48,8 @@ The Windows packages do not include OpenCode.
 - Scoop main: Git, pwsh, MSYS2, Vim, Starship, Yazi, eza, skim, fd, bat,
   ripgrep, ffmpeg, 7zip, jq, poppler and psmux.
 - Scoop extras: WezTerm.
-- Existing Scoop packages are not automatically upgraded.
+- Missing Scoop packages are installed; existing packages are updated. Already
+  current packages need no action and setup continues.
 - If Stow is absent, MSYS2 performs full `pacman -Syu` updates before installing
   it. A core update may require rerunning bootstrap after the shell exits.
 - Do not continue after a failed update or use `pacman -Sy` as a partial-upgrade
