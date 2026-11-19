@@ -23,7 +23,11 @@ syntax on
 filetype plugin indent on
 set termguicolors
 " vscode colorscheme
-colorscheme codedark
+if !empty(globpath(&runtimepath, 'colors/codedark.vim'))
+  colorscheme codedark
+else
+  colorscheme default
+endif
 " vscode airline
 let g:airline_theme = 'codedark'
 " dziedziczenie tła:
@@ -58,7 +62,7 @@ set expandtab      " spacje zamiast tabów
 set undolevels=1000
 set backspace=indent,eol,start
 
-" MacOS
+" Schowek systemowy dla y/p, bez dodatkowego prefiksu.
 set clipboard=unnamed,unnamedplus
 
 " --- Kursor tylko w Vim:
@@ -73,10 +77,6 @@ endif
 
 " F2 = tryb bezpiecznego wklejania z zewnątrz (Cmd+V)
 set pastetoggle=<F2>
-
-" Normal-mode wklejka prosto z systemowego schowka
-nnoremap <leader>p "+p
-vnoremap <leader>p "+p
 
 " Timeouty dla ESC
 set ttimeout
