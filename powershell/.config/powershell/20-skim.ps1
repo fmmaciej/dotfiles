@@ -7,13 +7,35 @@ if (-not (Get-Module -ListAvailable PSReadLine)) { return }
 Import-Module PSReadLine
 
 Set-PSReadLineKeyHandler -Chord Ctrl+t -BriefDescription SkimFiles -LongDescription 'Insert a file selected with skim' -ScriptBlock {
-    $SkimArgs = @('--prompt', 'file> ')
+    $SkimArgs = @('--prompt', 'file> ', '--cmd', $env:SKIM_DEFAULT_COMMAND)
     if (Get-Command bat -ErrorAction SilentlyContinue) {
         $SkimArgs += @('--preview', 'bat --color=always --style=numbers -- {}')
     }
-    $Selected = & fd --type f --hidden --follow --exclude .git | & sk @SkimArgs
-    if ($LASTEXITCODE -eq 0 -and $Selected) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("'" + ($Selected -replace "'", "''") + "'")
+
+    # Avoid the native PowerShell pipeline inside a PSReadLine handler. Skim
+    # owns its fd input; only stdout is captured, leaving console input/UI intact.
+    $Process = [Diagnostics.Process]::new()
+    try {
+        $Process.StartInfo.FileName = (Get-Command sk -CommandType Application).Source
+        $Process.StartInfo.WorkingDirectory = $PWD.ProviderPath
+        $Process.StartInfo.UseShellExecute = $false
+        $Process.StartInfo.RedirectStandardOutput = $true
+        $Process.StartInfo.StandardOutputEncoding = [Text.Encoding]::UTF8
+        foreach ($Argument in $SkimArgs) {
+            $Process.StartInfo.ArgumentList.Add($Argument)
+        }
+        $null = $Process.Start()
+        $Selected = $Process.StandardOutput.ReadToEnd()
+        $Process.WaitForExit()
+        if ($Process.ExitCode -eq 0) {
+            $Selected = $Selected.TrimEnd([char[]]"`r`n")
+            if ($Selected) {
+                [Microsoft.PowerShell.PSConsoleReadLine]::Insert("'" + $Selected.Replace("'", "''") + "'")
+            }
+        }
+    } finally {
+        $Process.Dispose()
+        [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
     }
 }
 

@@ -1,0 +1,5 @@
+# History stays local unless the user explicitly opts into synchronization.
+auto_sync = false
+update_check = false
+# Selecting a command returns it to the prompt instead of running it immediately.
+enter_accept = false

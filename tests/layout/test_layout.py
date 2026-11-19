@@ -10,8 +10,9 @@ import unittest
 
 
 REPO = Path(__file__).resolve().parents[2]
-PACKAGES = ("common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
+PACKAGES = ("atuin", "common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
 EXPECTED = {
+    "atuin": (".config/atuin/config.toml",),
     "common": (".editorconfig",),
     "opencode": (
         ".config/opencode/cli.json",
@@ -27,6 +28,7 @@ EXPECTED = {
         ".config/powershell/10-environment.ps1",
         ".config/powershell/15-readline.ps1",
         ".config/powershell/20-skim.ps1",
+        ".config/powershell/25-atuin.ps1",
         ".config/powershell/30-proxy.ps1",
         ".config/powershell/40-aliases.ps1",
         ".config/powershell/50-dotfiles.ps1",
@@ -75,6 +77,15 @@ class LayoutTests(unittest.TestCase):
                 terminal,
             )
 
+    def test_nushell_stays_optional_and_atuin_stays_local(self):
+        terminal = (REPO / "wezterm/.wezterm.lua").read_text()
+        self.assertRegex(terminal, r'config\.default_prog\s*=\s*\{\s*"pwsh\.exe"')
+        for source in (REPO / "powershell/.config/powershell").glob("[0-9][0-9]-*.ps1"):
+            self.assertNotRegex(source.read_text(), r"(?mi)^\s*(?:&\s+)?nu(?:\s|$)", source)
+        config = (REPO / "atuin/.config/atuin/config.toml").read_text()
+        for option in ("auto_sync", "update_check", "enter_accept"):
+            self.assertRegex(config, rf"(?m)^{option}\s*=\s*false$")
+
     def test_helper_uses_the_source_checkout_and_keeps_git_worktrees_supported(self):
         source = (REPO / "powershell/.config/powershell/50-dotfiles.ps1").read_text()
         self.assertIn('Get-Item -LiteralPath $PSCommandPath', source)
@@ -119,6 +130,7 @@ class LayoutTests(unittest.TestCase):
                 "README.md", "docs/new.md", "scripts/new.ps1", "tests/new.py",
                 "powershell/.config/powershell/profile.ps1",
                 "powershell/.config/powershell/proxy.local.example.psd1",
+                "atuin/.config/atuin/config.toml",
                 "opencode/.config/opencode/cli.json",
                 "opencode/.config/opencode/plugins/personal-ui/vendor/vim.js",
                 "vim/vimfiles/autoload/plug.vim", "example/.env.example",
@@ -131,6 +143,7 @@ class LayoutTests(unittest.TestCase):
                 "vim/.vim/undo/state", "vim/vimfiles/plugged/example/plugin.vim",
                 "tmux/.psmux/plugins/example/plugin.ps1", "tests/__pycache__/test.pyc",
                 "opencode/.config/opencode/node_modules/example/index.js",
+                "atuin/.local/share/atuin/history.db", "atuin/.config/atuin/history.db",
             )
             for paths, expected in ((visible, 1), (private, 0)):
                 for path in paths:

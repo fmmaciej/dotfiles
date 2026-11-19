@@ -10,7 +10,7 @@ import unittest
 
 
 REPO = Path(__file__).resolve().parents[2]
-PACKAGES = ("common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
+PACKAGES = ("atuin", "common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
 PROFILES = ("profile.ps1", "Microsoft.PowerShell_profile.ps1")
 
 
@@ -130,6 +130,18 @@ class ProfileLinkTests(unittest.TestCase):
         self.assertEqual(settings.read_text(), "synthetic existing CLI preferences")
         for root in (self.home, self.pwsh, self.windows):
             self.assertFalse(any(path.is_symlink() for path in root.rglob("*")), root)
+
+    def test_atuin_config_links_without_touching_history(self):
+        shutil.copytree(REPO / "atuin", self.repo / "atuin", dirs_exist_ok=True)
+        history = self.home / ".local" / "share" / "atuin" / "history.db"
+        history.parent.mkdir(parents=True)
+        history.write_text("synthetic existing history; never imported")
+        result = self.deploy()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        link = self.home / ".config" / "atuin" / "config.toml"
+        self.assertTrue(link.is_symlink())
+        self.assertEqual(link.resolve(), self.repo / "atuin" / ".config" / "atuin" / "config.toml")
+        self.assertEqual(history.read_text(), "synthetic existing history; never imported")
 
 
 if __name__ == "__main__":

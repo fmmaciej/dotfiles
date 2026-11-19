@@ -9,7 +9,7 @@
 - Bootstrap reads each PowerShell edition's `$PROFILE.CurrentUserAllHosts` to
   locate its profile directory; `$HOME\Documents` is not assumed.
 - The shared loader runs once per process and sources only numbered modules:
-  environment, PSReadLine/predictions, skim, proxy, aliases, Git helper and prompt.
+  environment, PSReadLine/predictions, skim, Atuin, proxy, aliases, Git helper and prompt.
 
 ## Predictions and completion
 
@@ -20,7 +20,8 @@
   installed, history-only predictions remain available.
 - `F2` toggles list/inline suggestions. `Tab` opens the completion menu; Right
   Arrow accepts an inline suggestion at the end of the input line.
-- `Ctrl+R` and `Ctrl+T` remain assigned to skim. Predictions also work without skim.
+- `Ctrl+R` opens [Atuin](atuin.md); `Ctrl+T` remains assigned to skim. Predictions
+  also work without either history/file picker.
 - Bootstrap and `dot update` install/update CompletionPredictor with PSResourceGet
   from PSGallery. PowerShell 7 supplies PSReadLine. No Node.js or AI provider is
   involved, and profile startup never installs modules or accesses the Gallery.
@@ -30,9 +31,18 @@
 
 ## Skim
 
-- `Ctrl+R` recalls history without executing the selected command.
+- `Ctrl+R` is a skim history fallback when Atuin is unavailable; Atuin takes over
+  the binding after successful initialization.
 - `Ctrl+T` inserts a quoted file path selected with skim and a bat preview.
+- The file picker starts skim as a direct process, with fd supplied through
+  `--cmd`, rather than a native PowerShell pipeline inside the key handler.
+  Cancelling leaves the input untouched; closing the picker redraws the prompt.
 - Neither uses PSFzf or an `fzf=sk` alias.
+
+## Optional Nushell
+
+Run `nu` to enter [Nushell](nushell.md), and `exit` to return. PowerShell remains
+the WezTerm/psmux default; no profile automatically starts Nu.
 
 ## Dotfiles
 

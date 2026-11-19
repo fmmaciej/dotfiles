@@ -14,7 +14,9 @@
 - Installs/updates CompletionPredictor from PowerShell Gallery for the current user.
 - Creates a normal `windows-next` checkout at `$HOME\.dotfiles`.
 - Checks profile destinations, competing psmux configs and native symlink permissions.
-- Simulates Stow for all eight packages before applying links.
+- Simulates Stow for all nine packages before applying links.
+- Generates Atuin's native Nushell autoload integration, without replacing Nu's
+  configuration or changing the default shell.
 - Installs [psmux plugins](psmux.md#plugins) and [Vim plugins](vim.md).
 
 The archive and checkout revisions must match. A branch moving during download
@@ -42,11 +44,12 @@ No checkpoint files or automatic elevation are involved.
 | `vim` | `.vimrc`, `_vimrc`, `vimfiles/autoload/plug.vim` |
 | `common` | `.editorconfig` (LF) |
 | `opencode` | `.config/opencode/cli.json`, personal UI plugin and integrated Vim runtime |
+| `atuin` | `.config/atuin/config.toml` (local history, automatic sync disabled) |
 
 ## Tools and MSYS2 updates
 
 - Scoop main: Git, pwsh, MSYS2, Vim, Starship, Yazi, eza, skim, fd, bat,
-  ripgrep, ffmpeg, 7zip, jq, poppler, psmux and OpenCode v2.
+  ripgrep, ffmpeg, 7zip, jq, poppler, psmux, OpenCode v2, Atuin and Nushell (`nu`).
 - Scoop extras: WezTerm.
 - Missing Scoop packages are installed; existing packages are updated. Already
   current packages need no action and setup continues.
@@ -58,6 +61,10 @@ No checkpoint files or automatic elevation are involved.
 - Do not continue after a failed update or use `pacman -Sy` as a partial-upgrade
   shortcut. Scoop base upgrades and pacman updates are separate operations.
 - Already installed Vim/psmux plugins are not updated or overwritten by bootstrap.
+- Atuin and Nushell are updated through Scoop. Bootstrap refreshes only its own
+  generated `dotfiles-atuin.nu` in Nu's user-data `vendor/autoload` directory.
+  Existing Nu configuration, other autoload files and history remain untouched;
+  a file at that generated path without the dotfiles marker stops setup.
 
 ## Profile destinations
 

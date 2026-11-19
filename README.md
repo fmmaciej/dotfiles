@@ -1,6 +1,7 @@
 # Dotfiles - Windows
 
-WezTerm + psmux + PowerShell 7, Starship, skim, Yazi, Vim and OpenCode.
+WezTerm + psmux + PowerShell 7, Starship, skim, Atuin, Yazi, Vim and OpenCode.
+Nushell is available on demand through `nu`; PowerShell remains the default.
 
 ## Quick start
 
@@ -27,6 +28,7 @@ The bootstrap:
 
 - Installs Scoop, Git and PowerShell 7.
 - Installs WezTerm, psmux, Starship, Yazi, Vim and OpenCode.
+- Installs Atuin for `Ctrl+R` history search and optional Nushell (`nu`).
 - Installs skim, fd, bat, eza, ripgrep, ffmpeg, 7zip, jq and poppler.
 - Installs MSYS2 and Stow.
 - Updates existing Scoop packages; already current packages are left as-is.
@@ -90,3 +92,5 @@ dot update
 - [Yazi](docs/yazi.md)
 - [Vim](docs/vim.md)
 - [OpenCode](docs/opencode.md)
+- [Atuin history](docs/atuin.md)
+- [Optional Nushell](docs/nushell.md)

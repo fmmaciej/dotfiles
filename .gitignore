@@ -27,6 +27,8 @@
 **/.local/state/nvim/
 **/.local/share/nvim/
 **/.local/share/wezterm/
+**/.local/share/atuin/
+**/.config/atuin/*.db*
 
 # Editor dependencies and caches; keep the tracked vim-plug bootstrap.
 **/.vim/plugged/

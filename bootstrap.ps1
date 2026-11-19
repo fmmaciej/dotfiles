@@ -98,6 +98,7 @@ try {
     Assert-NativeSymlinks
     Ensure-Stow -MsysRoot $MsysRoot
     Install-DotfilesLinks -Repository $Repository -MsysRoot $MsysRoot
+    Install-AtuinNushellIntegration
     Install-PsmuxPlugins
     Install-VimPlugins
     & pwsh -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Repository 'scripts/check-tools.ps1')
