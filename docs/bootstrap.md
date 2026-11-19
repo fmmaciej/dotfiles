@@ -31,9 +31,9 @@ No checkpoint files or automatic elevation are involved.
 
 ## Packages
 
-| Stow package | Managed paths under `$HOME` |
+| Stow package | Managed paths |
 | --- | --- |
-| `powershell` | `.config/powershell`, individual profile files in `Documents` |
+| `powershell` | `.config/powershell`, individual profile files at locations reported by `$PROFILE` |
 | `wezterm` | `.wezterm.lua`, `.config/wezterm` |
 | `tmux` | `.tmux.conf`, `.tmux` modules, theme and native psmux helpers |
 | `starship` | `.config/starship.toml` |
@@ -58,9 +58,15 @@ The Windows packages do not include OpenCode.
 
 ## Profile destinations
 
-The layout targets `$HOME\Documents`. Bootstrap stops if Documents is redirected,
-for example by OneDrive. That host needs a reviewed adaptation of the profile
-destinations and bootstrap check before deployment.
+- PowerShell 7 uses the directory of `$PROFILE.CurrentUserAllHosts`.
+- Windows PowerShell reports its own `$PROFILE.CurrentUserAllHosts` through a
+  `powershell.exe -NoProfile` invocation.
+- Stow links the individual profile entry points into these directories, including
+  redirected Documents in OneDrive and paths containing spaces.
+- Other configuration still targets `$HOME`. No Documents directory is replaced
+  or redirected; existing unrelated files remain untouched.
+- All Stow targets are simulated before any links are applied. Existing profile
+  files that conflict with the links stop setup rather than being overwritten.
 
 ## Availability checks
 

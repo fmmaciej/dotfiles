@@ -30,11 +30,6 @@ function Ensure-DotfilesCheckout {
 }
 
 function Assert-DotfilesHost {
-    $Documents = [Environment]::GetFolderPath('MyDocuments')
-    $Expected = Join-Path $HOME 'Documents'
-    if ([IO.Path]::GetFullPath($Documents) -ne [IO.Path]::GetFullPath($Expected)) {
-        throw "Documents is redirected to $Documents. Review profile destinations before linking; no Documents directory will be replaced."
-    }
     foreach ($OtherConfig in @('.psmux.conf', '.psmuxrc')) {
         if (Test-Path -LiteralPath (Join-Path $HOME $OtherConfig)) {
             throw "Existing $OtherConfig takes precedence over .tmux.conf. Review it before deployment."
@@ -58,15 +53,31 @@ function Assert-NativeSymlinks {
 
 function Install-DotfilesLinks {
     param([string] $Repository, [string] $MsysRoot)
+    # Ask each PowerShell edition where its user profiles actually live. In
+    # particular, Documents may be redirected to OneDrive or a network location.
+    $PowerShellDirectory = Split-Path -Parent $PROFILE.CurrentUserAllHosts
+    $WindowsProfile = & powershell.exe -NoLogo -NoProfile -NonInteractive -Command '$PROFILE.CurrentUserAllHosts'
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($WindowsProfile)) {
+        throw 'Could not determine the Windows PowerShell profile path from $PROFILE.'
+    }
+    $WindowsPowerShellDirectory = Split-Path -Parent $WindowsProfile
     $Deploy = @'
 set -e
 repo="$(cygpath -u "$1")"
 target="$(cygpath -u "$2")"
+pwsh_target="$(cygpath -u "$3")"
+windows_powershell_target="$(cygpath -u "$4")"
 packages=(common powershell starship tmux vim wezterm yazi)
-stow --dir="$repo" --target="$target" --no-folding --simulate --verbose --restow "${packages[@]}"
-stow --dir="$repo" --target="$target" --no-folding --verbose --restow "${packages[@]}"
+mkdir -p -- "$pwsh_target" "$windows_powershell_target"
+for pass in dry-run apply; do
+    options=(--no-folding --verbose --restow)
+    if [[ "$pass" == dry-run ]]; then options+=(--simulate); fi
+    stow --dir="$repo" --target="$target" --ignore='^Documents$' "${options[@]}" "${packages[@]}"
+    stow --dir="$repo/powershell/Documents" --target="$pwsh_target" "${options[@]}" PowerShell
+    stow --dir="$repo/powershell/Documents" --target="$windows_powershell_target" "${options[@]}" WindowsPowerShell
+done
 '@
-    Invoke-Msys -MsysRoot $MsysRoot -Command $Deploy -Arguments @($Repository, $HOME)
+    Invoke-Msys -MsysRoot $MsysRoot -Command $Deploy -Arguments @($Repository, $HOME, $PowerShellDirectory, $WindowsPowerShellDirectory)
 }
 
 function Install-PsmuxPlugins {

@@ -66,7 +66,7 @@ pwsh -NoProfile -File "$HOME\.dotfiles\scripts\check-tools.ps1"
 - If an MSYS2 update interrupts setup, close MSYS2 windows and rerun bootstrap.
 - File conflicts stop linking. Back up/reconcile the listed files, then rerun;
   bootstrap does not overwrite them or pull/reset/stash the checkout.
-- Redirected Documents (e.g. OneDrive) requires [manual profile setup](docs/bootstrap.md#profile-destinations).
+- PowerShell profile locations come from `$PROFILE`, including Documents in OneDrive.
 - SF Mono is optional and user-installed; otherwise WezTerm uses JetBrains Mono.
 
 ## Configuration

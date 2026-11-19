@@ -6,6 +6,8 @@
   report that requirement.
 - CurrentUserAllHosts loads `.config/powershell/profile.ps1`; CurrentHost does
   not load it again.
+- Bootstrap reads each PowerShell edition's `$PROFILE.CurrentUserAllHosts` to
+  locate its profile directory; `$HOME\Documents` is not assumed.
 - The shared loader runs once per process and sources only numbered modules:
   environment, skim, proxy, aliases, Git helper and prompt.
 

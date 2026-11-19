@@ -12,6 +12,7 @@ function Assert-True {
 
 $Fixture = Join-Path ([IO.Path]::GetTempPath()) ('dotfiles-bootstrap-test-' + [guid]::NewGuid().ToString('N'))
 $OriginalHome = $HOME
+$OriginalProfile = $PROFILE
 $OriginalScoop = $env:SCOOP
 $OriginalPath = $env:PATH
 $OriginalThemeBg = $env:THEME_BG
@@ -26,6 +27,9 @@ $global:DotfilesTestThemeOptions = @{}
 try {
     New-Item -ItemType Directory -Path $Fixture | Out-Null
     Set-Variable -Name HOME -Value (Join-Path $Fixture 'home with spaces') -Force
+    $PROFILE = [pscustomobject]@{
+        CurrentUserAllHosts = Join-Path $HOME 'OneDrive - pwsh fixture/Documents/PowerShell/profile.ps1'
+    }
     $env:SCOOP = Join-Path $Fixture 'scoop with spaces'
     New-Item -ItemType Directory -Path $HOME, $env:SCOOP | Out-Null
 
@@ -157,10 +161,27 @@ try {
         $script:DeployCommand = $Command
         $script:DeployArguments = $Arguments
     }
+    $script:WindowsProfileExit = 0
+    function global:powershell.exe {
+        Assert-True ($args -contains '-NoProfile' -and $args[-1] -eq '$PROFILE.CurrentUserAllHosts') 'Query Windows PowerShell without loading any real profile'
+        $global:LASTEXITCODE = $script:WindowsProfileExit
+        if ($script:WindowsProfileExit -ne 0) { return }
+        return (Join-Path $HOME 'OneDrive - fixture/Documents/WindowsPowerShell/profile.ps1')
+    }
     Install-DotfilesLinks -Repository $Checkout -MsysRoot 'synthetic'
     Assert-True ($script:DeployArguments[0] -eq $Checkout -and $script:DeployArguments[1] -eq $HOME) 'Stow paths were changed/split'
+    Assert-True ($script:DeployArguments[2] -eq (Split-Path -Parent $PROFILE.CurrentUserAllHosts)) 'PowerShell 7 must use its actual PROFILE directory'
+    Assert-True ($script:DeployArguments[3] -eq (Join-Path $HOME 'OneDrive - fixture/Documents/WindowsPowerShell')) 'Windows PowerShell must use its own PROFILE directory, preserving spaces'
     Assert-True ($script:DeployCommand.IndexOf('--simulate') -lt $script:DeployCommand.LastIndexOf('stow --dir')) 'Dry-run must precede apply'
     Assert-True ($script:DeployCommand -match 'set -e' -and $script:DeployCommand -notmatch '--adopt|--override') 'Conflicts must stop deployment'
+    $script:DeployCommand = $null
+    $script:WindowsProfileExit = 1
+    $Rejected = $false
+    try { Install-DotfilesLinks -Repository $Checkout -MsysRoot 'synthetic' } catch {
+        $Rejected = $_.Exception.Message -eq 'Could not determine the Windows PowerShell profile path from $PROFILE.'
+    }
+    Assert-True ($Rejected -and $null -eq $script:DeployCommand) 'A failed PROFILE query must stop before Stow runs'
+    $script:WindowsProfileExit = 0
 
     foreach ($Name in @('ppm', 'psmux-logging')) {
         $Directory = Join-Path $HOME ".psmux/plugins/$Name"
@@ -227,13 +248,14 @@ try {
 } finally {
     Set-Location -LiteralPath $OriginalLocation.Path
     Set-Variable -Name HOME -Value $OriginalHome -Force
+    $PROFILE = $OriginalProfile
     $env:SCOOP = $OriginalScoop
     $env:PATH = $OriginalPath
     $env:THEME_BG = $OriginalThemeBg
     $env:THEME_ACCENT = $OriginalThemeAccent
     $env:PSMUX_TARGET_SESSION = $OriginalPsmuxSession
     Remove-Variable -Scope Global -Name DotfilesTestThemeOptions, DotfilesTestMissingCommand, DotfilesTestLoaded, DotfilesTestYaziDirectory, DotfilesProfileLoaded -ErrorAction SilentlyContinue
-    foreach ($Name in @('scoop', 'git', 'vim', 'yazi', 'psmux', 'Get-Command')) {
+    foreach ($Name in @('scoop', 'git', 'vim', 'yazi', 'psmux', 'Get-Command', 'powershell.exe')) {
         Remove-Item -LiteralPath "Function:global:$Name" -ErrorAction SilentlyContinue
     }
     if (Test-Path -LiteralPath $Fixture) { Remove-Item -LiteralPath $Fixture -Recurse -Force }
