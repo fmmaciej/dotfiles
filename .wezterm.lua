@@ -117,7 +117,7 @@ config.window_padding = {
 
 config.window_frame = {
   font = wezterm.font{ family = "SF Mono", weight = "Regular" },
-  font_size = 12.0,
+  font_size = 11.0,
   active_titlebar_bg = bg,
   inactive_titlebar_bg = bg,
 }
@@ -138,7 +138,7 @@ config.font = wezterm.font_with_fallback({
   { family = "Symbols Nerd Font", weight = "Regular" },
 })
 
-config.font_size  = 12.0
+config.font_size  = 11.0
 config.line_height = 1.05
 
 -- ======================
