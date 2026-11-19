@@ -9,7 +9,24 @@
 - Bootstrap reads each PowerShell edition's `$PROFILE.CurrentUserAllHosts` to
   locate its profile directory; `$HOME\Documents` is not assumed.
 - The shared loader runs once per process and sources only numbered modules:
-  environment, skim, proxy, aliases, Git helper and prompt.
+  environment, PSReadLine/predictions, skim, proxy, aliases, Git helper and prompt.
+
+## Predictions and completion
+
+- PSReadLine supplies syntax highlighting and history suggestions.
+- CompletionPredictor, an experimental module from the PowerShell project, adds
+  suggestions from PowerShell's registered tab completers.
+- Predictions use `HistoryAndPlugin` with `ListView`; before the module is
+  installed, history-only predictions remain available.
+- `F2` toggles list/inline suggestions. `Tab` opens the completion menu; Right
+  Arrow accepts an inline suggestion at the end of the input line.
+- `Ctrl+R` and `Ctrl+T` remain assigned to skim. Predictions also work without skim.
+- Bootstrap and `dot update` install/update CompletionPredictor with PSResourceGet
+  from PSGallery. PowerShell 7 supplies PSReadLine. No Node.js or AI provider is
+  involved, and profile startup never installs modules or accesses the Gallery.
+- Start a new PowerShell after installation/update to load the new module.
+
+[PowerShell predictive IntelliSense](https://learn.microsoft.com/en-us/powershell/scripting/learn/shell/using-predictors)
 
 ## Skim
 

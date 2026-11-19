@@ -53,6 +53,11 @@ function Ensure-WindowsTools {
     if (($env:PATH -split ';') -notcontains $Shims) { $env:PATH = "$Shims;$env:PATH" }
 }
 
+function Ensure-CompletionPredictor {
+    $Action = if (Get-Module -ListAvailable CompletionPredictor) { 'Update-PSResource' } else { 'Install-PSResource' }
+    & $Action -Name CompletionPredictor -Repository PSGallery -Scope CurrentUser -TrustRepository -Quiet -ErrorAction Stop
+}
+
 function Invoke-Msys {
     param([string] $MsysRoot, [string] $Command, [string[]] $Arguments = @())
     $SavedMsys = $env:MSYS

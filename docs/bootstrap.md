@@ -11,6 +11,7 @@
 - Downloads the `windows-next` archive directly, without Git or GitHub API calls.
 - Reads its commit SHA from the ZIP metadata to check the checkout revision.
 - Installs Scoop, Git and PowerShell 7; re-enters PowerShell 7 when necessary.
+- Installs/updates CompletionPredictor from PowerShell Gallery for the current user.
 - Creates a normal `windows-next` checkout at `$HOME\.dotfiles`.
 - Checks profile destinations, competing psmux configs and native symlink permissions.
 - Simulates Stow for all eight packages before applying links.
@@ -49,6 +50,9 @@ No checkpoint files or automatic elevation are involved.
 - Scoop extras: WezTerm.
 - Missing Scoop packages are installed; existing packages are updated. Already
   current packages need no action and setup continues.
+- CompletionPredictor uses PowerShell 7's PSResourceGet with `CurrentUser` scope,
+  not Scoop. Repository trust is accepted for this operation only; no permanent
+  repository-policy change or administrator shell is required.
 - If Stow is absent, MSYS2 performs full `pacman -Syu` updates before installing
   it. A core update may require rerunning bootstrap after the shell exits.
 - Do not continue after a failed update or use `pacman -Sy` as a partial-upgrade

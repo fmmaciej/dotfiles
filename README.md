@@ -30,6 +30,7 @@ The bootstrap:
 - Installs skim, fd, bat, eza, ripgrep, ffmpeg, 7zip, jq and poppler.
 - Installs MSYS2 and Stow.
 - Updates existing Scoop packages; already current packages are left as-is.
+- Installs/updates CompletionPredictor from PowerShell Gallery for the current user.
 - Clones `windows-next` into `$HOME\.dotfiles`.
 - Links configurations with Stow.
 - Installs Vim and psmux plugins.
@@ -60,7 +61,7 @@ dot update
 ```
 
 - Pulls the checkout's current branch with `--ff-only`.
-- Runs its local bootstrap to install/update Scoop packages and refresh Stow links.
+- Runs its local bootstrap to install/update tools and CompletionPredictor, and refresh Stow links.
 - Stops if Git fails; existing configuration conflicts are not overwritten.
 - Other Git commands still work: `dot status`, `dot diff`, `dot add`, `dot commit`.
 

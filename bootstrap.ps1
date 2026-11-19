@@ -87,6 +87,7 @@ try {
     }
 
     Ensure-WindowsTools
+    Ensure-CompletionPredictor
     . (Join-Path $Source 'scripts/windows/dotfiles.ps1')
     $Repository = Ensure-DotfilesCheckout -Path $RepositoryPath -Revision $Revision
     # Existing checkouts keep their own helpers and changes; no pull/reset/stash.

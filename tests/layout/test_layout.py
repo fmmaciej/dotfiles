@@ -25,6 +25,7 @@ EXPECTED = {
     ),
     "powershell": (
         ".config/powershell/10-environment.ps1",
+        ".config/powershell/15-readline.ps1",
         ".config/powershell/20-skim.ps1",
         ".config/powershell/30-proxy.ps1",
         ".config/powershell/40-aliases.ps1",
