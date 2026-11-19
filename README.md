@@ -41,20 +41,25 @@ helpers, and no generated editing view is needed.
 | `opencode` | Global OpenCode CLI preferences and personal terminal UI |
 
 Each package contains the directory layout expected under `$HOME`. README,
-LICENSE, and this repository's `.gitignore` are not Stow packages.
+LICENSE, `.gitignore`, `docs/`, `scripts/`, and `tests/` are not Stow packages.
+Keep deployment commands explicit: do not use `stow *`.
+
+Repository organization is shared with the WSL branch: application packages at
+the root, documentation in `docs/`, setup and diagnostic scripts in `scripts/`,
+and tests in `tests/<area>/`. See [branches and worktrees](docs/worktrees.md).
 
 ## Check tools
 
 Before installing links, check the commands used by the macOS configuration:
 
 ```sh
-~/.dotfiles/check-tools.sh
+~/.dotfiles/scripts/check-tools.sh
 ```
 
-For the planned WSL/Void configuration, use the separate list:
+For a reference check of WSL/Void tools from this branch, use the separate list:
 
 ```sh
-~/.dotfiles/check-tools-wsl.sh
+~/.dotfiles/scripts/check-tools-wsl.sh
 ```
 
 Edit the `programs` array in each script to maintain its list. Each only checks
@@ -62,6 +67,8 @@ availability in `PATH`: it does not run or install the programs, check versions,
 or detect GUI applications whose command-line tools are not in `PATH`.
 Exit status is `0` when all commands are found, or `1` when any are missing.
 This is a manual check, not a shell startup hook.
+On the WSL branch, `scripts/check-tools.sh` is the native check and contains
+the current WSL tool list; the extra list here is only a reference.
 
 ## Install or refresh links
 
@@ -133,8 +140,9 @@ separate administrative command.
 
 ## Branches and live configuration
 
-Only `mac` currently has the Stow package layout. The preserved branches
-`anyon`, `phonon`, `soliton`, and `windows` still use their original layouts.
+Both `mac` and `wsl` use the Stow package layout. The preserved branches
+`anyon`, `phonon`, `soliton`, and `windows` have not been verified by this change
+and may still use their original layouts.
 Do not switch this live checkout to an unmigrated branch: the links would point
 at paths that no longer exist. Adapt other branches in separate Git worktrees
 before using them with Stow. Native Windows deployment needs its own decision.

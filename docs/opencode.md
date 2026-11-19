@@ -160,7 +160,7 @@ From the repository root:
 
 ```sh
 node --test tests/opencode/*.test.mjs
-python3 -B -m unittest discover -s tests/opencode -p 'test_*.py' -v
+python3 -B -m unittest discover -s tests/zsh -p 'test_*.py' -v
 bash -n zsh/.config/zsh/80-kei.zsh
 zsh -f -n zsh/.config/zsh/80-kei.zsh
 ```

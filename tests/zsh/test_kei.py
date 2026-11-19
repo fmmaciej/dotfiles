@@ -1,4 +1,4 @@
-"""Hermetic tests of the shell entry point; no real OC or editor is started."""
+"""Hermetic tests of the Zsh entry point; no real OC or editor is started."""
 
 import os
 from pathlib import Path
