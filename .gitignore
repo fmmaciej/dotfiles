@@ -42,6 +42,7 @@
 **/vimfiles/backup/
 **/.psmux/plugins/
 **/.psmux/logs/
+**/node_modules/
 **/.config/nvim/plugged/
 **/.config/nvim/pack/
 **/.vscode/extensions/

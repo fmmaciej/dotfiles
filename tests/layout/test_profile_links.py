@@ -10,7 +10,7 @@ import unittest
 
 
 REPO = Path(__file__).resolve().parents[2]
-PACKAGES = ("common", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
+PACKAGES = ("common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
 PROFILES = ("profile.ps1", "Microsoft.PowerShell_profile.ps1")
 
 
@@ -100,6 +100,36 @@ class ProfileLinkTests(unittest.TestCase):
                 for root in (self.home, self.pwsh, self.windows):
                     self.assertFalse(any(path.is_symlink() for path in root.rglob("*")), root)
                 target.unlink()  # Only this synthetic conflict fixture is removed.
+
+    def test_opencode_package_links_without_touching_server_settings_or_runtime(self):
+        shutil.copytree(REPO / "opencode", self.repo / "opencode", dirs_exist_ok=True)
+        settings = self.home / ".config" / "opencode" / "opencode.json"
+        settings.parent.mkdir(parents=True)
+        settings.write_text('{"description":"synthetic existing server settings"}\n')
+        runtime = self.home / ".local" / "share" / "opencode" / "keep.txt"
+        runtime.parent.mkdir(parents=True)
+        runtime.write_text("synthetic existing runtime")
+        result = self.deploy()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for source in (REPO / "opencode").rglob("*"):
+            if source.is_file():
+                relative = source.relative_to(REPO / "opencode")
+                link = self.home / relative
+                self.assertTrue(link.is_symlink(), link)
+                self.assertEqual(link.resolve(), self.repo / "opencode" / relative)
+        self.assertEqual(settings.read_text(), '{"description":"synthetic existing server settings"}\n')
+        self.assertEqual(runtime.read_text(), "synthetic existing runtime")
+
+    def test_existing_opencode_preferences_stop_deployment(self):
+        shutil.copytree(REPO / "opencode", self.repo / "opencode", dirs_exist_ok=True)
+        settings = self.home / ".config" / "opencode" / "cli.json"
+        settings.parent.mkdir(parents=True)
+        settings.write_text("synthetic existing CLI preferences")
+        result = self.deploy()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(settings.read_text(), "synthetic existing CLI preferences")
+        for root in (self.home, self.pwsh, self.windows):
+            self.assertFalse(any(path.is_symlink() for path in root.rglob("*")), root)
 
 
 if __name__ == "__main__":

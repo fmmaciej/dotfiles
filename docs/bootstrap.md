@@ -13,7 +13,7 @@
 - Installs Scoop, Git and PowerShell 7; re-enters PowerShell 7 when necessary.
 - Creates a normal `windows-next` checkout at `$HOME\.dotfiles`.
 - Checks profile destinations, competing psmux configs and native symlink permissions.
-- Simulates Stow for all seven packages before applying links.
+- Simulates Stow for all eight packages before applying links.
 - Installs [psmux plugins](psmux.md#plugins) and [Vim plugins](vim.md).
 
 The archive and checkout revisions must match. A branch moving during download
@@ -40,13 +40,12 @@ No checkpoint files or automatic elevation are involved.
 | `yazi` | `.config/yazi/yazi.toml` |
 | `vim` | `.vimrc`, `_vimrc`, `vimfiles/autoload/plug.vim` |
 | `common` | `.editorconfig` (LF) |
-
-The Windows packages do not include OpenCode.
+| `opencode` | `.config/opencode/cli.json`, personal UI plugin and integrated Vim runtime |
 
 ## Tools and MSYS2 updates
 
 - Scoop main: Git, pwsh, MSYS2, Vim, Starship, Yazi, eza, skim, fd, bat,
-  ripgrep, ffmpeg, 7zip, jq, poppler and psmux.
+  ripgrep, ffmpeg, 7zip, jq, poppler, psmux and OpenCode v2.
 - Scoop extras: WezTerm.
 - Missing Scoop packages are installed; existing packages are updated. Already
   current packages need no action and setup continues.

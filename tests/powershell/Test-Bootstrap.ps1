@@ -60,12 +60,13 @@ try {
     }
     Ensure-Scoop
     Ensure-WindowsTools
-    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'install *' }).Count -eq 17) 'Expected 17 missing packages to be installed'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'install *' }).Count -eq 18) 'Expected 18 missing packages to be installed'
     Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'update *' }).Count -eq 0) 'New packages do not need another update'
     Assert-True (@($script:ScoopCalls | Where-Object { $_ -eq 'bucket add extras' }).Count -eq 1) 'Expected one extras bucket addition'
     $script:ScoopCalls.Clear()
     Ensure-WindowsTools
-    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'update *' }).Count -eq 17) 'Rerun must ask Scoop to update all existing packages, including already current ones'
+    Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'update *' }).Count -eq 18) 'Rerun must ask Scoop to update all existing packages, including already current ones'
+    Assert-True ($script:ScoopCalls -contains 'update opencode') 'OpenCode must participate in Scoop install/update'
     Assert-True (@($script:ScoopCalls | Where-Object { $_ -like 'install *' -or $_ -like 'bucket *' }).Count -eq 0) 'Rerun must not reinstall packages or re-add extras'
 
     # Existing installations need neither a legacy manifest nor a current junction.
@@ -174,6 +175,7 @@ try {
     Assert-True ($script:DeployArguments[3] -eq (Join-Path $HOME 'OneDrive - fixture/Documents/WindowsPowerShell')) 'Windows PowerShell must use its own PROFILE directory, preserving spaces'
     Assert-True ($script:DeployCommand.IndexOf('--simulate') -lt $script:DeployCommand.LastIndexOf('stow --dir')) 'Dry-run must precede apply'
     Assert-True ($script:DeployCommand -match 'set -e' -and $script:DeployCommand -notmatch '--adopt|--override') 'Conflicts must stop deployment'
+    Assert-True ($script:DeployCommand -match 'packages=\(common opencode ') 'Stow must deploy OpenCode with the other packages'
     $script:DeployCommand = $null
     $script:WindowsProfileExit = 1
     $Rejected = $false
@@ -243,6 +245,9 @@ try {
     $global:DotfilesTestMissingCommand = 'sk'
     $Output = & (Join-Path $Repository 'scripts/check-tools.ps1')
     Assert-True ($LASTEXITCODE -eq 1 -and ($Output -match '^MISSING  sk ')) 'Missing-command check should fail with code 1'
+    $global:DotfilesTestMissingCommand = 'opencode'
+    $Output = & (Join-Path $Repository 'scripts/check-tools.ps1')
+    Assert-True ($LASTEXITCODE -eq 1 -and ($Output -match '^MISSING  opencode ')) 'Missing OpenCode must fail the availability-only check'
 
     Write-Output 'PASS: mocked Scoop install/update/rerun and failures, checkout guards, dry-run ordering, existing plugins, loader, Yazi wrapper, shared palette and availability-only checker'
 } finally {

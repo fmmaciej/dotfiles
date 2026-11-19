@@ -1,6 +1,6 @@
 # Dotfiles - Windows
 
-WezTerm + psmux + PowerShell 7, Starship, skim, Yazi and Vim.
+WezTerm + psmux + PowerShell 7, Starship, skim, Yazi, Vim and OpenCode.
 
 ## Quick start
 
@@ -26,7 +26,7 @@ Set-ExecutionPolicy -Scope Process Bypass; irm https://raw.githubusercontent.com
 The bootstrap:
 
 - Installs Scoop, Git and PowerShell 7.
-- Installs WezTerm, psmux, Starship, Yazi and Vim.
+- Installs WezTerm, psmux, Starship, Yazi, Vim and OpenCode.
 - Installs skim, fd, bat, eza, ripgrep, ffmpeg, 7zip, jq and poppler.
 - Installs MSYS2 and Stow.
 - Updates existing Scoop packages; already current packages are left as-is.
@@ -77,3 +77,4 @@ pwsh -NoProfile -File "$HOME\.dotfiles\scripts\check-tools.ps1"
 - [psmux and keybindings](docs/psmux.md)
 - [Yazi](docs/yazi.md)
 - [Vim](docs/vim.md)
+- [OpenCode](docs/opencode.md)

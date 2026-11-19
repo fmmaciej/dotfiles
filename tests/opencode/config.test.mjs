@@ -1,0 +1,71 @@
+import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
+import test from "node:test"
+
+const root = new URL("../../", import.meta.url)
+const config = JSON.parse(readFileSync(new URL("opencode/.config/opencode/cli.json", root), "utf8"))
+const plugin = new URL("opencode/.config/opencode/plugins/personal-ui/", root)
+
+test("global CLI configuration enables the local TUI-only package", () => {
+  assert.equal(config.$schema, "https://opencode.ai/v2/cli.json")
+  const entry = config.plugins.find((item) => item.package === "./plugins/personal-ui")
+  assert.ok(entry)
+  assert.equal(typeof entry.options.animations, "boolean")
+  assert.equal(config.tabs.mode, "off")
+  assert.equal(config.session.sidebar, "auto")
+  assert.equal(config.instructions, undefined)
+  assert.equal(config.permissions, undefined)
+})
+
+test("keybinds retain the existing leader and resolve native tab conflicts", () => {
+  assert.equal(config.keybinds.leader, "ctrl+b")
+  assert.equal(config.keybinds["input.line.home"], "home")
+  assert.equal(config.keybinds["input.move.left"], "left")
+  assert.equal(config.keybinds["session.new"], "<leader>c")
+  for (const key of ["session.background", "session.compact", "session.export", "session.tab.next", "session.tab.previous", "session.tab.close"]) {
+    assert.equal(config.keybinds[key], "none")
+  }
+  for (let index = 1; index <= 10; index++) {
+    assert.equal(config.keybinds[`session.tab.select.${index}`], "none")
+  }
+})
+
+test("personal UI owns one integrated Vim runtime without the native footer", () => {
+  const entry = config.plugins.find((item) => item.package === "./plugins/personal-ui")
+  assert.deepEqual(entry.options.vim, {
+    enabled: true,
+    vim_initial_mode: "insert",
+    vim_system_clipboard_register: false,
+  })
+  assert.equal(entry.options.preservePromptFooter, undefined)
+  assert.ok(!config.plugins.some((item) => String(typeof item === "string" ? item : item.package).includes("opencode-vim-plugin")))
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  assert.match(source, /const vim = setupVim\(/)
+  assert.match(source, /vim\.dispose\(\)/)
+  assert.match(source, /context\.ui\.slot\(\{ replace: "prompt\.footer", render: \(\) => null \}\)/)
+  assert.match(source, /vimField\(vim\.mode\(\), context\.keymap\.pending\(\)\)/)
+  assert.match(source, /dimensions\(\)\.width - vimPrefixWidth - layout\(\)\.width\)/)
+  assert.match(source, /priority: 200/)
+})
+
+test("plugin keeps its identity and storage keys without depending on Kei", () => {
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  const manifest = JSON.parse(readFileSync(new URL("package.json", plugin), "utf8"))
+  assert.equal(manifest.name, "kei-terminal-ui")
+  assert.equal(manifest.exports["./tui"], "./tui.tsx")
+  assert.match(source, /id: "kei\.terminal-ui"/)
+  assert.ok(source.includes("`tabs-${scope}`"))
+  assert.ok(source.includes("context.options.animations"))
+  assert.doesNotMatch(source, /KEI_TUI_ENABLED|KEI_UI_ANIMATIONS|00-system\//)
+})
+
+test("bar names use the current session title without aliases or a custom rename command", () => {
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  assert.match(source, /sessionID, title: context\.data\.session\.get\(sessionID\)\?\.title/)
+  assert.match(source, /context\.keymap\.dispatch\("session\.rename"\)/)
+  assert.match(source, /bindings: \["session\.rename"\]/)
+  assert.doesNotMatch(source, /tab-titles-v1|updateNames|names\.titles/)
+  assert.doesNotMatch(source, /id: "session\.rename"|context\.client\.session\.update/)
+  assert.doesNotMatch(source, /> Kei:? <\/text>/)
+  assert.doesNotMatch(source, /wrapMode="none" truncate flexGrow=\{1\} flexShrink=\{1\} minWidth=\{0\}> \{tab\.label\}/)
+})

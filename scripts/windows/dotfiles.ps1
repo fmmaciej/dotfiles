@@ -67,7 +67,7 @@ repo="$(cygpath -u "$1")"
 target="$(cygpath -u "$2")"
 pwsh_target="$(cygpath -u "$3")"
 windows_powershell_target="$(cygpath -u "$4")"
-packages=(common powershell starship tmux vim wezterm yazi)
+packages=(common opencode powershell starship tmux vim wezterm yazi)
 mkdir -p -- "$pwsh_target" "$windows_powershell_target"
 for pass in dry-run apply; do
     options=(--no-folding --verbose --restow)

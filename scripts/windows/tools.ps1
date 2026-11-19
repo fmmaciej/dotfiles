@@ -41,7 +41,7 @@ function Ensure-ScoopPackage {
 }
 
 function Ensure-WindowsTools {
-    foreach ($Name in @('git', 'pwsh', 'msys2', 'vim', 'starship', 'yazi', 'eza', 'skim', 'fd', 'bat', 'ripgrep', 'ffmpeg', '7zip', 'jq', 'poppler', 'psmux')) {
+    foreach ($Name in @('git', 'pwsh', 'msys2', 'vim', 'starship', 'yazi', 'eza', 'skim', 'fd', 'bat', 'ripgrep', 'ffmpeg', '7zip', 'jq', 'poppler', 'psmux', 'opencode')) {
         Ensure-ScoopPackage $Name
     }
     if (-not (Test-Path -LiteralPath (Join-Path (Get-ScoopRoot) 'buckets/extras'))) {

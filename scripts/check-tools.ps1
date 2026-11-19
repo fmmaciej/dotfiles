@@ -1,7 +1,7 @@
 # Native Windows availability check only; no programs are executed or installed.
 $Programs = @(
     'scoop', 'git', 'pwsh', 'msys2',
-    'wezterm', 'psmux', 'vim', 'starship', 'yazi',
+    'wezterm', 'psmux', 'vim', 'starship', 'yazi', 'opencode',
     'sk', 'fd', 'rg', 'bat', 'eza',
     'ffmpeg', 'ffprobe', '7z', 'jq', 'pdftoppm'
 )

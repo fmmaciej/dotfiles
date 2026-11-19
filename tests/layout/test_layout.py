@@ -10,9 +10,19 @@ import unittest
 
 
 REPO = Path(__file__).resolve().parents[2]
-PACKAGES = ("common", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
+PACKAGES = ("common", "opencode", "powershell", "starship", "tmux", "vim", "wezterm", "yazi")
 EXPECTED = {
     "common": (".editorconfig",),
+    "opencode": (
+        ".config/opencode/cli.json",
+        ".config/opencode/plugins/personal-ui/package.json",
+        ".config/opencode/plugins/personal-ui/state.mjs",
+        ".config/opencode/plugins/personal-ui/tui.tsx",
+        ".config/opencode/plugins/personal-ui/vendor/LICENSE",
+        ".config/opencode/plugins/personal-ui/vendor/README.md",
+        ".config/opencode/plugins/personal-ui/vendor/vim.d.ts",
+        ".config/opencode/plugins/personal-ui/vendor/vim.js",
+    ),
     "powershell": (
         ".config/powershell/10-environment.ps1",
         ".config/powershell/20-skim.ps1",
@@ -52,7 +62,7 @@ class LayoutTests(unittest.TestCase):
         for name in ("docs", "scripts", "tests"):
             self.assertTrue((REPO / name).is_dir())
             self.assertNotIn(name, PACKAGES)
-        self.assertFalse((REPO / "opencode").exists())
+        self.assertIn("opencode", PACKAGES)
 
     def test_copy_mode_half_page_keys_reach_psmux(self):
         bindings = (REPO / "tmux/.tmux/modules/20-copy-paste.conf").read_text()
@@ -108,6 +118,8 @@ class LayoutTests(unittest.TestCase):
                 "README.md", "docs/new.md", "scripts/new.ps1", "tests/new.py",
                 "powershell/.config/powershell/profile.ps1",
                 "powershell/.config/powershell/proxy.local.example.psd1",
+                "opencode/.config/opencode/cli.json",
+                "opencode/.config/opencode/plugins/personal-ui/vendor/vim.js",
                 "vim/vimfiles/autoload/plug.vim", "example/.env.example",
             )
             private = (
@@ -117,6 +129,7 @@ class LayoutTests(unittest.TestCase):
                 "example/.gnupg/secret", "vim/.vim/plugged/example/plugin.vim",
                 "vim/.vim/undo/state", "vim/vimfiles/plugged/example/plugin.vim",
                 "tmux/.psmux/plugins/example/plugin.ps1", "tests/__pycache__/test.pyc",
+                "opencode/.config/opencode/node_modules/example/index.js",
             )
             for paths, expected in ((visible, 1), (private, 0)):
                 for path in paths:
