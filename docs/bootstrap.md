@@ -8,7 +8,8 @@
 
 ## Installation flow
 
-- Downloads a commit-pinned archive before Git exists.
+- Downloads the `windows-next` archive directly, without Git or GitHub API calls.
+- Reads its commit SHA from the ZIP metadata to check the checkout revision.
 - Installs Scoop, Git and PowerShell 7; re-enters PowerShell 7 when necessary.
 - Creates a normal `windows-next` checkout at `$HOME\.dotfiles`.
 - Checks profile destinations, competing psmux configs and native symlink permissions.

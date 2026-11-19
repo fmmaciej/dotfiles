@@ -5,6 +5,29 @@ param(
     [string] $Revision
 )
 
+function Get-GitHubArchiveRevision {
+    param([string] $Path)
+
+    # GitHub ZIPs end with a 22-byte end-of-directory record and the full
+    # commit SHA as a 40-byte comment. This also works in Windows PowerShell 5.1.
+    $Stream = [IO.File]::OpenRead($Path)
+    try {
+        if ($Stream.Length -lt 62) { throw 'GitHub archive has no commit SHA.' }
+        $null = $Stream.Seek(-62, [IO.SeekOrigin]::End)
+        $Reader = New-Object IO.BinaryReader($Stream)
+        $Tail = $Reader.ReadBytes(62)
+    } finally {
+        $Stream.Dispose()
+    }
+    $Commit = [Text.Encoding]::ASCII.GetString($Tail, 22, 40)
+    if ([BitConverter]::ToUInt32($Tail, 0) -ne 0x06054b50 -or
+        [BitConverter]::ToUInt16($Tail, 20) -ne 40 -or
+        $Commit -cnotmatch '^[0-9a-f]{40}$') {
+        throw 'GitHub archive has no valid commit SHA.'
+    }
+    return $Commit
+}
+
 $ErrorActionPreference = 'Stop'
 if ($env:OS -ne 'Windows_NT') { throw 'This bootstrap is for native Windows, not macOS, Linux or WSL.' }
 if (-not [Environment]::Is64BitProcess -or $env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
@@ -26,19 +49,28 @@ $DownloadRoot = $null
 try {
     $Source = $PSScriptRoot
     if (-not $Source) {
-        # No Git is required to obtain the helper files. Pin the archive to one
-        # commit so a branch update cannot mix helpers from different revisions.
-        if (-not $Revision) {
-            $Commit = Invoke-RestMethod 'https://api.github.com/repos/fmmaciej/dotfiles/commits/windows-next'
-            $Revision = $Commit.sha
+        # Obtain all helpers in one download, without Git or the GitHub API.
+        if ($Revision -and $Revision -cnotmatch '^[0-9a-f]{40}$') { throw 'Expected a full Git commit SHA.' }
+        $ArchiveRef = 'refs/heads/windows-next'
+        $ArchiveDirectory = 'dotfiles-windows-next'
+        if ($Revision) {
+            $ArchiveRef = $Revision
+            $ArchiveDirectory = "dotfiles-$Revision"
         }
-        if ($Revision -notmatch '^[0-9a-f]{40}$') { throw 'Expected a full Git commit SHA.' }
         $DownloadRoot = Join-Path ([IO.Path]::GetTempPath()) ('dotfiles-bootstrap-' + [guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Path $DownloadRoot | Out-Null
         $Archive = Join-Path $DownloadRoot 'dotfiles.zip'
-        Invoke-WebRequest "https://github.com/fmmaciej/dotfiles/archive/$Revision.zip" -UseBasicParsing -OutFile $Archive
+        Invoke-WebRequest "https://github.com/fmmaciej/dotfiles/archive/$ArchiveRef.zip" -UseBasicParsing -OutFile $Archive
+        $ArchiveRevision = Get-GitHubArchiveRevision -Path $Archive
+        if ($Revision -and $Revision -cne $ArchiveRevision) { throw 'GitHub archive revision does not match the requested commit.' }
+        $Revision = $ArchiveRevision
         Expand-Archive -LiteralPath $Archive -DestinationPath $DownloadRoot
-        $Source = Join-Path $DownloadRoot "dotfiles-$Revision"
+        $Source = Join-Path $DownloadRoot $ArchiveDirectory
+        foreach ($Relative in @('bootstrap.ps1', 'scripts/windows/tools.ps1', 'scripts/windows/dotfiles.ps1')) {
+            if (-not (Test-Path -LiteralPath (Join-Path $Source $Relative) -PathType Leaf)) {
+                throw "GitHub archive is missing $Relative."
+            }
+        }
     }
 
     . (Join-Path $Source 'scripts/windows/tools.ps1')
