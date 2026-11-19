@@ -25,9 +25,49 @@ $Fixture = Join-Path ([System.IO.Path]::GetTempPath()) ("dotfiles-test-" + [guid
 $SavedLocation = Get-Location
 $script:GitArguments = @()
 $script:MockGitExit = 0
+$script:BootstrapArguments = @()
+$script:MockBootstrapExit = 0
+$script:UpdateEvents = [Collections.Generic.List[string]]::new()
 function global:git {
+    $script:UpdateEvents.Add('git')
     $script:GitArguments = @($args)
     $global:LASTEXITCODE = $script:MockGitExit
+}
+function global:pwsh {
+    $script:UpdateEvents.Add('bootstrap')
+    $script:BootstrapArguments = @($args)
+    $global:LASTEXITCODE = $script:MockBootstrapExit
+}
+
+function Test-DotUpdate {
+    param([string] $Repo, [string] $CallerDirectory)
+    $script:UpdateEvents.Clear()
+    dot update
+    Assert-True (($script:UpdateEvents -join ',') -eq 'git,bootstrap') 'dot update must pull before running bootstrap'
+    Assert-True (($script:GitArguments -join '|') -eq "-C|$Repo|pull|--ff-only") 'dot update must fast-forward its own checkout'
+    Assert-True ($script:BootstrapArguments.Count -eq 8) 'dot update changed the bootstrap argument count'
+    Assert-True (($script:BootstrapArguments[0..4] -join '|') -eq '-NoLogo|-NoProfile|-ExecutionPolicy|Bypass|-File') 'Bootstrap must run in a clean PowerShell process'
+    Assert-True ($script:BootstrapArguments[5] -eq (Join-Path $Repo 'bootstrap.ps1')) 'dot update chose the wrong bootstrap'
+    Assert-True ($script:BootstrapArguments[6] -eq '-RepositoryPath' -and $script:BootstrapArguments[7] -eq $Repo) 'dot update must pass its checkout explicitly, preserving spaces'
+    Assert-True ($LASTEXITCODE -eq 0) 'Successful update must return zero'
+    Assert-True ((Get-Location).Path -eq $CallerDirectory) 'dot update changed the caller directory'
+
+    $script:MockGitExit = 7
+    $script:UpdateEvents.Clear()
+    dot update
+    Assert-True (($script:UpdateEvents -join ',') -eq 'git') 'A failed pull must not launch bootstrap'
+    Assert-True ($LASTEXITCODE -eq 7) 'dot update lost the pull failure code'
+    $script:MockGitExit = 0
+
+    $script:MockBootstrapExit = 9
+    dot update
+    Assert-True ($LASTEXITCODE -eq 9) 'dot update lost the bootstrap failure code'
+    $script:MockBootstrapExit = 0
+
+    $script:UpdateEvents.Clear()
+    $Rejected = $false
+    try { dot update --unexpected } catch { $Rejected = $_.Exception.Message -eq 'Usage: dot update' }
+    Assert-True ($Rejected -and $script:UpdateEvents.Count -eq 0) 'Unsupported update arguments must not be silently ignored or execute commands'
 }
 
 try {
@@ -56,6 +96,7 @@ try {
     dot status
     Assert-True ($LASTEXITCODE -eq 7) "dot did not preserve Git's exit code"
     $script:MockGitExit = 0
+    Test-DotUpdate -Repo $Repo -CallerDirectory $Other
 
     # Also support ordinary checkouts, whose .git is a directory.
     Remove-Item -LiteralPath (Join-Path $Repo ".git") -Force
@@ -63,6 +104,7 @@ try {
     . $Helper
     dot status
     Assert-True ($script:GitArguments[1] -eq $Repo) "ordinary checkout detection failed"
+    Test-DotUpdate -Repo $Repo -CallerDirectory $Other
 
     foreach ($Relative in @($false, $true)) {
         $Name = if ($Relative) { "relative.ps1" } else { "absolute.ps1" }
@@ -72,6 +114,7 @@ try {
         . $Link
         dot status
         Assert-True ($script:GitArguments[1] -eq $Repo) "helper did not resolve its source through a symlink"
+        Test-DotUpdate -Repo $Repo -CallerDirectory $Other
     }
 
     # A global helper must also retain its root when called from another script.
@@ -93,9 +136,10 @@ dot status
     foreach ($Retired in @("dot-code", "dot-sync", "dot-help", "New-DotfilesViewLink")) {
         Assert-True (-not (Get-Command -Name $Retired -ErrorAction SilentlyContinue)) "retired helper was recreated: $Retired"
     }
-    Write-Output "PASS: syntax, direct checkout, Git worktree, argument forwarding, exit code, caller directory, absolute/relative symlinks, invalid placement, retired helpers"
+    Write-Output "PASS: syntax, checkout/worktree, Git forwarding, dot update ordering/failure/paths, exit code, caller directory, symlinks, invalid placement, retired helpers"
 } finally {
     Set-Location -LiteralPath $SavedLocation.Path
+    Remove-Item -LiteralPath 'Function:global:git', 'Function:global:pwsh' -ErrorAction SilentlyContinue
     if (Test-Path -LiteralPath $Fixture) {
         Remove-Item -LiteralPath $Fixture -Recurse -Force
     }

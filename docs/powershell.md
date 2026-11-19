@@ -17,6 +17,15 @@
 - `Ctrl+T` inserts a quoted file path selected with skim and a bat preview.
 - Neither uses PSFzf or an `fzf=sk` alias.
 
+## Dotfiles
+
+- `dot <git arguments>` runs Git in the checkout that owns the linked profile.
+- `dot update` runs `git pull --ff-only`, then that checkout's `bootstrap.ps1`
+  in PowerShell 7 without loading profiles. It passes the checkout path explicitly,
+  so a worktree outside `$HOME\.dotfiles` is also supported.
+- If Git fails, bootstrap does not run. Neither command changes the caller's
+  directory, resets/stashes local changes or automatically resolves conflicts.
+
 ## Proxy
 
 Private configuration stays at `.config/powershell/proxy.local.psd1`, outside

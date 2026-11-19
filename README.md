@@ -53,6 +53,17 @@ pwsh -NoProfile -File "$HOME\.dotfiles\scripts\check-tools.ps1"
 - Exit code: `0` when complete, `1` when tools are missing.
 - Checks availability only; no installation or configuration tests.
 
+## Update
+
+```powershell
+dot update
+```
+
+- Pulls the checkout's current branch with `--ff-only`.
+- Runs its local bootstrap to install/update Scoop packages and refresh Stow links.
+- Stops if Git fails; existing configuration conflicts are not overwritten.
+- Other Git commands still work: `dot status`, `dot diff`, `dot add`, `dot commit`.
+
 ## Scripts
 
 - `bootstrap.ps1` - obtains helpers and coordinates setup in PowerShell 7.

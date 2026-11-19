@@ -27,5 +27,12 @@ if (-not $DotfilesRepositoryCandidate -or
 $global:DotfilesRepository = $DotfilesRepositoryCandidate
 
 function global:dot {
+    if ($args.Count -gt 0 -and $args[0] -eq 'update') {
+        if ($args.Count -ne 1) { throw 'Usage: dot update' }
+        & git -C $global:DotfilesRepository pull --ff-only
+        if ($LASTEXITCODE -ne 0) { return }
+        & pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File (Join-Path $global:DotfilesRepository 'bootstrap.ps1') -RepositoryPath $global:DotfilesRepository
+        return
+    }
     & git -C $global:DotfilesRepository @args
 }
