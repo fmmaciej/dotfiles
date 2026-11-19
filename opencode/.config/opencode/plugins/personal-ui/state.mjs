@@ -57,76 +57,58 @@ export function contextBar(percent, width = 12) {
 }
 
 export function sessionState({ running, permissions = 0, forms = 0, outcome }) {
-  if (permissions) return { kind: "attention", label: "approve", icon: "!" }
-  if (forms) return { kind: "attention", label: "reply", icon: "?" }
-  if (running) return { kind: "running", label: "working", icon: "" }
-  if (outcome === "failed") return { kind: "error", label: "error", icon: "✗" }
-  if (outcome === "interrupted") return { kind: "idle", label: "interrupted", icon: "–" }
-  return { kind: "idle", label: "ready", icon: "✓" }
+  if (permissions) return { kind: "attention", label: "APPROVE", icon: "!" }
+  if (forms) return { kind: "attention", label: "REPLY", icon: "?" }
+  if (running) return { kind: "running", label: "WORKING", icon: "" }
+  if (outcome === "failed") return { kind: "error", label: "ERROR", icon: "✗" }
+  if (outcome === "interrupted") return { kind: "idle", label: "STOPPED", icon: "–" }
+  return { kind: "idle", label: "READY", icon: "✓" }
 }
 
 export const tabSpinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+
+export const vimLabels = Object.freeze({
+  insert: "INSERT", normal: "NORMAL", visual: "VISUAL", "visual-line": "VISUAL",
+  replace: "REPLACE", copy: "COPY", leader: "LEADER",
+})
+export const vimLabelWidth = Math.max(...Object.values(vimLabels).map((label) => label.length))
+export const vimPrefixWidth = vimLabelWidth + 2 // Exactly one space, then the separator.
+
+/** @param {ReadonlyArray<{token?: string}>} pending */
+export function vimField(mode, pending = []) {
+  const label = pending.some((key) => key.token === "leader") ? vimLabels.leader : vimLabels[mode] ?? "?"
+  return label.padStart(vimLabelWidth) + " │"
+}
 
 export function tabIcon(state, frame = 0, animations = true) {
   if (state.kind !== "running") return state.icon
   return animations ? tabSpinnerFrames[frame % tabSpinnerFrames.length] : "⋯"
 }
 
-// " Kei: " + label + " " + icon + gap + "│"; work uses gap for a scanner, then " │".
-// Labels and glyphs here occupy one cell each. The longest label needs a one-cell gap.
+export const statusLabelWidth = 7
+export const statusSegmentWidth = statusLabelWidth + 5 // " " + label + " " + icon + " │".
+
+// Pad labels before the icon so every status and spinner frame uses the same column.
 // Only terminal resizing may move the separator, never a status transition.
 export function statusLayout(state, terminalWidth) {
-  const width = Math.max(0, Math.min(21, Math.floor(terminalWidth) - 8))
-  const available = Math.max(0, width - 9)
+  const width = Math.max(0, Math.min(statusSegmentWidth, Math.floor(terminalWidth) - 8))
+  const available = Math.max(0, width - 5)
   const full = state.label
   const text = full.length <= available ? full
     : available ? full.slice(0, available - 1) + "…" : ""
-  return { width, icon: state.icon, text, gap: Math.max(0, available - text.length) }
-}
-
-// A bidirectional scanner with a fading, directional tail and endpoint pauses,
-// following OC's Knight Rider timing: 40 ms ticks, 30/9 endpoint hold frames.
-// Levels 1–6 describe dot brightness; 0 is an empty cell (no visible track).
-export function scannerFrame(width, frame) {
-  width = Math.max(0, Math.floor(width))
-  if (!width) return []
-  const endHold = 9
-  const backwardEnd = width + endHold + width - 1
-  const cycle = backwardEnd + 30
-  const phase = ((Math.floor(frame) % cycle) + cycle) % cycle
-  let position, direction, fade = 0
-  if (phase < width) {
-    position = phase
-    direction = 1
-  } else if (phase < width + endHold) {
-    position = width - 1
-    direction = 1
-    fade = phase - width + 1
-  } else if (phase < backwardEnd) {
-    position = width - 2 - (phase - width - endHold)
-    direction = -1
-  } else {
-    position = 0
-    direction = -1
-    fade = phase - backwardEnd + 1
-  }
-  return Array.from({ length: width }, (_, index) => {
-    const distance = direction === 1 ? position - index : index - position
-    return distance < 0 ? 0 : Math.max(0, 6 - distance - fade)
-  })
+  return { width, text: text.padEnd(available), labelWidth: available }
 }
 
 const titleSegmenter = new Intl.Segmenter("en", { granularity: "grapheme" })
 const titleCharacters = (value) => Array.from(titleSegmenter.segment(value), (part) => part.segment)
 
-// Ten visible characters, followed by three literal dots only when truncated.
-// A smaller room is used only when even the active card cannot fit the terminal.
-export function tabTitle(value, room = 13) {
+// Use the current session title, whether generated or manually edited. A title
+// that is missing or blank falls back to "oc". Keep only its first word and
+// clip to the available room without adding dots.
+export function tabTitle(value, room = Infinity) {
   room = Math.max(0, Math.floor(room))
-  const chars = titleCharacters(cleanTitle(value))
-  if (chars.length <= Math.min(10, room)) return chars.join("")
-  const suffix = "...".slice(0, Math.min(3, room))
-  return chars.slice(0, Math.min(10, Math.max(0, room - suffix.length))).join("") + suffix
+  const word = cleanTitle(value, "oc").split(/\s+/u)[0]
+  return titleCharacters(word).slice(0, room).join("")
 }
 
 // Pack content-sized cards into a contiguous window containing the active tab.
@@ -136,12 +118,12 @@ export function visibleTabs(tabs, active, width) {
   const index = Math.max(0, tabs.findIndex((tab) => tab.sessionID === active))
   const items = tabs.map((tab, number) => {
     const title = tabTitle(tab.title)
-    const prefix = `${number}: `
+    const prefix = `${number} `
     // One leading space and the non-shrinking four-cell suffix " icon │".
     return { ...tab, number, width: prefix.length + titleCharacters(title).length + 5, label: `${prefix}${title}` }
   })
   if (items[index].width > budget) {
-    const prefix = `${index}: `
+    const prefix = `${index} `
     const cellWidth = Math.max(4, budget)
     return [{ ...items[index], width: cellWidth,
       label: prefix + tabTitle(tabs[index].title, cellWidth - prefix.length - 5) }]

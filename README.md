@@ -16,6 +16,14 @@ and configuration managed by GNU Stow.
 | `opencode` | [Personal terminal UI](docs/opencode.md) |
 | `common` | EditorConfig |
 
+## Repository layout
+
+Application directories at the root are GNU Stow packages and mirror paths
+under `$HOME`. Documentation lives in `docs/`, setup and diagnostic scripts in
+`scripts/`, and tests in `tests/<area>/`, matching the `mac` branch.
+These support directories are not Stow packages: use explicit package names,
+not `stow *`. See [branches and worktrees](docs/worktrees.md).
+
 ## Quick start
 
 Run these steps inside WSL: clone → install tools and Flyline → link with Stow → start Bash.
@@ -31,11 +39,11 @@ cd "$HOME/.dotfiles"
 
 ### 2. Install tools
 
-Install GNU Stow and the tools listed in `check-tools-wsl.sh` using your package
+Install GNU Stow and the tools listed in `scripts/check-tools.sh` using your package
 manager or preferred binary installer, then check command availability:
 
 ```sh
-./check-tools-wsl.sh
+./scripts/check-tools.sh
 ```
 
 Install the distribution's `bash-completion` package for command-specific Tab

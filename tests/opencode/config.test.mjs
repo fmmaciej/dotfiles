@@ -30,6 +30,24 @@ test("keybinds retain the existing leader and resolve native tab conflicts", () 
   }
 })
 
+test("personal UI owns one integrated Vim runtime without the native footer", () => {
+  const entry = config.plugins.find((item) => item.package === "./plugins/personal-ui")
+  assert.deepEqual(entry.options.vim, {
+    enabled: true,
+    vim_initial_mode: "insert",
+    vim_system_clipboard_register: false,
+  })
+  assert.equal(entry.options.preservePromptFooter, undefined)
+  assert.ok(!config.plugins.some((item) => String(typeof item === "string" ? item : item.package).includes("opencode-vim-plugin")))
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  assert.match(source, /const vim = setupVim\(/)
+  assert.match(source, /vim\.dispose\(\)/)
+  assert.match(source, /context\.ui\.slot\(\{ replace: "prompt\.footer", render: \(\) => null \}\)/)
+  assert.match(source, /vimField\(vim\.mode\(\), context\.keymap\.pending\(\)\)/)
+  assert.match(source, /dimensions\(\)\.width - vimPrefixWidth - layout\(\)\.width\)/)
+  assert.match(source, /priority: 200/)
+})
+
 test("plugin keeps its identity and storage keys without depending on Kei", () => {
   const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
   const manifest = JSON.parse(readFileSync(new URL("package.json", plugin), "utf8"))
@@ -39,4 +57,15 @@ test("plugin keeps its identity and storage keys without depending on Kei", () =
   assert.ok(source.includes("`tabs-${scope}`"))
   assert.ok(source.includes("context.options.animations"))
   assert.doesNotMatch(source, /KEI_TUI_ENABLED|KEI_UI_ANIMATIONS|00-system\//)
+})
+
+test("bar names use the current session title without aliases or a custom rename command", () => {
+  const source = readFileSync(new URL("tui.tsx", plugin), "utf8")
+  assert.match(source, /sessionID, title: context\.data\.session\.get\(sessionID\)\?\.title/)
+  assert.match(source, /context\.keymap\.dispatch\("session\.rename"\)/)
+  assert.match(source, /bindings: \["session\.rename"\]/)
+  assert.doesNotMatch(source, /tab-titles-v1|updateNames|names\.titles/)
+  assert.doesNotMatch(source, /id: "session\.rename"|context\.client\.session\.update/)
+  assert.doesNotMatch(source, /> Kei:? <\/text>/)
+  assert.doesNotMatch(source, /wrapMode="none" truncate flexGrow=\{1\} flexShrink=\{1\} minWidth=\{0\}> \{tab\.label\}/)
 })

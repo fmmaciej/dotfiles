@@ -59,7 +59,12 @@
     {
       "package": "./plugins/personal-ui",
       "options": {
-        "animations": true
+        "animations": true,
+        "vim": {
+          "enabled": true,
+          "vim_initial_mode": "insert",
+          "vim_system_clipboard_register": false
+        }
       }
     }
   ]
