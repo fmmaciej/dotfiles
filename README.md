@@ -22,7 +22,7 @@ Application directories at the root are GNU Stow packages and mirror paths
 under `$HOME`. Documentation lives in `docs/`, setup and diagnostic scripts in
 `scripts/`, and tests in `tests/<area>/`, matching the `mac` branch.
 These support directories are not Stow packages: use explicit package names,
-not `stow *`. See [branches and worktrees](docs/worktrees.md).
+not `stow *`.
 
 ## Quick start
 

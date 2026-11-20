@@ -5,7 +5,7 @@ OpenCode **2.2.7**. It loads globally from `~/.config/opencode/cli.json` (or
 `$XDG_CONFIG_HOME/opencode/cli.json` when set), in any project. Stow commands
 below assume the default configuration directory. The UI does not need a
 `kei` function, a Kei instance, project instructions, activation flags, or a
-remote-ssh runtime. See [repository and worktree organization](worktrees.md).
+remote-ssh runtime.
 
 ## Managed files
 
